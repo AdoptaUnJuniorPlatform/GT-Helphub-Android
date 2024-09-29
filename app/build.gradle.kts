@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
+
 }
 
 android {
@@ -50,6 +53,11 @@ android {
 }
 
 dependencies {
+
+    //Dagger Hilt
+    implementation(libs.dagger.hilt)
+    implementation(libs.dagger.hilt.navigation)
+    kapt(libs.dagger.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
