@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
+import com.alejandro.helphub.features.auth.presentation.LoginViewModel
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
 @Composable
@@ -19,7 +20,7 @@ fun RootNavGraph(navController:NavHostController){
             })
         }
         composable("LoginScreen"){
-            LoginScreen()
+            LoginScreen(loginViewModel = LoginViewModel())
         }
     }
 }
