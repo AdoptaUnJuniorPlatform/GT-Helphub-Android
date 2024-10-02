@@ -53,11 +53,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 
 @Composable
-fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier) {
+fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier, navController: NavHostController) {
 
 
     Box(
@@ -83,7 +84,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier) {
             ) {
                 Header(Modifier.align(Alignment.TopEnd))
                 Body(Modifier.align(Alignment.Center), loginViewModel)
-                Footer(Modifier.align(Alignment.BottomCenter))
+                Footer(Modifier.align(Alignment.BottomCenter), navController = navController)
             }
         }
 
@@ -327,7 +328,7 @@ fun SocialLogin() {
 
 
 @Composable
-fun Footer(modifier: Modifier) {
+fun Footer(modifier: Modifier, navController: NavHostController) {
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalDivider(
             Modifier
@@ -336,14 +337,14 @@ fun Footer(modifier: Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(24.dp))
-        SignUp()
+        SignUp(navController = navController)
         Spacer(modifier = Modifier.size(24.dp))
     }
 
 }
 
 @Composable
-fun SignUp() {
+fun SignUp(navController:NavHostController) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
             text = stringResource(id = R.string.signup_invitation),
@@ -352,7 +353,7 @@ fun SignUp() {
         )
         Text(
             text = stringResource(id = R.string.signup),
-            Modifier.padding(horizontal = 8.dp),
+            Modifier.padding(horizontal = 8.dp).clickable{navController.navigate("SignUpCredsScreen")},
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
