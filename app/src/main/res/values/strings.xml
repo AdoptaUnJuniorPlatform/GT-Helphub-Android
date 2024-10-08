@@ -2,11 +2,32 @@
     <string name="app_name">Helphub</string>
     <!--Login Screen -->
     <string name="quote">"Uniendo talentos, creando comunidad"</string>
-    <string name="email">ejemplo@gmail.com</string>
-    <string name="password">*******</string>
+    <string name="email_example">ejemplo@gmail.com</string>
+    <string name="password_example">*******</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login">Inicia Sesión</string>
     <string name="alternative_login">O Inicia Sesión con</string>
     <string name="signup_invitation">¿Es tu primera vez aquí?</string>
     <string name="signup">Regístrate</string>
+    <!--SignUp Screen -->
+    <string name="name">Nombre</string>
+    <string name="surname">Apellidos</string>
+    <string name="account_question">¿Ya tienes una cuenta?</string>
+    <string name="i_agree_to_the">Estoy de acuerdo con sus</string>
+    <string name="terms_and_conditions">Términos de sercicio y Política de provacidad</string>
+    <string name="password_condition">La contraseña debe incluir al menos 12&#10;caracteres, una letra y un número</string>
+    <string name="password">Contraseña</string>
+    <string name="ic_visibility_content_description">Icono de visibilidad</string>
+    <string name="email">Email</string>
+    <string name="activate_call">Activa la opción de llamada</string>
+    <string name="show_number">Mostrar teléfono al iniciar el intercambio</string>
+    <string name="set_up_call">Coordinar directamente por llamada</string>
+    <string name="dialog_text">No te preocupes, tu teléfono no esta visible para todos los usuarios. Solo estará visible para la persona con la que solicites un intercambio.</string>
+    <string name="dropdown_flags_content_description">Selecciona el código del país</string>
+    <string name="mobile_numer">Número de teléfono</string>
+    <string name="signing_up">Registro</string>
+    <string name="welcome_to_the_community">Bienvenido a&#10;la comunidad</string>
+    <string name="motto">Comparte, aprende, crece.</string>
+    <string name="logo_content_description">Logo Helphub.</string>
+
 </resources>

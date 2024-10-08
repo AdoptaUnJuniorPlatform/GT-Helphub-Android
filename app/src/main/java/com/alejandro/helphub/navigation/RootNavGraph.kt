@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
-import com.alejandro.helphub.features.auth.presentation.LoginViewModel
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
@@ -22,13 +22,13 @@ fun RootNavGraph(navController: NavHostController) {
         }
         composable("LoginScreen") {
             LoginScreen(
-                loginViewModel = LoginViewModel(),
+                authViewModel = AuthViewModel(),
                 navController = navController
             )
         }
-        composable("RegisterCredentialsScreen") {
+        composable("SignUpCredsScreen") {
             SignUpCredsScreen(
-                loginScreenViewModel = LoginViewModel(),
+                authViewModel = AuthViewModel(),
                 navController = navController
             )
         }

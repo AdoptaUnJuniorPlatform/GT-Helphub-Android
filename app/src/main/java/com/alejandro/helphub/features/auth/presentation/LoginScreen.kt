@@ -58,7 +58,7 @@ import com.alejandro.helphub.R
 
 
 @Composable
-fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier, navController: NavHostController) {
+fun LoginScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier, navController: NavHostController) {
 
 
     Box(
@@ -67,7 +67,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier, n
             .background(Color.White)
             .absolutePadding(left = 32.dp, right = 32.dp, top = 32.dp)
     ) {
-        val isLoading: Boolean by loginViewModel.isLoading.observeAsState(
+        val isLoading: Boolean by authViewModel.isLoading.observeAsState(
             initial = false
         )
         if (isLoading) {
@@ -83,7 +83,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, modifier: Modifier = Modifier, n
                     .align(Alignment.Center)
             ) {
                 Header(Modifier.align(Alignment.TopEnd))
-                Body(Modifier.align(Alignment.Center), loginViewModel)
+                Body(Modifier.align(Alignment.Center), authViewModel)
                 Footer(Modifier.align(Alignment.BottomCenter), navController = navController)
             }
         }
@@ -105,10 +105,10 @@ fun Header(modifier: Modifier) {
 }
 
 @Composable
-fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
-    val email: String by loginViewModel.email.observeAsState(initial = "")
-    val password: String by loginViewModel.password.observeAsState(initial = "")
-    val isLoginEnable: Boolean by loginViewModel.isLoginEnable.observeAsState(
+fun Body(modifier: Modifier, authViewModel: AuthViewModel) {
+    val email: String by authViewModel.email.observeAsState(initial = "")
+    val password: String by authViewModel.password.observeAsState(initial = "")
+    val isLoginEnable: Boolean by authViewModel.isLoginEnable.observeAsState(
         initial = false
     )
 
@@ -117,16 +117,16 @@ fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
         Quote()
         Spacer(modifier = Modifier.size(16.dp))
         Email(email) {
-            loginViewModel.onLoginChanged(email = it, password = password)
+            authViewModel.onLoginChanged(email = it, password = password)
         }
         Spacer(modifier = Modifier.size(8.dp))
         Password(password) {
-            loginViewModel.onLoginChanged(email = email, password = it)
+            authViewModel.onLoginChanged(email = email, password = it)
         }
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable, loginViewModel)
+        LoginButton(isLoginEnable, authViewModel)
         Spacer(modifier = Modifier.size(16.dp))
         LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
@@ -246,7 +246,7 @@ fun ForgotPassword(modifier: Modifier) {
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, loginViewModel: LoginViewModel) {
+fun LoginButton(loginEnable: Boolean, authViewModel: AuthViewModel) {
     Button(
         onClick = { },
         enabled = loginEnable,
