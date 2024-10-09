@@ -29,5 +29,15 @@
     <string name="welcome_to_the_community">Bienvenido a&#10;la comunidad</string>
     <string name="motto">Comparte, aprende, crece.</string>
     <string name="logo_content_description">Logo Helphub.</string>
-
+    <!--SignUp Screen Step 1 -->
+<string name="go_back">ATRÁS</string>
+    <string name="next">SIGUIENTE</string>
+    <string name="location">Ubicación</string>
+    <string name="postal_code">Código Postal (CP)</string>
+    <string name="postal_code_content_description">Código postal</string>
+    <string name="postal_code_instruction">Por favor, escribe tu código postal (5 dígitos) de tu lugar de residencia</string>
+<string name="description_placeholder">Soy una joven estudiante de enfermería, tengo 22 años, vivo en Madrid con unas amigas. Soy una apasionada por la música, y que desea aprender a tocar el piano.</string>
+<string name="character_limit">%1$d/255</string>
+    <string name="user_description_title">Breve descripción del usuario</string>
+    <string name="step_1">Paso 1</string>
 </resources>

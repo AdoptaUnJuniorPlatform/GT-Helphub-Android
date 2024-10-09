@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -54,7 +55,6 @@ fun SignUpStep1() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
-
         ) {
             LazyColumn(
                 state = listState,
@@ -73,9 +73,7 @@ fun SignUpStep1() {
                 item { Spacer(modifier = Modifier.height(20.dp)) }
                 item { StepButtons() }
                 item{EndBox()}
-
             }
-
         }
     }
 }
@@ -88,12 +86,16 @@ fun EndBox() {
 @Composable
 fun StepButtons() {
     Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-        Box(modifier=Modifier.weight(1f).align(Alignment.CenterVertically)) {
-            Text(text = "ATRÁS")
+        Box(modifier= Modifier
+            .weight(1f)
+            .align(Alignment.CenterVertically)) {
+            Text(text = stringResource(id = R.string.go_back))
         }
         Button(
             onClick = { },
-            modifier=Modifier.weight(1f).align(Alignment.CenterVertically),
+            modifier= Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent
@@ -101,12 +103,10 @@ fun StepButtons() {
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "SIGUIENTE",
+                text = stringResource(id = R.string.next),
                 color = MaterialTheme.colorScheme.primary
             )
-
         }
-
     }
 }
 
@@ -114,7 +114,7 @@ fun StepButtons() {
 fun Location() {
     var postalCode by remember { mutableStateOf("") }
     Text(
-        text = "Ubicación",
+        text = stringResource(id = R.string.location),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(start = 16.dp)
@@ -126,7 +126,7 @@ fun Location() {
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(12.dp),
-        placeholder = { Text(text = "Código Postal (CP)") },
+        placeholder = { Text(text = stringResource(id = R.string.postal_code)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         colors = OutlinedTextFieldDefaults.colors(
@@ -140,10 +140,12 @@ fun Location() {
             unfocusedBorderColor = Color.LightGray
         ),
         leadingIcon =
-        { Icon(imageVector = Icons.Default.Mail, contentDescription = "") }
+        { Icon(imageVector = Icons.Default.Mail, contentDescription = stringResource(
+            id = R.string.postal_code_content_description
+        )) }
     )
     Text(
-        text = "Por favor escribe tu código postal (5 dígitos) de tu lugar de residencia",
+        text = stringResource(id = R.string.postal_code_instruction),
         fontSize = 16.sp,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp),
         color = Color.Gray
@@ -165,7 +167,7 @@ fun TextBox() {
                     text = it
                 }
             },
-            placeholder = { Text("Por Ej: Soy una joven estudiante....") },
+            placeholder = { Text(stringResource(id =R.string.description_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(146.dp),
@@ -179,26 +181,22 @@ fun TextBox() {
                 focusedBorderColor = Color.LightGray,
                 unfocusedBorderColor = Color.LightGray
             )
-
         )
         Text(
-            text = "${text.length}/255",
+            text = stringResource(id = R.string.character_limit,text.length),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(12.dp),
             color = Color.LightGray,
             style = MaterialTheme.typography.bodySmall
         )
-
-
     }
-
 }
 
 @Composable
 fun Description() {
     Text(
-        text = "Breve descripción del usuario",
+        text = stringResource(id = R.string.user_description_title),
         fontSize = 25.sp,
         color = Color.Black,
         modifier = Modifier.padding(start = 16.dp)
@@ -208,13 +206,12 @@ fun Description() {
 @Composable
 fun ScreenTitle() {
     Text(
-        text = "Paso 1",
+        text = stringResource(id = R.string.step_1),
         fontSize = 40.sp,
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(start = 16.dp)
     )
 }
-
 
 @Composable
 fun StepOne() {
@@ -231,7 +228,6 @@ fun StepOne() {
                     .size(350.dp)
                     .align(Alignment.Center)
             )
-
         }
     }
 }
