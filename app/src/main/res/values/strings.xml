@@ -40,4 +40,18 @@
 <string name="character_limit">%1$d/255</string>
     <string name="user_description_title">Breve descripción del usuario</string>
     <string name="step_1">Paso 1</string>
+    <string name="step_1_title">Cuéntanos un poco&#10;más sobre ti"</string>
+    <!--SignUp Screen Step 2 -->
+    <string name="step_2_title">Una foto vale más que mil palabras</string>
+    <string name="step_2">Paso 2</string>
+    <string name="choose_photo">Escoger una foto</string>
+    <string name="step_two_description">En Helphub, todas las personas deben tener una fotografía en donde se muestre claramente su rostro</string>
+    <string name="upload_photo">Subir foto</string>
+    <string name="photobox_text">Selecciona una foto de&#10;perfil de tu equipo</string>
+    <string name="profile_examples">Ejemplos de perfil</string>
+    <string name="example_first_line">Si no lo tienes claro, aquí tienes unos</string>
+<string name="example_second_line">ejemplos:</string>
+    <string name="photo_dialog">Cómo escoger una gran foto</string>
+    <string name="photo_indications_dialog">Preferentemente no escojas fotos donde tengas que recortar a otras personas.&#10;Tu cara debe estar en el centro y bien enfocada.&#10;Un fondo limpio y sin distracciones hará que te destaques más.&#10;Mantén la edición de la foto al mínimo.&#10;Asegúrate de que la foto sea reciente y refleje cómo te ves actualmente.</string>
+    <string name="confirm_button">ENTIENDO</string>
 </resources>
