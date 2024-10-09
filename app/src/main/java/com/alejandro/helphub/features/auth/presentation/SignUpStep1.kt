@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,9 +64,11 @@ fun SignUpStep1() {
                     .zIndex(0f)
             ) {
                 item { RegisterHeader() }
+                item{StepOneMotto()}
+                item { Spacer(modifier = Modifier.height(30.dp)) }
                 item { Divider() }
-                item { StepOne() }
-                item { ScreenTitle() }
+                item { StepOneProgressIndicator() }
+                item { StepOneTitle() }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
                 item { Description() }
                 item { TextBox() }
@@ -204,7 +207,7 @@ fun Description() {
 }
 
 @Composable
-fun ScreenTitle() {
+fun StepOneTitle() {
     Text(
         text = stringResource(id = R.string.step_1),
         fontSize = 40.sp,
@@ -214,7 +217,7 @@ fun ScreenTitle() {
 }
 
 @Composable
-fun StepOne() {
+fun StepOneProgressIndicator() {
     Column(modifier = Modifier.absolutePadding(left = 16.dp, right = 16.dp)) {
         Box(
             modifier = Modifier
@@ -244,13 +247,27 @@ fun Divider() {
 }
 
 @Composable
+fun StepOneMotto(){
+    Box(modifier= Modifier
+        .fillMaxWidth()
+        .height(70.dp) ){
+        Text(
+            text = stringResource(id = R.string.step_1_title),
+            textAlign = TextAlign.Center,
+            fontSize = 30.sp,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+    }
+}
+
+@Composable
 fun RegisterHeader() {
     Column(modifier = Modifier.absolutePadding(left = 16.dp, right = 16.dp)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(260.dp)
-                .padding(bottom = 24.dp)
+                .wrapContentHeight()
+                //.padding(bottom = 24.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.helphub_morado),
@@ -259,16 +276,7 @@ fun RegisterHeader() {
                     .align(Alignment.TopCenter),
                 contentDescription = ""
             )
-            // Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                text = "Cuentanos un poco\nmás sobre ti",
-                textAlign = TextAlign.Center,
-                fontSize = 30.sp,
-                modifier = Modifier.align(
-                    Alignment.BottomCenter
-                )
-            )
-            Spacer(modifier = Modifier.height(30.dp))
+
         }
     }
 }
