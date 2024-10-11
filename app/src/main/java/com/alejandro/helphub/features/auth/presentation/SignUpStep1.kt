@@ -6,22 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -40,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,55 +46,65 @@ import com.alejandro.helphub.R
 @Preview(showBackground = true)
 @Composable
 fun SignUpStep1() {
-    val listState = rememberLazyListState()
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
         ) {
-            LazyColumn(
-                state = listState,
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .zIndex(0f)
             ) {
-                item { RegisterHeader() }
-                item{StepOneMotto()}
-                item { Spacer(modifier = Modifier.height(30.dp)) }
-                item { Divider() }
-                item { StepOneProgressIndicator() }
-                item { StepOneTitle() }
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { Description() }
-                item { TextBox() }
-                item { Location() }
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { StepButtons() }
-                item{EndBox()}
+                RegisterHeader()
+                StepOneProgressIndicator()
+                StepOneTitle()
+                Spacer(modifier = Modifier.height(20.dp))
+                Description()
+                TextBox()
+                Spacer(modifier = Modifier.height(20.dp))
+                Location()
+                Spacer(modifier = Modifier.height(70.dp))
+                StepButtons()
             }
         }
     }
 }
 
 @Composable
-fun EndBox() {
-    Box(modifier=Modifier.height(40.dp))
-}
-
-@Composable
 fun StepButtons() {
-    Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-        Box(modifier= Modifier
-            .weight(1f)
-            .align(Alignment.CenterVertically)) {
-            Text(text = stringResource(id = R.string.go_back))
-        }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         Button(
             onClick = { },
-            modifier= Modifier
-                .weight(1f)
-                .align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .wrapContentWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        ) {
+            Text(
+                text = stringResource(id = R.string.go_back),
+                color = Color.DarkGray
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .wrapContentWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent
@@ -120,14 +126,13 @@ fun Location() {
         text = stringResource(id = R.string.location),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 16.dp)
     )
+    Spacer(modifier = Modifier.height(10.dp))
     OutlinedTextField(
         value = postalCode,
-        onValueChange = {postalCode=it},
+        onValueChange = { postalCode = it },
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         placeholder = { Text(text = stringResource(id = R.string.postal_code)) },
         singleLine = true,
@@ -143,14 +148,19 @@ fun Location() {
             unfocusedBorderColor = Color.LightGray
         ),
         leadingIcon =
-        { Icon(imageVector = Icons.Default.Mail, contentDescription = stringResource(
-            id = R.string.postal_code_content_description
-        )) }
+        {
+            Icon(
+                imageVector = Icons.Default.Mail,
+                contentDescription = stringResource(
+                    id = R.string.postal_code_content_description
+                )
+            )
+        }
     )
+    Spacer(modifier = Modifier.height(10.dp))
     Text(
         text = stringResource(id = R.string.postal_code_instruction),
-        fontSize = 16.sp,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+        fontSize = 14.sp,
         color = Color.Gray
     )
 }
@@ -161,7 +171,6 @@ fun TextBox() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         OutlinedTextField(
             value = text,
@@ -170,10 +179,11 @@ fun TextBox() {
                     text = it
                 }
             },
-            placeholder = { Text(stringResource(id =R.string.description_placeholder)) },
+            placeholder = { Text(stringResource(id = R.string.description_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(146.dp),
+                .height(180.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.LightGray,
@@ -186,7 +196,7 @@ fun TextBox() {
             )
         )
         Text(
-            text = stringResource(id = R.string.character_limit,text.length),
+            text = stringResource(id = R.string.character_limit, text.length),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(12.dp),
@@ -200,9 +210,10 @@ fun TextBox() {
 fun Description() {
     Text(
         text = stringResource(id = R.string.user_description_title),
-        fontSize = 25.sp,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
         color = Color.Black,
-        modifier = Modifier.padding(start = 16.dp)
+        modifier = Modifier.padding(bottom = 16.dp)
     )
 }
 
@@ -211,14 +222,20 @@ fun StepOneTitle() {
     Text(
         text = stringResource(id = R.string.step_1),
         fontSize = 40.sp,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp)
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    Text(
+        text = stringResource(id = R.string.step_1_title),
+        fontSize = 20.sp,
+        color = MaterialTheme.colorScheme.primary,
     )
 }
 
 @Composable
 fun StepOneProgressIndicator() {
-    Column(modifier = Modifier.absolutePadding(left = 16.dp, right = 16.dp)) {
+    Column{
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -228,55 +245,30 @@ fun StepOneProgressIndicator() {
                 painter = painterResource(id = R.drawable.step_one),
                 contentDescription = "",
                 modifier = Modifier
-                    .size(350.dp)
-                    .align(Alignment.Center)
+                    .size(300.dp)
+                    .align(Alignment.BottomCenter)
             )
         }
     }
 }
 
 @Composable
-fun Divider() {
-    HorizontalDivider(
-        modifier = Modifier
-            .fillMaxWidth()
-            .absolutePadding(left = 16.dp, right = 16.dp),
-        color = Color.LightGray,
-        thickness = 2.dp
-    )
-}
-
-@Composable
-fun StepOneMotto(){
-    Box(modifier= Modifier
-        .fillMaxWidth()
-        .height(70.dp) ){
-        Text(
-            text = stringResource(id = R.string.step_1_title),
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-    }
-}
-
-@Composable
 fun RegisterHeader() {
-    Column(modifier = Modifier.absolutePadding(left = 16.dp, right = 16.dp)) {
+    Column{
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                //.padding(bottom = 24.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.helphub_morado),
                 modifier = Modifier
-                    .size(180.dp)
-                    .align(Alignment.TopCenter),
-                contentDescription = ""
+                    .fillMaxWidth()
+                    .padding(top = 60.dp)
+                    .size(60.dp)
+                    .align(Alignment.BottomCenter),
+                contentDescription = stringResource(id = R.string.logo_content_description)
             )
-
         }
     }
 }
