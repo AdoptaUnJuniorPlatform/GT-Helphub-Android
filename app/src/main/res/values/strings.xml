@@ -49,9 +49,9 @@
     <string name="upload_photo">Subir foto</string>
     <string name="photobox_text">Selecciona una foto de&#10;perfil de tu equipo</string>
     <string name="profile_examples">Ejemplos de perfil</string>
-    <string name="example_first_line">Si no lo tienes claro, aquí tienes unos</string>
-    <string name="example_second_line">ejemplos:</string>
+    <string name="example_photo">Si no lo tienes claro, aquí tienes unos ejemplos</string>
     <string name="photo_dialog">Cómo escoger una gran foto</string>
     <string name="photo_indications_dialog">Preferentemente no escojas fotos donde tengas que recortar a otras personas.&#10;Tu cara debe estar en el centro y bien enfocada.&#10;Un fondo limpio y sin distracciones hará que te destaques más.&#10;Mantén la edición de la foto al mínimo.&#10;Asegúrate de que la foto sea reciente y refleje cómo te ves actualmente.</string>
     <string name="confirm_button">ENTIENDO</string>
+    <string name="photo_advice">CONSEJOS</string>
 </resources>
