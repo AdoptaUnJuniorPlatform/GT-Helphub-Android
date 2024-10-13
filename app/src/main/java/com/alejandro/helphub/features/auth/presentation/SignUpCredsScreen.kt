@@ -157,7 +157,7 @@ fun SignUpCredsScreen(
                 item { Spacer(modifier = Modifier.height(16.dp)) }
                 item { PrivacyCheck(authViewModel = authViewModel) }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { SignUpButton() }
+                item { SignUpButton(navController=navController) }
                 item { ToLogin(navController = navController) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
             }
@@ -191,9 +191,9 @@ fun ToLogin(navController: NavHostController) {
 }
 
 @Composable
-fun SignUpButton() {
+fun SignUpButton(navController:NavHostController) {
     Button(
-        onClick = { Log.i("alejandro", "Funciona") }, //Later to change into navigation button
+        onClick = {navController.navigate("SignUpStep1")}, //Later to change into navigation button
         enabled = true,
         modifier = Modifier
             .fillMaxWidth()

@@ -41,11 +41,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
-@Preview(showBackground = true)
+
 @Composable
-fun SignUpStep1() {
+fun SignUpStep1(
+    authViewModel: AuthViewModel,
+    navController:NavHostController) {
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -71,20 +74,26 @@ fun SignUpStep1() {
                 Spacer(modifier = Modifier.height(20.dp))
                 Location()
                 Spacer(modifier = Modifier.height(70.dp))
-                StepButtons()
+                StepButtons(
+                    onBackClick = {navController.navigate("SignUpCredsScreen")},
+                    onNextClick = {navController.navigate("SignUpStep2")}
+                )
             }
         }
     }
 }
 
 @Composable
-fun StepButtons() {
+fun StepButtons(
+    onBackClick:()->Unit,
+    onNextClick:()->Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Button(
-            onClick = { },
+            onClick = { onBackClick()},
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .wrapContentWidth(),
@@ -101,7 +110,7 @@ fun StepButtons() {
         }
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { },
+            onClick = { onNextClick() },
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .wrapContentWidth(),

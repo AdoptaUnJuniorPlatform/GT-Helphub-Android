@@ -40,10 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep3(authViewModel: AuthViewModel) {
+fun SignUpStep3(
+    authViewModel: AuthViewModel,
+    navController: NavHostController
+) {
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -70,7 +74,10 @@ fun SignUpStep3(authViewModel: AuthViewModel) {
                 Spacer(modifier = Modifier.height(10.dp))
                 DaySelection(authViewModel)
                 Spacer(modifier = Modifier.height(30.dp))
-                StepButtons()
+                StepButtons(
+                    onBackClick = {navController.navigate("SignUpStep2")},
+                    onNextClick = {navController.navigate("SignUpStep4")}
+                )
             }
         }
 
@@ -78,7 +85,7 @@ fun SignUpStep3(authViewModel: AuthViewModel) {
 }
 
 @Composable
-fun DaySelection(authViewModel:AuthViewModel) {
+fun DaySelection(authViewModel: AuthViewModel) {
     val expanded by authViewModel.expanded.observeAsState(initial = false)
     val selectedDay by authViewModel.selectedDay.observeAsState(initial = "")
     val daysOfWeek = authViewModel.daysOfWeek
@@ -97,7 +104,7 @@ fun DaySelection(authViewModel:AuthViewModel) {
     Text(
         text = stringResource(id = R.string.select_more_days),
         color = Color.Gray, fontSize = 18.sp,
-        modifier = Modifier.padding(end=12.dp)
+        modifier = Modifier.padding(end = 12.dp)
     )
     Spacer(modifier = Modifier.height(10.dp))
     Box(
@@ -116,7 +123,10 @@ fun DaySelection(authViewModel:AuthViewModel) {
                 text = if (selectedDay.isEmpty()) stringResource(id = R.string.select_day) else selectedDay,
                 modifier = Modifier.weight(1f)
             )
-            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null
+            )
         }
 
         DropdownMenu(
@@ -124,14 +134,20 @@ fun DaySelection(authViewModel:AuthViewModel) {
             onDismissRequest = { authViewModel.toggleDropdown() }
         ) {
             daysOfWeek.forEach { day ->
-                DropdownMenuItem(text = { Text(text = day) }, onClick = {authViewModel.onDaySelected(day)})
+                DropdownMenuItem(
+                    text = { Text(text = day) },
+                    onClick = { authViewModel.onDaySelected(day) })
             }
         }
     }
 }
 
 @Composable
-fun RadioButton(availability:String, selectedItem:String,onItemSelected:(String)->Unit) {
+fun RadioButton(
+    availability: String,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .wrapContentWidth()
@@ -144,8 +160,8 @@ fun RadioButton(availability:String, selectedItem:String,onItemSelected:(String)
     ) {
         Spacer(modifier = Modifier.width(8.dp))
         RadioButton(
-            selected = (selectedItem==availability),
-            onClick = {onItemSelected(availability)},
+            selected = (selectedItem == availability),
+            onClick = { onItemSelected(availability) },
             colors = RadioButtonDefaults.colors(
                 selectedColor = Color.Blue,
                 unselectedColor = Color.DarkGray
@@ -163,7 +179,7 @@ fun RadioButton(availability:String, selectedItem:String,onItemSelected:(String)
 
 @Composable
 fun AvailabilityOptions() {
-    var selectedItem by remember{mutableStateOf("8:00 a 14:00")}
+    var selectedItem by remember { mutableStateOf("8:00 a 14:00") }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
@@ -174,48 +190,48 @@ fun AvailabilityOptions() {
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row {
-            Box{
+            Box {
                 RadioButton(
                     availability = stringResource(id = R.string.eight_to_two),
-                    selectedItem=selectedItem,
-                    onItemSelected={selectedItem=it}
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
                 )
 
             }
             Spacer(modifier = Modifier.weight(1f))
-            Box{
+            Box {
                 RadioButton(
-                availability = stringResource(id = R.string.three_to_five),
-                    selectedItem=selectedItem,
-                    onItemSelected={selectedItem=it}
-            )
+                    availability = stringResource(id = R.string.three_to_five),
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
+                )
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row {
-            Box{
+            Box {
                 RadioButton(
                     availability = stringResource(id = R.string.five_to_nine),
-                    selectedItem=selectedItem,
-                    onItemSelected={selectedItem=it}
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Box{
+            Box {
                 RadioButton(
                     availability = stringResource(id = R.string.eight_to_five),
-                    selectedItem=selectedItem,
-                    onItemSelected={selectedItem=it}
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
                 )
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row {
-            Box{
+            Box {
                 RadioButton(
                     availability = stringResource(id = R.string.availability_title),
-                    selectedItem=selectedItem,
-                    onItemSelected={selectedItem=it}
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it }
                 )
             }
         }
@@ -239,7 +255,7 @@ fun Availability() {
     Text(
         text = stringResource(id = R.string.step_three_description),
         color = Color.Gray, fontSize = 18.sp,
-        modifier = Modifier.padding(end=12.dp)
+        modifier = Modifier.padding(end = 12.dp)
     )
 }
 
