@@ -47,6 +47,16 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     private val _isSwitchChecked=MutableLiveData<Boolean>(false)
     val isSwitchChecked:LiveData<Boolean> = _isSwitchChecked
 
+    private val _expanded = MutableLiveData(false)
+    val expanded: LiveData<Boolean> = _expanded
+
+    private val _selectedDay = MutableLiveData("")
+    val selectedDay: LiveData<String> = _selectedDay
+
+    val daysOfWeek = listOf(
+        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
+    )
+
 
 
     init {
@@ -54,6 +64,15 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             CountryProvider.countries // Asignamos la lista del provider
         _selectedCountry.value =
             CountryProvider.countries.first() // El primer país como predeterminado
+    }
+
+    fun onDaySelected(day: String) {
+        _selectedDay.value = day
+        _expanded.value = false
+    }
+
+    fun toggleDropdown() {
+        _expanded.value = !_expanded.value!!
     }
 
     fun onSwitchCheckedChanged(isChecked: Boolean) {

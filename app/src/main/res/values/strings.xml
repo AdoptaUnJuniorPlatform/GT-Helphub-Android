@@ -54,4 +54,20 @@
     <string name="photo_indications_dialog">Preferentemente no escojas fotos donde tengas que recortar a otras personas.&#10;Tu cara debe estar en el centro y bien enfocada.&#10;Un fondo limpio y sin distracciones hará que te destaques más.&#10;Mantén la edición de la foto al mínimo.&#10;Asegúrate de que la foto sea reciente y refleje cómo te ves actualmente.</string>
     <string name="confirm_button">ENTIENDO</string>
     <string name="photo_advice">CONSEJOS</string>
+    <!--SignUp Screen Step 3 -->
+    <string name="step_3">Paso 3</string>
+    <string name="step_3_title">Selecciona tus horarios</string>
+    <string name="availability_question">¿Qué día estás disponible?</string>
+    <string name="step_three_description">En Helphub queremos facilitar a los usuarios la coordinación de horarios.</string>
+    <string name="availability_title">Flexibilidad horaria</string>
+    <string name="eight_to_five">8:00 a 17:00</string>
+    <string name="five_to_nine">17:00 a 21:00</string>
+    <string name="three_to_five">15:00 a 17:00</string>
+    <string name="eight_to_two">8:00 a 14:00</string>
+    <string name="level">Nivel</string>
+    <string name="select_day">Seleccionar día</string>
+    <string name="select_more_days">Pudes seleccionar más de un día</string>
+    <string name="days">Días</string>
+
+
 </resources>
