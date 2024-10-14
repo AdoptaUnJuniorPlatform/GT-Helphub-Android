@@ -68,6 +68,39 @@
     <string name="select_day">Seleccionar día</string>
     <string name="select_more_days">Pudes seleccionar más de un día</string>
     <string name="days">Días</string>
+    <!--SignUp Screen Step 4.1 -->
+    <string name="step_4">Paso 4</string>
+    <string name="step_4_title">¡Ya casi terminamos!</string>
+    <string name="add_first_skill">Carta tu primera habilidad</string>
+    <string name="add_skills">¡Puedes añadir múltiples habilidades y siempre podrás cambiarlas o editarlas más tarde!</string>
+    <string name="post_title">Título de la publicación</string>
+    <string name="post_title_examples_dialog">Ejemplos</string>
+    <string name="skill_placeholder">Ej: Pintar óleo</string>
+    <string name="character_limit_twenty">%1$d/20</string>
+    <string name="advanced">Avanzado</string>
+    <string name="amateur">Medio</string>
+    <string name="basic">Básico</string>
+    <string name="warning">*Recomendamos una reunión online con la persona antes de un encuentro presencial por tu seguridad.</string>
+    <string name="mode">Modalidad</string>
+    <string name="face_to_face">Presencial</string>
+    <string name="online">Online</string>
+    <string name="title_post_dialog">Ejemplos para crear tu título</string>
+    <string name="meditation_dialog">Sesión grupal de meditación al aire libre.</string>
+    <string name="cv_dialog">Revisión de currículum vitae.</string>
+    <string name="cooking_dialog">Clases de cocina italiana tradicional.</string>
+    <string name="gym_dialog">Entrenamiento personal en gimnasio.</string>
+    <!--SignUp Screen Step 4.2 -->
+    <string name="skill_offer">¿Qué ofreces?</string>
+    <string name="skill_description">Ej: Clases de pintura al óleo desde cero, nivel inicial y avanzado.</string>
+    <string name="how_to_text">Cómo generar un texto llamativo</string>
+    <string name="how_to_text_message">Asegúrate de que tu mensaje sea fácil de entender y vaya directo al grano.</string>
+    <string name="how_to_text_details">Incluye detalles interesantes de tu intercambio.</string>
+    <string name="how_to_text_value">Resalta las ventajas y el valor que obtendrán al participar.</string>
+    <string name="select_category">¿Qué categoría se ajusta mejor a tu habilidad?</string>
+    <string name="categories">Categorías</string>
+    <!--SignUp Screen Step 4.2 -->
+    <string name="congratulations">¡Felicitaciones!</string>
+
 
 
 </resources>

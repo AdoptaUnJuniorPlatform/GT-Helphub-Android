@@ -26,7 +26,8 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     private val _countries = MutableLiveData<List<CountriesModel>>()
     val countries: LiveData<List<CountriesModel>> = _countries
 
-    private val _selectedCountry = MutableLiveData(CountryProvider.countries.first())
+    private val _selectedCountry =
+        MutableLiveData(CountryProvider.countries.first())
     val selectedCountry: LiveData<CountriesModel> = _selectedCountry
 
     private val _name = MutableLiveData<String>()
@@ -35,17 +36,17 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     private val _surname = MutableLiveData<String>()
     val surname: LiveData<String> = _surname
 
-    private val _isExpanded=MutableLiveData<Boolean>(false)
-    val isExpanded:LiveData<Boolean> = _isExpanded
+    private val _isExpanded = MutableLiveData<Boolean>(false)
+    val isExpanded: LiveData<Boolean> = _isExpanded
 
-    private val _phoneNumber=MutableLiveData<String>("")
-    val phoneNumber:LiveData<String> = _phoneNumber
+    private val _phoneNumber = MutableLiveData<String>("")
+    val phoneNumber: LiveData<String> = _phoneNumber
 
-    private val _isCheckBoxChecked=MutableLiveData<Boolean>(false)
-    val isCheckBoxChecked:LiveData<Boolean> = _isCheckBoxChecked
+    private val _isCheckBoxChecked = MutableLiveData<Boolean>(false)
+    val isCheckBoxChecked: LiveData<Boolean> = _isCheckBoxChecked
 
-    private val _isSwitchChecked=MutableLiveData<Boolean>(false)
-    val isSwitchChecked:LiveData<Boolean> = _isSwitchChecked
+    private val _isSwitchChecked = MutableLiveData<Boolean>(false)
+    val isSwitchChecked: LiveData<Boolean> = _isSwitchChecked
 
     private val _expanded = MutableLiveData(false)
     val expanded: LiveData<Boolean> = _expanded
@@ -56,7 +57,21 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     val daysOfWeek = listOf(
         "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
     )
+    private val _selectedCategory = MutableLiveData("")
+    val selectedCategory: LiveData<String> = _selectedCategory
 
+    val categories = listOf(
+        "Idiomas",
+        "Fitness",
+        "Diseño",
+        "Tutorias",
+        "Animales",
+        "Bricolaje",
+        "Consultoría",
+        "Informática",
+        "Cuidado Personal",
+        "Ayuda"
+    )
 
 
     init {
@@ -79,8 +94,8 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         _isSwitchChecked.value = isChecked
     }
 
-    fun onCheckBoxCheckedChanged(isChecked:Boolean){
-        _isCheckBoxChecked.value= isChecked
+    fun onCheckBoxCheckedChanged(isChecked: Boolean) {
+        _isCheckBoxChecked.value = isChecked
     }
 
     fun toggleExpanded() {
@@ -91,13 +106,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         _phoneNumber.value = number
     }
 
-    fun onSignUp(name:String, surname:String){
-        _name.value=name
-        _surname.value=surname
+    fun onSignUp(name: String, surname: String) {
+        _name.value = name
+        _surname.value = surname
     }
 
-    fun updateSelectedCountry(country:CountriesModel){
-        _selectedCountry.value =country
+    fun updateSelectedCountry(country: CountriesModel) {
+        _selectedCountry.value = country
     }
 
     fun onLoginChanged(email: String, password: String) {
