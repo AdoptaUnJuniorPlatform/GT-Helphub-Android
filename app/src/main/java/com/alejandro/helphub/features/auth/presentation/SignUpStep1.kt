@@ -101,7 +101,7 @@ fun StepButtons(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent
             ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            border = BorderStroke(1.dp, color = Color.DarkGray)
         ) {
             Text(
                 text = stringResource(id = R.string.go_back),
@@ -118,11 +118,11 @@ fun StepButtons(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent
             ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            border = BorderStroke(1.dp, color = Color.Blue)
         ) {
             Text(
                 text = stringResource(id = R.string.next),
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Blue
             )
         }
     }
@@ -238,6 +238,7 @@ fun StepOneTitle() {
     Text(
         text = stringResource(id = R.string.step_1_title),
         fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
     )
 }
@@ -252,7 +253,7 @@ fun StepOneProgressIndicator() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.step_one),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.step_1),
                 modifier = Modifier
                     .size(300.dp)
                     .align(Alignment.BottomCenter)
