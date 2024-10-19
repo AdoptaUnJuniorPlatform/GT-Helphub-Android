@@ -9,13 +9,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,7 +31,9 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,18 +44,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 
 @Composable
 fun SignUpStep1(
-    authViewModel: AuthViewModel,
-    navController:NavHostController) {
+    authViewModel: AuthViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -70,13 +78,13 @@ fun SignUpStep1(
                 StepOneTitle()
                 Spacer(modifier = Modifier.height(20.dp))
                 Description()
-                TextBox()
+                TextBox(authViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                Location()
-                Spacer(modifier = Modifier.height(70.dp))
+                Location(authViewModel)
+                Spacer(modifier = Modifier.height(104.dp))
                 StepButtons(
-                    onBackClick = {navController.navigate("SignUpCredsScreen")},
-                    onNextClick = {navController.navigate("SignUpStep2")}
+                    onBackClick = { navController.navigate("SignUpCredsScreen") },
+                    onNextClick = { navController.navigate("SignUpStep2") }
                 )
             }
         }
@@ -85,15 +93,15 @@ fun SignUpStep1(
 
 @Composable
 fun StepButtons(
-    onBackClick:()->Unit,
-    onNextClick:()->Unit
+    onBackClick: () -> Unit,
+    onNextClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Button(
-            onClick = { onBackClick()},
+            onClick = { onBackClick() },
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .wrapContentWidth(),
@@ -103,6 +111,13 @@ fun StepButtons(
             ),
             border = BorderStroke(1.dp, color = Color.DarkGray)
         ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                modifier=Modifier.size(16.dp).offset((-8).dp),
+                tint = Color.Black,
+                contentDescription = stringResource(id = R.string.go_back)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(id = R.string.go_back),
                 color = Color.DarkGray
@@ -129,8 +144,8 @@ fun StepButtons(
 }
 
 @Composable
-fun Location() {
-    var postalCode by remember { mutableStateOf("") }
+fun Location(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
     Text(
         text = stringResource(id = R.string.location),
         fontSize = 16.sp,
@@ -138,8 +153,11 @@ fun Location() {
     )
     Spacer(modifier = Modifier.height(10.dp))
     OutlinedTextField(
-        value = postalCode,
-        onValueChange = { postalCode = it },
+        value = userData.postalCode,
+        onValueChange = {
+            //postalCode = it
+            authViewModel.updatePostalCode(it)
+        },
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -175,24 +193,24 @@ fun Location() {
 }
 
 @Composable
-fun TextBox() {
-    var text by remember { mutableStateOf("") }
+fun TextBox(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = text,
+            value = userData.userDescription,
             onValueChange = {
-                if (it.length <= 255) {
-                    text = it
+                if (it.length <= 160) {
+                    authViewModel.updateUserDescription(it)
                 }
             },
             placeholder = { Text(stringResource(id = R.string.description_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.LightGray,
@@ -205,7 +223,10 @@ fun TextBox() {
             )
         )
         Text(
-            text = stringResource(id = R.string.character_limit, text.length),
+            text = stringResource(
+                id = R.string.character_limit,
+                userData.userDescription.length
+            ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(12.dp),
@@ -245,7 +266,7 @@ fun StepOneTitle() {
 
 @Composable
 fun StepOneProgressIndicator() {
-    Column{
+    Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -264,7 +285,7 @@ fun StepOneProgressIndicator() {
 
 @Composable
 fun RegisterHeader() {
-    Column{
+    Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

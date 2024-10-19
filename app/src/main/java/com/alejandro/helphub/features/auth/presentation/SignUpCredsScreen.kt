@@ -1,7 +1,6 @@
 package com.alejandro.helphub.features.auth.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,31 +60,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.features.auth.data.CountryProvider
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignUpCredsScreen(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel= hiltViewModel(),
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
-    val email: String by authViewModel.email.observeAsState(initial = "")
-    val password: String by authViewModel.password.observeAsState(initial = "")
-    val name: String by authViewModel.name.observeAsState(initial = "")
-    val surname: String by authViewModel.surname.observeAsState(initial = "")
+    val userData by authViewModel.userData.collectAsState()
+    val isChecked:Boolean by authViewModel.isCheckBoxChecked.observeAsState(initial=false)
 
     Scaffold { innerPadding ->
         Box(
@@ -98,30 +96,26 @@ fun SignUpCredsScreen(
                     .fillMaxWidth()
                     .zIndex(0f)
             ) {
-                item { Card() }
+                item { TopCard() }
                 item { SignUpText() }
                 item {
                     CustomTextField(
-                        value = name,
+                        value = userData.name,
                         onValueChange = {
-                            authViewModel.onSignUp(
-                                name = it,
-                                surname = surname
-                            )
-                        },
+                            authViewModel.updateUserName(it)
+                        }
+                        //{ authViewModel.onSignUp(name = it, surname = userData.surname) }
+                        ,
                         label = stringResource(id = R.string.name),
                         placeholder = stringResource(id = R.string.name)
                     )
                 }
                 item {
                     CustomTextField(
-                        value = surname,
-                        onValueChange = {
-                            authViewModel.onSignUp(
-                                name = name,
-                                surname = it
-                            )
-                        },
+                        value = userData.surname,
+                        onValueChange =
+                        {authViewModel.updateUserSurname(it)},
+                        //{ authViewModel.onSignUp(name = name, surname = it) },
                         label = stringResource(id = R.string.surname),
                         placeholder = stringResource(id = R.string.surname)
                     )
@@ -137,27 +131,23 @@ fun SignUpCredsScreen(
                 }
                 item { SignUpText() }
                 item {
-                    EmailTextfield(email) {
-                        authViewModel.onLoginChanged(
-                            email = it,
-                            password = password
-                        )
+                    EmailTextfield(userData.email) {
+                        authViewModel.updateUserEmail(it)
+
                     }
                 }
                 item { Spacer(modifier = Modifier.size(8.dp)) }
                 item {
-                    PasswordTextfield(password) {
-                        authViewModel.onLoginChanged(
-                            email = email,
-                            password = it
-                        )
+                    PasswordTextfield(userData.password) {
+                        authViewModel.updateUserPassword(it)
+
                     }
                 }
                 item { PasswordReminder() }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { PrivacyCheck(authViewModel = authViewModel) }
+                item { PrivacyCheck(isChecked=isChecked,authViewModel = authViewModel) }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { SignUpButton(navController=navController) }
+                item { SignUpButton(isChecked=isChecked,navController=navController) }
                 item { ToLogin(navController = navController) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
             }
@@ -191,10 +181,10 @@ fun ToLogin(navController: NavHostController) {
 }
 
 @Composable
-fun SignUpButton(navController:NavHostController) {
+fun SignUpButton(isChecked:Boolean,navController:NavHostController) {
     Button(
-        onClick = {navController.navigate("SignUpStep1")}, //Later to change into navigation button
-        enabled = true,
+        onClick = {navController.navigate("SignUpStep1")},
+        enabled = isChecked,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
@@ -209,10 +199,8 @@ fun SignUpButton(navController:NavHostController) {
 }
 
 @Composable
-fun PrivacyCheck(authViewModel: AuthViewModel) {
-    val isChecked: Boolean by authViewModel.isCheckBoxChecked.observeAsState(
-        initial = false
-    )
+fun PrivacyCheck(isChecked: Boolean,authViewModel: AuthViewModel) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -396,8 +384,8 @@ fun Optional() {
             modifier = Modifier
                 .clickable {
                     showDialog = true
-                } // Al pulsar el ícono, muestra el diálogo
-                .padding(8.dp) // Agregar algo de padding para mejorar la usabilidad
+                }
+                .padding(8.dp)
         )
         Text(
             text = "Opcional",
@@ -417,10 +405,10 @@ fun Optional() {
 
 @Composable
 fun PhoneTextfield(authViewModel: AuthViewModel) {
-    val countries by authViewModel.countries.observeAsState(emptyList())
-    val selectedCountry by authViewModel.selectedCountry.observeAsState()
+    val countries = CountryProvider.countries
+    val userData by authViewModel.userData.collectAsState()
     val expanded by authViewModel.isExpanded.observeAsState(false)
-    val phoneNumber by authViewModel.phoneNumber.observeAsState("")
+
 
     Row(
         modifier = Modifier
@@ -443,21 +431,21 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                selectedCountry?.let { painterResource(id = it.flagResId) }
+                countries.find { it.code == userData.countryCode }
                     ?.let {
                         Image(
-                            painter = it,
-                            contentDescription = selectedCountry!!.name,
+                            painter = painterResource(id=it.flagResId),
+                            contentDescription = it.name,
                             modifier = Modifier.size(12.dp)
                         )
                     }
                 Spacer(modifier = Modifier.width(8.dp))
-                selectedCountry?.let {
+
                     Text(
-                        text = it.code,
+                        text = userData.countryCode.ifEmpty { "+34" },
                         color = Color.Gray
                     )
-                }
+
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = stringResource(id = R.string.dropdown_flags_content_description),
@@ -498,7 +486,7 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
                 .background(Color.Gray)
         )
         OutlinedTextField(
-            value = phoneNumber,
+            value = userData.phoneNumber,
             onValueChange = { authViewModel.updatePhoneNumber(it) },
             modifier = Modifier
                 .weight(3f)
@@ -576,7 +564,7 @@ fun SignUpText() {
 }
 
 @Composable
-fun Card() {
+fun TopCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()

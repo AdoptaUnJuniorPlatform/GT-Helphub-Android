@@ -17,12 +17,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController= rememberNavController()
             RootNavGraph(navController = navController)
-            HelphubTheme {
-               // Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-               // }
             }
         }
     }
-}
+
 

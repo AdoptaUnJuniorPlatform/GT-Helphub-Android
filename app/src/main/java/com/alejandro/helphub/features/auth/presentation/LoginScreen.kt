@@ -53,12 +53,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 
 @Composable
-fun LoginScreen(authViewModel: AuthViewModel, modifier: Modifier = Modifier, navController: NavHostController) {
+fun LoginScreen(authViewModel: AuthViewModel= hiltViewModel(), modifier: Modifier = Modifier, navController: NavHostController) {
 
 
     Box(
@@ -353,7 +354,9 @@ fun SignUp(navController:NavHostController) {
         )
         Text(
             text = stringResource(id = R.string.signup),
-            Modifier.padding(horizontal = 8.dp).clickable{navController.navigate("SignUpCredsScreen")},
+            Modifier
+                .padding(horizontal = 8.dp)
+                .clickable { navController.navigate("SignUpCredsScreen") },
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary

@@ -1,8 +1,10 @@
 package com.alejandro.helphub.features.auth.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -26,6 +29,7 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -36,16 +40,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Checkbox
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep3(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     Scaffold { innerPadding ->
@@ -70,13 +76,13 @@ fun SignUpStep3(
                 Spacer(modifier = Modifier.height(16.dp))
                 Availability()
                 Spacer(modifier = Modifier.height(16.dp))
-                AvailabilityOptions()
+                AvailabilityOptions(authViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
                 DaySelection(authViewModel)
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 StepButtons(
-                    onBackClick = {navController.navigate("SignUpStep2")},
-                    onNextClick = {navController.navigate("SignUpStep4")}
+                    onBackClick = { navController.navigate("SignUpStep2") },
+                    onNextClick = { navController.navigate("SignUpStep4Post") }
                 )
             }
         }
@@ -86,8 +92,8 @@ fun SignUpStep3(
 
 @Composable
 fun DaySelection(authViewModel: AuthViewModel) {
-    val expanded by authViewModel.expanded.observeAsState(initial = false)
-    val selectedDay by authViewModel.selectedDay.observeAsState(initial = "")
+    val expanded by authViewModel.expanded.collectAsState(initial = false)
+    val selectedDays by authViewModel.selectedDays.collectAsState(initial = emptyList())
     val daysOfWeek = authViewModel.daysOfWeek
     Row(
         modifier = Modifier
@@ -111,7 +117,8 @@ fun DaySelection(authViewModel: AuthViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .background(Color.LightGray)
+            .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
             .clickable { authViewModel.toggleDropdown() },
         contentAlignment = Alignment.Center
     ) {
@@ -120,7 +127,8 @@ fun DaySelection(authViewModel: AuthViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (selectedDay.isEmpty()) stringResource(id = R.string.select_day) else selectedDay,
+                text = if (selectedDays.isEmpty()) stringResource(id = R.string.select_day)
+                else selectedDays.joinToString(","),
                 modifier = Modifier.weight(1f)
             )
             Icon(
@@ -128,15 +136,26 @@ fun DaySelection(authViewModel: AuthViewModel) {
                 contentDescription = null
             )
         }
-
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { authViewModel.toggleDropdown() }
         ) {
             daysOfWeek.forEach { day ->
+                var isChecked = selectedDays.contains(day)
                 DropdownMenuItem(
-                    text = { Text(text = day) },
-                    onClick = { authViewModel.onDaySelected(day) })
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = isChecked,
+                                onCheckedChange = {
+                                    authViewModel.onDayChecked(day, it)
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = day)
+                        }
+                    },
+                    onClick = { })
             }
         }
     }
@@ -144,46 +163,46 @@ fun DaySelection(authViewModel: AuthViewModel) {
 
 @Composable
 fun RadioButton(
-    availability: String,
+    text: String,
     selectedItem: String,
     onItemSelected: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .wrapContentWidth()
-            .padding(end = 12.dp)
+            .width(170.dp)
+            .padding(end = 8.dp)
             .border(
                 width = 2.dp,
-                color = if (selectedItem == availability) Color.Blue else Color.DarkGray,
+                color = if (selectedItem == text) Color.Blue else Color.DarkGray,
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
-        Spacer(modifier = Modifier.width(8.dp))
         RadioButton(
-            selected = (selectedItem == availability),
-            onClick = { onItemSelected(availability) },
+            selected = (selectedItem == text),
+            onClick = { onItemSelected(text) },
             colors = RadioButtonDefaults.colors(
                 selectedColor = Color.Blue,
                 unselectedColor = Color.DarkGray
             )
         )
         Text(
-            text = availability,
+            text = text,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
         )
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(10.dp))
     }
 }
 
 
 @Composable
-fun AvailabilityOptions() {
-    var selectedItem by remember { mutableStateOf("8:00 a 14:00") }
+fun AvailabilityOptions(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
+    var selectedItem by remember { mutableStateOf(userData.availability ?: "") }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
-                text = stringResource(id = R.string.level), fontSize = 22.sp,
+                text = stringResource(id = R.string.availability), fontSize = 22.sp,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )
@@ -192,18 +211,38 @@ fun AvailabilityOptions() {
         Row {
             Box {
                 RadioButton(
-                    availability = stringResource(id = R.string.eight_to_two),
+                    text = stringResource(id = R.string.eight_to_two),
                     selectedItem = selectedItem,
                     onItemSelected = { selectedItem = it }
                 )
 
             }
-            Spacer(modifier = Modifier.weight(1f))
             Box {
                 RadioButton(
-                    availability = stringResource(id = R.string.three_to_five),
+                    text = stringResource(id = R.string.three_to_five),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
+                    onItemSelected = { selectedItem = it
+                        authViewModel.updateAvailability(it)}
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row {
+            Box {
+                RadioButton(
+                    text = stringResource(id = R.string.five_to_nine),
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it
+                        authViewModel.updateAvailability(it)}
+                )
+            }
+            //Spacer(modifier = Modifier.weight(1f))
+            Box {
+                RadioButton(
+                    text = stringResource(id = R.string.eight_to_five),
+                    selectedItem = selectedItem,
+                    onItemSelected = { selectedItem = it
+                        authViewModel.updateAvailability(it)}
                 )
             }
         }
@@ -211,32 +250,17 @@ fun AvailabilityOptions() {
         Row {
             Box {
                 RadioButton(
-                    availability = stringResource(id = R.string.five_to_nine),
+                    text = stringResource(id = R.string.availability_title),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Box {
-                RadioButton(
-                    availability = stringResource(id = R.string.eight_to_five),
-                    selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Row {
-            Box {
-                RadioButton(
-                    availability = stringResource(id = R.string.availability_title),
-                    selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
+                    onItemSelected = { selectedItem = it
+                        authViewModel.updateAvailability(it)}
                 )
             }
         }
     }
 }
+
+
 
 @Composable
 fun Availability() {
@@ -285,7 +309,7 @@ fun StepThreeProgressIndicator() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.step_three),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.step_3),
                 modifier = Modifier
                     .size(300.dp)
                     .align(Alignment.BottomCenter)

@@ -1,5 +1,10 @@
 package com.alejandro.helphub.features.auth.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,10 +21,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +36,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,18 +47,23 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
-@Preview(showBackground = true)
+
 @Composable
-fun SignUpStep4Post() {
+fun SignUpStep4Post(
+    authViewModel: AuthViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     val listState = rememberLazyListState()
-    var showDialog by remember { mutableStateOf(false) }
+    var showCard by remember { mutableStateOf(false) }
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -59,7 +74,6 @@ fun SignUpStep4Post() {
                     end = 16.dp,
                     bottom = 16.dp
                 )
-                .blur(if (showDialog) 12.dp else 0.dp)
         ) {
             LazyColumn(
                 state = listState,
@@ -74,80 +88,29 @@ fun SignUpStep4Post() {
                 item { AddSkill() }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
                 item {
-                    PostTitle(
-                        showDialog = showDialog,
-                        onShowDialogChange = { showDialog = it })
+                    PostTitle(authViewModel,
+                        showCard = showCard,
+                        onShowCardChange = { showCard = it })
                 }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { Level() }
+                item { Level(authViewModel) }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { Mode() }
-                item { Spacer(modifier = Modifier.height(30.dp)) }
-                item { StepButtons(onBackClick = {}, onNextClick = {}) }
+                item { Mode(authViewModel) }
+                item { Spacer(modifier = Modifier.height(22.dp)) }
+                item {
+                    StepButtons(
+                        onBackClick = { navController.navigate("SignUpStep3") },
+                        onNextClick = { navController.navigate("SignUpStep4Skill") })
+                }
             }
         }
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.title_post_dialog),
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                },
-                text = {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.meditation_dialog),
-                            fontSize = 16.sp,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = stringResource(id = R.string.cv_dialog),
-                            fontSize = 16.sp,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = stringResource(id = R.string.cooking_dialog),
-                            fontSize = 16.sp,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = stringResource(id = R.string.gym_dialog),
-                            fontSize = 16.sp,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                },
-                confirmButton = {
-                    Button(
-                        onClick = { showDialog = false },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text(text = stringResource(id = R.string.confirm_button))
-                    }
-                },
-                shape = RoundedCornerShape(6.dp),
-                containerColor = Color.White
-            )
-        }
-
     }
 }
 
 @Composable
-fun Mode() {
-    var selectedItem by remember { mutableStateOf("Online") }
+fun Mode(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
+    var selectedItem by remember { mutableStateOf(userData.mode ?: "") }
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -162,25 +125,39 @@ fun Mode() {
             RadioButton(
                 text = stringResource(id = R.string.online),
                 selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it },
+                onItemSelected = {
+                    selectedItem = it
+                    authViewModel.updateLearningMode(it)
+                },
             )
         }
         Box(modifier = Modifier.weight(2f)) {
             RadioButton(
                 text = stringResource(id = R.string.face_to_face),
                 selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it })
+                onItemSelected = {
+                    selectedItem = it
+                    authViewModel.updateLearningMode(it)
+                })
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
     Row {
-        Text(text = stringResource(id = R.string.warning), fontSize = 14.sp)
+        Text(
+            text = stringResource(id = R.string.warning),
+            fontSize = 14.sp, fontStyle = FontStyle.Italic
+        )
     }
 }
 
 @Composable
-fun Level() {
-    var selectedItem by remember { mutableStateOf("Avanzado") }
+fun Level(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
+    var selectedItem by remember {
+        mutableStateOf(
+            userData.selectedLevel ?: ""
+        )
+    }
     Row {
         Text(
             text = stringResource(id = R.string.level),
@@ -195,28 +172,42 @@ fun Level() {
             RadioButton(
                 text = stringResource(id = R.string.basic),
                 selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it },
+                onItemSelected = {
+                    selectedItem = it
+                    authViewModel.updateSelectedLevel(it)
+                },
             )
         }
         Box(modifier = Modifier.weight(4f)) {
             RadioButton(
                 text = stringResource(id = R.string.amateur),
                 selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it })
+                onItemSelected = {
+                    selectedItem = it
+                    authViewModel.updateSelectedLevel(it)
+                })
         }
         Box(modifier = Modifier.weight(5f)) {
             RadioButton(
                 text = stringResource(id = R.string.advanced),
                 selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it })
+                onItemSelected = {
+                    selectedItem = it
+                    authViewModel.updateSelectedLevel(it)
+                })
         }
     }
 }
 
 
 @Composable
-fun PostTitle(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
-    var text by remember { mutableStateOf("") }
+fun PostTitle(
+    authViewModel: AuthViewModel,
+    showCard: Boolean,
+    onShowCardChange: (Boolean) -> Unit
+) {
+    val userData by authViewModel.userData.collectAsState()
+    val postDescription by authViewModel.charLimit.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,17 +222,8 @@ fun PostTitle(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
         Box(modifier = Modifier
             .padding(end = 12.dp)
             .align(Alignment.CenterVertically)
-            .clickable { onShowDialogChange(true) }) {
+            .clickable { onShowCardChange(!showCard) }) {
             Row(horizontalArrangement = Arrangement.End) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = stringResource(
-                        id = R.string.post_title_examples_dialog
-                    ),
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
                 Text(
                     text = stringResource(id = R.string.post_title_examples_dialog),
                     color = MaterialTheme.colorScheme.primary,
@@ -249,6 +231,65 @@ fun PostTitle(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
+                Icon(
+                    imageVector =
+                    if(showCard)Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                    contentDescription = stringResource(
+                        id = R.string.post_title_examples_dialog
+                    ),
+                    tint = Color.Blue,
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+
+    AnimatedVisibility(
+        visible = showCard,
+        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF1FF))
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = stringResource(id = R.string.title_post_dialog),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(id = R.string.meditation_dialog),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(id = R.string.cv_dialog),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(id = R.string.cooking_dialog),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(id = R.string.gym_dialog),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -258,10 +299,10 @@ fun PostTitle(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = text,
+            value = userData.postTitle,
             onValueChange = {
                 if (it.length <= 20) {
-                    text = it
+                    authViewModel.updatePostTitle(it)
                 }
             },
             placeholder = {
@@ -287,7 +328,7 @@ fun PostTitle(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-                text.length
+                postDescription?.length ?: 0
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)

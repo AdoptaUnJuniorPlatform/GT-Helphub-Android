@@ -1,6 +1,11 @@
 package com.alejandro.helphub.features.auth.presentation
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,9 +15,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -30,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,16 +47,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
 
 
 @Composable
 fun SignUpStep2(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
+    var showDialog by remember { mutableStateOf(false) }
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -58,6 +71,7 @@ fun SignUpStep2(
                     end = 16.dp,
                     bottom = 16.dp
                 )
+                .blur(if (showDialog) 12.dp else 0.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -68,18 +82,170 @@ fun SignUpStep2(
                 StepTwoProgressIndicator()
                 StepTwoTitle()
                 Spacer(modifier = Modifier.height(20.dp))
-                ChooseImage()
+                ChooseImage(showDialog = showDialog,
+                    onShowDialogChange = { showDialog = it })
                 Spacer(modifier = Modifier.height(20.dp))
+                UploadPhoto(authViewModel)
                 Examples()
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(40.dp))
                 StepButtons(
-                    onBackClick = {navController.navigate("SignUpStep1")},
-                    onNextClick = {navController.navigate("SignUpStep3")}
+                    onBackClick = {
+                        navController.navigate("SignUpStep1")
+                    },
+                    onNextClick = {
+                        navController.navigate("SignUpStep3")
+                    }
+                )
+            }
+        }
+        ShowDialog(
+            showDialog = showDialog,
+            onDismiss = { showDialog = false })
+
+    }
+}
+
+
+@Composable
+fun ShowDialog(showDialog: Boolean, onDismiss: () -> Unit) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = stringResource(id = R.string.photo_dialog),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.photo_first_indication_dialog),
+                        fontSize = 16.sp,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.photo_second_indication_dialog),
+                        fontSize = 16.sp,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.photo_third_indication_dialog),
+                        fontSize = 16.sp,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.photo_fourth_indication_dialog),
+                        fontSize = 16.sp,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.photo_fifth_indication_dialog),
+                        fontSize = 16.sp,
+                        color = Color.DarkGray
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { onDismiss() },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text(text = stringResource(id = R.string.confirm_button))
+                }
+            },
+            shape = RoundedCornerShape(6.dp),
+            containerColor = Color.White
+        )
+    }
+}
+
+
+@Composable
+fun UploadPhoto(authViewModel: AuthViewModel) {
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            photoUri = it
+            authViewModel.updateUserPhotoUri(it)
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(modifier = Modifier.size(100.dp)) {
+                Image(
+                    painter =
+                    if (photoUri != null) {
+                        rememberAsyncImagePainter(photoUri)
+                    } else {
+                        painterResource(id = R.drawable.default_profile_icon)
+                    },
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                        .then(
+                            if (photoUri == null) Modifier.border(
+                                12.dp,
+                                Color.Gray,
+                                CircleShape
+                            )
+                            else Modifier
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+                if (photoUri != null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_check_circle),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.TopEnd)
+                            .offset((-4).dp, (-4).dp)
+                            .background(Color.White, CircleShape)
+                            .border(1.dp, Color.White, CircleShape)
+
+                    )
+                }
+            }
+            Button(
+                onClick = {
+                    galleryLauncher.launch("image/*")
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .offset(y = (-18).dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Blue
+                ),
+                elevation = ButtonDefaults.buttonElevation(8.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.upload_photo).uppercase(),
+                    color = Color.White
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun Examples() {
@@ -110,56 +276,11 @@ fun Examples() {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-            onClick = { },
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            elevation = ButtonDefaults.buttonElevation(8.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.upload_photo).uppercase(),
-                color = Color.White
-            )
-        }
     }
 }
 
 @Composable
-fun ChooseImage() {
-    var showDialog by remember { mutableStateOf(false) }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.photo_dialog),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(id = R.string.photo_indications_dialog),
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
-            },
-            confirmButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text(text = stringResource(id = R.string.confirm_button))
-                }
-            },
-            modifier = Modifier.padding(16.dp),
-            shape = RoundedCornerShape(12.dp),
-            containerColor = Color.White
-        )
-    }
+fun ChooseImage(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -174,20 +295,20 @@ fun ChooseImage() {
         Box(modifier = Modifier
             .padding(end = 12.dp)
             .align(Alignment.CenterVertically)
-            .clickable { showDialog = true }) {
+            .clickable { onShowDialogChange(true) }) {
             Row(horizontalArrangement = Arrangement.End) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = stringResource(
                         id = R.string.photo_dialog
                     ),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.Blue,
                     modifier = Modifier
                         .size(20.dp)
                 )
                 Text(
                     text = stringResource(id = R.string.photo_advice),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color.Blue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -198,7 +319,7 @@ fun ChooseImage() {
     Spacer(modifier = Modifier.height(10.dp))
     Text(
         text = stringResource(id = R.string.step_two_description),
-        color = Color.Gray, fontSize = 18.sp
+        color = Color.Gray, fontSize = 20.sp
     )
 }
 
@@ -213,6 +334,7 @@ fun StepTwoTitle() {
     Spacer(modifier = Modifier.height(10.dp))
     Text(
         text = stringResource(id = R.string.step_2_title),
+        fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         color = MaterialTheme.colorScheme.primary,
     )
