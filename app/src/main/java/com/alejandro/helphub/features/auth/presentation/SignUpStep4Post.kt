@@ -226,7 +226,7 @@ fun PostTitle(
             Row(horizontalArrangement = Arrangement.End) {
                 Text(
                     text = stringResource(id = R.string.post_title_examples_dialog),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color.Blue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -328,7 +328,7 @@ fun PostTitle(
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-                postDescription?.length ?: 0
+                userData.postTitle.length
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
