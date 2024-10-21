@@ -28,8 +28,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,14 +49,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -73,7 +69,9 @@ fun SignUpStep4Skill(
 ) {
     var showCard by remember { mutableStateOf(false) }
     var showDataCard by remember { mutableStateOf(false) }
-    val isStep5Enabled by authViewModel.isNavigationToStep5Enabled.collectAsState(initial = false)
+    val isStep5Enabled by authViewModel.isNavigationToStep5Enabled.collectAsState(
+        initial = false
+    )
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
             Box(
@@ -105,22 +103,22 @@ fun SignUpStep4Skill(
                         onNextClick = {
                             showDataCard = true
                         },
-                        enabled= isStep5Enabled &&!showDataCard
+                        enabled = isStep5Enabled && !showDataCard
                     )
                 }
-
             }
-
         }
         if (showDataCard) {
-            OpeSkillCard(authViewModel,navController)
-
+            OpeSkillCard(authViewModel, navController)
         }
     }
 }
 
 @Composable
-fun OpeSkillCard(authViewModel: AuthViewModel,navController: NavHostController) {
+fun OpeSkillCard(
+    authViewModel: AuthViewModel,
+    navController: NavHostController
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -134,7 +132,6 @@ fun OpeSkillCard(authViewModel: AuthViewModel,navController: NavHostController) 
         DataCard(authViewModel, navController)
     }
 }
-
 
 @Composable
 fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
@@ -291,7 +288,6 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-
                     Box(
                         modifier = Modifier
                             .border(
@@ -308,7 +304,6 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
@@ -322,20 +317,15 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 Text(text = "CONTINUAR")
             }
             Spacer(modifier = Modifier.height(24.dp))
-
-
         }
     }
 }
-
-
 
 @Composable
 fun CategorySelection(authViewModel: AuthViewModel) {
     val userData by authViewModel.userData.collectAsState()
     val expanded by authViewModel.expanded.collectAsState()
     val categories = authViewModel.categories
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -370,7 +360,6 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                     contentDescription = null
                 )
             }
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { authViewModel.toggleDropdown() }
@@ -470,7 +459,6 @@ fun SkillTextBox(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
-
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
@@ -508,4 +496,3 @@ fun SkillTextBox(
         )
     }
 }
-

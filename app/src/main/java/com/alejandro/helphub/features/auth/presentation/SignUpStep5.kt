@@ -47,7 +47,7 @@ fun SignUpStep5(
     navController: NavHostController
 ) {
     val userData by authViewModel.userData.collectAsState()
-    val isNextEnabled=userData.categoriesOfInterest.isNotEmpty()
+    val isNextEnabled = userData.categoriesOfInterest.isNotEmpty()
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -76,10 +76,9 @@ fun SignUpStep5(
                 Spacer(modifier = Modifier.height(76.dp))
                 StepButtons(
                     onBackClick = { navController.navigate("SignUpStep4Skill") },
-                    onNextClick = {  },
+                    onNextClick = { },
                     enabled = isNextEnabled
                 )
-
             }
         }
     }
@@ -92,8 +91,6 @@ fun MoreCategories(authViewModel: AuthViewModel) {
     val selectedCategories = userData.categoriesOfInterest ?: emptyList()
     val availableCategories =
         authViewModel.categories.filterNot { it in selectedCategories }
-
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +125,6 @@ fun MoreCategories(authViewModel: AuthViewModel) {
                     contentDescription = null
                 )
             }
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { authViewModel.toggleDropdown() }
@@ -159,7 +155,6 @@ fun CategoryBox(
     isSelected: Boolean,
     onItemSelected: (Boolean) -> Unit
 ) {
-
     Box(
         modifier = Modifier
             .background(
@@ -183,15 +178,12 @@ fun CategoryBox(
     Spacer(modifier = Modifier.width(12.dp))
 }
 
-
 @Composable
 fun PopularCategories(
     authViewModel: AuthViewModel
 ) {
     val categories = authViewModel.popularCategories
     val userData by authViewModel.userData.collectAsState()
-
-
     Column {
         Row(
             modifier = Modifier
@@ -205,7 +197,6 @@ fun PopularCategories(
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
-
         categories.chunked(3).forEach { categoryRow ->
             Row {
                 categoryRow.forEach { category ->
@@ -213,10 +204,12 @@ fun PopularCategories(
                         userData.categoriesOfInterest.contains(category)
                     CategoryBox(category = category, isSelected = isSelected,
                         onItemSelected = { isSelected ->
-                            authViewModel.updateCategoriesOfInterest(category, isSelected)
+                            authViewModel.updateCategoriesOfInterest(
+                                category,
+                                isSelected
+                            )
                         }
                     )
-
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))

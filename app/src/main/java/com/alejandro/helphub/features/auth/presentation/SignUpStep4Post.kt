@@ -23,10 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,7 +59,9 @@ fun SignUpStep4Post(
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
-    val isStep4SkillEnabled by authViewModel.isNavigationToStep4SkillEnabled.collectAsState(initial = false)
+    val isStep4SkillEnabled by authViewModel.isNavigationToStep4SkillEnabled.collectAsState(
+        initial = false
+    )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -102,7 +99,8 @@ fun SignUpStep4Post(
                     StepButtons(
                         onBackClick = { navController.navigate("SignUpStep3") },
                         onNextClick = { navController.navigate("SignUpStep4Skill") },
-                        enabled=isStep4SkillEnabled)
+                        enabled = isStep4SkillEnabled
+                    )
                 }
             }
         }
@@ -201,7 +199,6 @@ fun Level(authViewModel: AuthViewModel) {
     }
 }
 
-
 @Composable
 fun PostTitle(
     authViewModel: AuthViewModel,
@@ -209,7 +206,6 @@ fun PostTitle(
     onShowCardChange: (Boolean) -> Unit
 ) {
     val userData by authViewModel.userData.collectAsState()
-    //val postDescription by authViewModel.charLimit.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,7 +231,7 @@ fun PostTitle(
                 )
                 Icon(
                     imageVector =
-                    if(showCard)Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                    if (showCard) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                     contentDescription = stringResource(
                         id = R.string.post_title_examples_dialog
                     ),
@@ -247,7 +243,6 @@ fun PostTitle(
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
-
     AnimatedVisibility(
         visible = showCard,
         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),

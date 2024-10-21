@@ -45,10 +45,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -62,7 +60,9 @@ fun SignUpStep2(
     navController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val isStep3Enabled by authViewModel.isNavigationToStep3Enabled.collectAsState(initial=false)
+    val isStep3Enabled by authViewModel.isNavigationToStep3Enabled.collectAsState(
+        initial = false
+    )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -104,10 +104,8 @@ fun SignUpStep2(
         ShowDialog(
             showDialog = showDialog,
             onDismiss = { showDialog = false })
-
     }
 }
-
 
 @Composable
 fun ShowDialog(showDialog: Boolean, onDismiss: () -> Unit) {
@@ -172,7 +170,6 @@ fun ShowDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     }
 }
 
-
 @Composable
 fun UploadPhoto(authViewModel: AuthViewModel) {
     var photoUri by remember { mutableStateOf<Uri?>(null) }
@@ -184,7 +181,6 @@ fun UploadPhoto(authViewModel: AuthViewModel) {
             authViewModel.updateUserPhotoUri(it)
         }
     }
-
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -223,7 +219,6 @@ fun UploadPhoto(authViewModel: AuthViewModel) {
                             .offset((-4).dp, (-4).dp)
                             .background(Color.White, CircleShape)
                             .border(1.dp, Color.White, CircleShape)
-
                     )
                 }
             }
@@ -248,7 +243,6 @@ fun UploadPhoto(authViewModel: AuthViewModel) {
         }
     }
 }
-
 
 @Composable
 fun Examples() {

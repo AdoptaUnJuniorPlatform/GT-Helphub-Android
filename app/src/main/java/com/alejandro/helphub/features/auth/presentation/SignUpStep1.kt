@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
@@ -33,10 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,8 +51,9 @@ fun SignUpStep1(
     authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-
-    val isStep2Enabled by authViewModel.isNavigationToStep2Enabled.collectAsState(initial = false)
+    val isStep2Enabled by authViewModel.isNavigationToStep2Enabled.collectAsState(
+        initial = false
+    )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -98,7 +93,7 @@ fun SignUpStep1(
 fun StepButtons(
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    enabled:Boolean
+    enabled: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -118,7 +113,7 @@ fun StepButtons(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
-                modifier= Modifier
+                modifier = Modifier
                     .size(16.dp)
                     .offset((-8).dp),
                 tint = Color.Black,
@@ -142,11 +137,14 @@ fun StepButtons(
                 containerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent
             ),
-            border = BorderStroke(1.dp, color = if(enabled)Color.Blue else Color.LightGray)
+            border = BorderStroke(
+                1.dp,
+                color = if (enabled) Color.Blue else Color.LightGray
+            )
         ) {
             Text(
                 text = stringResource(id = R.string.next),
-                color = if(enabled) Color.Blue else Color.LightGray
+                color = if (enabled) Color.Blue else Color.LightGray
             )
         }
     }
@@ -164,8 +162,9 @@ fun Location(authViewModel: AuthViewModel) {
     OutlinedTextField(
         value = userData.postalCode,
         onValueChange = {
-            if(it.length<=5 && it.all{char-> char.isDigit()})
-            { authViewModel.updatePostalCode(it) }
+            if (it.length <= 5 && it.all { char -> char.isDigit() }) {
+                authViewModel.updatePostalCode(it)
+            }
         },
         modifier = Modifier
             .fillMaxWidth(),
