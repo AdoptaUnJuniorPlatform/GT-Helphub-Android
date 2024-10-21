@@ -73,8 +73,7 @@ fun SignUpStep4Skill(
 ) {
     var showCard by remember { mutableStateOf(false) }
     var showDataCard by remember { mutableStateOf(false) }
-    val userData by authViewModel.userData.collectAsState()
-    val isNextButtonEnabled= userData.skillDescription.isNotEmpty()&& userData.selectedCategory!=null
+    val isStep5Enabled by authViewModel.isNavigationToStep5Enabled.collectAsState(initial = false)
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
             Box(
@@ -106,7 +105,7 @@ fun SignUpStep4Skill(
                         onNextClick = {
                             showDataCard = true
                         },
-                        enabled= isNextButtonEnabled &&!showDataCard
+                        enabled= isStep5Enabled &&!showDataCard
                     )
                 }
 

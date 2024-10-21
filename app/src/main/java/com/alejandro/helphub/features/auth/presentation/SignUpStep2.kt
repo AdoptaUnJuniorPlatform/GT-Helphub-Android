@@ -62,8 +62,7 @@ fun SignUpStep2(
     navController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val userData by authViewModel.userData.collectAsState()
-    val isNextButtonEnabled=userData.userPhotoUri!=null
+    val isStep3Enabled by authViewModel.isNavigationToStep3Enabled.collectAsState(initial=false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -98,7 +97,7 @@ fun SignUpStep2(
                     onNextClick = {
                         navController.navigate("SignUpStep3")
                     },
-                    enabled = isNextButtonEnabled
+                    enabled = isStep3Enabled
                 )
             }
         }

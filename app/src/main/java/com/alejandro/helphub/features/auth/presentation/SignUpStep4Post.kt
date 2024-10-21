@@ -64,8 +64,7 @@ fun SignUpStep4Post(
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
-    val userData by authViewModel.userData.collectAsState()
-    val isNextButtonEnabled= userData.postTitle.isNotEmpty()&& userData.selectedLevel!=null && userData.mode!=null
+    val isStep4SkillEnabled by authViewModel.isNavigationToStep4SkillEnabled.collectAsState(initial = false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -103,7 +102,7 @@ fun SignUpStep4Post(
                     StepButtons(
                         onBackClick = { navController.navigate("SignUpStep3") },
                         onNextClick = { navController.navigate("SignUpStep4Skill") },
-                        enabled=isNextButtonEnabled)
+                        enabled=isStep4SkillEnabled)
                 }
             }
         }
@@ -210,7 +209,7 @@ fun PostTitle(
     onShowCardChange: (Boolean) -> Unit
 ) {
     val userData by authViewModel.userData.collectAsState()
-    val postDescription by authViewModel.charLimit.collectAsState()
+    //val postDescription by authViewModel.charLimit.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()

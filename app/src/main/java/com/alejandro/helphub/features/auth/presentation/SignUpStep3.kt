@@ -54,8 +54,7 @@ fun SignUpStep3(
     authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    val userData by authViewModel.userData.collectAsState()
-    val isNextEnabled=userData.selectedDays.isNotEmpty() && userData.availability!=null
+    val isStep4Enabled by authViewModel.isNavigationToStep4PostEnabled.collectAsState(initial = false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -85,7 +84,7 @@ fun SignUpStep3(
                 StepButtons(
                     onBackClick = { navController.navigate("SignUpStep2") },
                     onNextClick = { navController.navigate("SignUpStep4Post") },
-                    enabled = isNextEnabled
+                    enabled = isStep4Enabled
                 )
             }
         }
