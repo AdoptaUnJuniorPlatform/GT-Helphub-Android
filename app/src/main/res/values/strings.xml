@@ -73,7 +73,14 @@
     <string name="select_day">Seleccionar día</string>
     <string name="select_more_days">Puedes seleccionar más de un día</string>
     <string name="days">Días</string>
-    <!--SignUp Screen Step 4.1 -->
+    <string name="monday">Lunes</string>
+    <string name="tuesday">Martes</string>
+    <string name="wednesday">Miércoles</string>
+    <string name="thursday">Jueves</string>
+    <string name="friday">Viernes</string>
+    <string name="saturday">Sábado</string>
+    <string name="sunday">Domingo</string>
+    <!--SignUp Screen Step 4 Post -->
     <string name="step_4">Paso 4</string>
     <string name="step_4_title">¡Ya casi estamos!</string>
     <string name="level">Nivel</string>
@@ -95,7 +102,7 @@
     <string name="cv_dialog">Revisión de currículum vitae.</string>
     <string name="cooking_dialog">Clases de cocina italiana tradicional.</string>
     <string name="gym_dialog">Entrenamiento personal en gimnasio.</string>
-    <!--SignUp Screen Step 4.2 -->
+    <!--SignUp Screen Step 4 Skill -->
     <string name="skill_offer">¿Qué ofreces?</string>
     <string name="skill_description">Ej: Clases de pintura al óleo desde cero, nivel inicial y avanzado.</string>
     <string name="how_to_text">Cómo generar un texto llamativo</string>
@@ -105,6 +112,16 @@
     <string name="select_category">¿Qué categoría se ajusta mejor a tu habilidad?</string>
     <string name="categories">Categorías</string>
     <string name="congratulations">¡Felicitaciones!</string>
+    <string name="languages">Idiomas</string>
+    <string name="fitness">Fitness</string>
+    <string name="design">Diseño</string>
+    <string name="private_lessons">Tutorías</string>
+    <string name="animals">Animales</string>
+    <string name="diy">Bricolaje</string>
+    <string name="consultancy">Consultoría</string>
+    <string name="it">Informática</string>
+    <string name="self_care">Cuidado Personal</string>
+    <string name="help">Ayuda</string>
     <!--SignUp Screen Step 5 -->
     <string name="step_5">Último paso</string>
     <string name="step_5_title">Intercambiando habilidades</string>

@@ -7,7 +7,7 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.alejandro.helphub.features.auth.data.CountryProvider
+import com.alejandro.helphub.R
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -155,7 +155,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     val selectedDays: StateFlow<List<String>> = _selectedDays
 
     val daysOfWeek = listOf(
-        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
+        R.string.monday,
+        R.string.tuesday,
+        R.string.wednesday,
+        R.string.thursday,
+        R.string.friday,
+        R.string.saturday,
+        R.string.sunday
     )
     fun toggleDropdown() {
         _expanded.value = !_expanded.value
@@ -226,16 +232,16 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     val isNavigationToStep5Enabled:StateFlow<Boolean> = _isNavigationToStep5Enabled.asStateFlow()
 
     val categories = listOf(
-        "Idiomas",
-        "Fitness",
-        "Diseño",
-        "Tutorias",
-        "Animales",
-        "Bricolaje",
-        "Consultoría",
-        "Informática",
-        "Cuidado Personal",
-        "Ayuda"
+        R.string.languages,
+        R.string.fitness,
+        R.string.design,
+        R.string.private_lessons,
+        R.string.animals,
+        R.string.diy,
+        R.string.consultancy,
+        R.string.it,
+        R.string.self_care,
+        R.string.help
     )
 
     fun updateSkillDescription(skillDescription:String){
@@ -258,15 +264,15 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     //<!--------------------SignUpStep5 Screen ---------------->
     val popularCategories=listOf(
-        "Idiomas",
-        "Fitness",
-        "Diseño",
-        "Tutorias",
-        "Animales",
-        "Bricolaje",
-        "Consultoría",
-        "Informática",
-        "Cuidado Personal"
+        R.string.languages,
+        R.string.fitness,
+        R.string.design,
+        R.string.private_lessons,
+        R.string.animals,
+        R.string.diy,
+        R.string.consultancy,
+        R.string.it,
+        R.string.self_care,
     )
 
     fun updateCategoriesOfInterest(category: String,isSelected:Boolean){
@@ -307,22 +313,6 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     fun updateUserPhotoBitmap(bitmap: Bitmap) {
         _userData.value = _userData.value.copy(photoBitmap = bitmap)
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
    fun onLoginChanged(email: String, password: String) {
         _email.value = email
