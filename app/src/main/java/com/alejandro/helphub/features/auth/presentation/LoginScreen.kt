@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -107,8 +108,8 @@ fun Header(modifier: Modifier) {
 
 @Composable
 fun Body(modifier: Modifier, authViewModel: AuthViewModel) {
-    val email: String by authViewModel.email.observeAsState(initial = "")
-    val password: String by authViewModel.password.observeAsState(initial = "")
+    val email: String by authViewModel.email.collectAsState(initial = "")
+    val password: String by authViewModel.password.collectAsState(initial = "")
     val isLoginEnable: Boolean by authViewModel.isLoginEnable.observeAsState(
         initial = false
     )

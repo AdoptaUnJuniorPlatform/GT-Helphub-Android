@@ -64,6 +64,8 @@ fun SignUpStep4Post(
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
+    val userData by authViewModel.userData.collectAsState()
+    val isNextButtonEnabled= userData.postTitle.isNotEmpty()&& userData.selectedLevel!=null && userData.mode!=null
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -100,7 +102,8 @@ fun SignUpStep4Post(
                 item {
                     StepButtons(
                         onBackClick = { navController.navigate("SignUpStep3") },
-                        onNextClick = { navController.navigate("SignUpStep4Skill") })
+                        onNextClick = { navController.navigate("SignUpStep4Skill") },
+                        enabled=isNextButtonEnabled)
                 }
             }
         }
@@ -300,6 +303,7 @@ fun PostTitle(
     ) {
         OutlinedTextField(
             value = userData.postTitle,
+            singleLine = true,
             onValueChange = {
                 if (it.length <= 20) {
                     authViewModel.updatePostTitle(it)

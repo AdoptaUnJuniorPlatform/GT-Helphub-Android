@@ -73,6 +73,8 @@ fun SignUpStep4Skill(
 ) {
     var showCard by remember { mutableStateOf(false) }
     var showDataCard by remember { mutableStateOf(false) }
+    val userData by authViewModel.userData.collectAsState()
+    val isNextButtonEnabled= userData.skillDescription.isNotEmpty()&& userData.selectedCategory!=null
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
             Box(
@@ -103,46 +105,46 @@ fun SignUpStep4Skill(
                         onBackClick = { navController.navigate("SignUpStep4Post") },
                         onNextClick = {
                             showDataCard = true
-                            //navController.navigate("SignUpStep4Card")
-                        })
+                        },
+                        enabled= isNextButtonEnabled &&!showDataCard
+                    )
                 }
 
             }
 
         }
         if (showDataCard) {
-            OpeSkillCard(authViewModel)
+            OpeSkillCard(authViewModel,navController)
 
         }
     }
 }
 
 @Composable
-fun OpeSkillCard(authViewModel: AuthViewModel) {
+fun OpeSkillCard(authViewModel: AuthViewModel,navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // Fondo oscuro semi-transparente
+            .background(Color.Black.copy(alpha = 0.5f))
     )
-
-    // Mostrar la tarjeta encima del fondo oscuro
     Box(
         modifier = Modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.Center // Centra la tarjeta
+        contentAlignment = Alignment.Center
     ) {
-        DataCard(authViewModel)
+        DataCard(authViewModel, navController)
     }
 }
 
 
 @Composable
-fun DataCard(authViewModel: AuthViewModel) {
+fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
     val userData by authViewModel.userData.collectAsState()
     Log.d(
         "CongratulationsBox",
         "name: ${userData.name}," +
-                "surname: ${userData.surname}," +
+                "surname1: ${userData.surname1}," +
+                "surname2: ${userData.surname2}," +
                 "email: ${userData.email}," +
                 "password: ${userData.password}," +
                 "countryCode:${userData.countryCode}" +
@@ -284,7 +286,6 @@ fun DataCard(authViewModel: AuthViewModel) {
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        //borrar de aqui arriba
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -312,7 +313,7 @@ fun DataCard(authViewModel: AuthViewModel) {
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("SignUpStep5") },
                 shape = RoundedCornerShape(6.dp),
                 modifier = Modifier.align(Alignment.End),
                 colors = ButtonDefaults.buttonColors(
@@ -327,71 +328,6 @@ fun DataCard(authViewModel: AuthViewModel) {
         }
     }
 }
-/*
-Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Color.Blue,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "Básico",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                    // Text(text = "Básico", fontSize = 14.sp)
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Color.Blue,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "Medio",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                   // Text(text = "Medio", fontSize = 14.sp)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Color.Blue,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "Avanzado",
-                            fontSize = 14.sp,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                   // Text(text = "Avanzado", fontSize = 14.sp)
-                }
- */
 
 
 

@@ -13,6 +13,7 @@ import com.alejandro.helphub.features.auth.presentation.SignUpStep2
 import com.alejandro.helphub.features.auth.presentation.SignUpStep3
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Post
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Skill
+import com.alejandro.helphub.features.auth.presentation.SignUpStep5
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
 @Composable
@@ -67,6 +68,12 @@ fun RootNavGraph(navController: NavHostController) {
             SignUpStep4Skill(
                 authViewModel =authViewModel,
                 navController = navController
+            )
+        }
+        composable("SignUpStep5"){
+            SignUpStep5(
+                authViewModel=authViewModel,
+                navController=navController
             )
         }
 

@@ -11,7 +11,8 @@
     <string name="signup">Regístrate</string>
     <!--SignUp Screen -->
     <string name="name">Nombre</string>
-    <string name="surname">Apellidos</string>
+    <string name="surname1">Apellido 1</string>
+    <string name="surname2">Apellido 2 (opcional)</string>
     <string name="account_question">¿Ya tienes una cuenta?</string>
     <string name="i_agree_to_the">Estoy de acuerdo con sus</string>
     <string name="terms_and_conditions">Términos de sercicio y Política de provacidad</string>
@@ -103,8 +104,14 @@
     <string name="how_to_text_value">Resalta las ventajas y el valor que obtendrán al participar.</string>
     <string name="select_category">¿Qué categoría se ajusta mejor a tu habilidad?</string>
     <string name="categories">Categorías</string>
-    <!--SignUp Screen Step 4.2 -->
     <string name="congratulations">¡Felicitaciones!</string>
+    <!--SignUp Screen Step 5 -->
+    <string name="step_5">Último paso</string>
+    <string name="step_5_title">Intercambiando habilidades</string>
+    <string name="learning_question">¿Qué te gustaría aprender?</string>
+    <string name="step_five_description">Nos encantaría saber qué te gustaría aprender, para que los demás usuarios puedan ofrecerte su ayuda.</string>
+    <string name="popular_categories">Categorías populares</string>
+    <string name="more_categories">Busca más categorías</string>
 
 
 

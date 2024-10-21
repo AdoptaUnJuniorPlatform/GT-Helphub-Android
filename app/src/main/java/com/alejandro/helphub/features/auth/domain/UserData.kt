@@ -5,7 +5,8 @@ import android.net.Uri
 
 data class UserData (
     val name:String="",
-    val surname:String="",
+    val surname1:String="",
+    val surname2:String="",
     val email:String="",
     val password:String="",
     val countryCode:String="",
@@ -21,4 +22,5 @@ data class UserData (
     val mode:String?=null,
     val skillDescription:String="",
     val selectedCategory:String?=null,
+    val categoriesOfInterest:List<String> =emptyList()
 )

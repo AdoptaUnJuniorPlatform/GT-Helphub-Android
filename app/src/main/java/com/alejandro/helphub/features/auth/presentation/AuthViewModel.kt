@@ -20,17 +20,26 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor() : ViewModel() {
 
+    private val _isSignUpButtonEnabled=MutableStateFlow(false)
+    val isSignUpButtonEnabled:StateFlow<Boolean> = _isSignUpButtonEnabled.asStateFlow()
+
+    private val _selectedCategoriesOfInterest= MutableStateFlow<List<String>>(
+        emptyList()
+    )
+    val selectedCategoriesOfInterest:StateFlow<List<String>> = _selectedCategoriesOfInterest.asStateFlow()
+
     private val _charLimit = MutableStateFlow<String?>("")
     val charLimit: StateFlow<String?> = _charLimit.asStateFlow()
 
     private val _userData = MutableStateFlow(UserData())
     val userData: StateFlow<UserData> = _userData.asStateFlow()
 
-    private val _email = MutableLiveData<String>()
-    val email: LiveData<String> = _email
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email.asStateFlow()
 
-    private val _password = MutableLiveData<String>()
-    val password: LiveData<String> = _password
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password.asStateFlow()
+
 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
@@ -38,21 +47,20 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _countries = MutableLiveData<List<CountriesModel>>()
-    val countries: LiveData<List<CountriesModel>> = _countries
+    private val _countries = MutableStateFlow<List<CountriesModel>>(emptyList())
+    val countries: StateFlow<List<CountriesModel>> = _countries.asStateFlow()
 
-    private val _selectedCountry =
-        MutableLiveData(CountryProvider.countries.first())
-    val selectedCountry: LiveData<CountriesModel> = _selectedCountry
+    private val _selectedCountry = MutableStateFlow(CountryProvider.countries.first())
+    val selectedCountry: StateFlow<CountriesModel> = _selectedCountry.asStateFlow()
 
-    private val _isExpanded = MutableLiveData<Boolean>(false)
-    val isExpanded: LiveData<Boolean> = _isExpanded
+    private val _isExpanded = MutableStateFlow(false)
+    val isExpanded: StateFlow<Boolean> = _isExpanded.asStateFlow()
 
-    private val _isCheckBoxChecked = MutableLiveData<Boolean>(false)
-    val isCheckBoxChecked: LiveData<Boolean> = _isCheckBoxChecked
+    private val _isCheckBoxChecked = MutableStateFlow(false)
+    val isCheckBoxChecked: StateFlow<Boolean> = _isCheckBoxChecked.asStateFlow()
 
-    private val _isSwitchChecked = MutableLiveData<Boolean>(false)
-    val isSwitchChecked: LiveData<Boolean> = _isSwitchChecked
+    private val _isSwitchChecked = MutableStateFlow(false)
+    val isSwitchChecked: StateFlow<Boolean> = _isSwitchChecked.asStateFlow()
 
     private val _expanded = MutableStateFlow(false)
     val expanded: StateFlow<Boolean> = _expanded.asStateFlow()
@@ -63,7 +71,6 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     val daysOfWeek = listOf(
         "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
     )
-
 
     val categories = listOf(
         "Idiomas",
@@ -77,16 +84,39 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         "Cuidado Personal",
         "Ayuda"
     )
+    val popularCategories=listOf(
+        "Idiomas",
+        "Fitness",
+        "Diseño",
+        "Tutorias",
+        "Animales",
+        "Bricolaje",
+        "Consultoría",
+        "Informática",
+        "Cuidado Personal"
+    )
 
-    /*
-    init {
-
-        _countries.value =
-            CountryProvider.countries // Asignamos la lista del provider
-        _selectedCountry.value =
-            CountryProvider.countries.first() // El primer país como predeterminado
+    fun updateCategoriesOfInterest(category: String,isSelected:Boolean){
+        val currentCategories = _userData.value.categoriesOfInterest.toMutableList()
+        if (isSelected) {
+            currentCategories.add(category)
+        } else {
+            currentCategories.remove(category)
+        }
+        _userData.value = _userData.value.copy(categoriesOfInterest = currentCategories)
     }
-     */
+
+    fun updateSelectedCategoriesOfInterest(category: String){
+        val currentCategories=userData.value.categoriesOfInterest.toMutableList()?:mutableListOf()
+        currentCategories.add(category)
+        _userData.value=_userData.value.copy(categoriesOfInterest = currentCategories)
+    }
+    fun removeCategoryOfInterest(category: String) {
+        val currentCategories = _userData.value.categoriesOfInterest?.toMutableList() ?: mutableListOf()
+        currentCategories.remove(category)
+        _userData.value = _userData.value.copy(categoriesOfInterest = currentCategories)
+    }
+
 
     fun updateLearningMode(mode:String){
         Log.d("AuthViewModel", "Updating learning mode to: $mode")
@@ -111,9 +141,20 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         _userData.value = _userData.value.copy(photoBitmap = bitmap)
     }
 
+    fun updateSignUpButtonState() {
+        _isSignUpButtonEnabled.value = userData.value.name.isNotBlank() &&
+                userData.value.surname1.isNotBlank() &&
+                userData.value.surname2.isNotBlank() &&
+                userData.value.phoneNumber.isNotBlank() &&
+                userData.value.email.isNotBlank() &&
+                userData.value.password.isNotBlank() &&
+                _isCheckBoxChecked.value == true
+    }
+
     fun updatePhoneNumber(phoneNumber:String){
         Log.d("AuthViewModel", "Updating phoneNumber to: $phoneNumber")
         _userData.update{it.copy(phoneNumber = phoneNumber)}
+        updateSignUpButtonState()
     }
     fun updateSelectedCountry(country: CountriesModel) {
         _userData.update{it.copy(countryCode=country.code)}
@@ -122,22 +163,32 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         Log.d("AuthViewModel", "Updating email to: $email")
         val updateUserData= userData.value.copy(email = email)
         _userData.value=updateUserData
+        updateSignUpButtonState()
     }
     fun updateUserPassword(password:String){
         Log.d("AuthViewModel", "Updating password to: $password")
         val updateUserData= userData.value.copy(password = password)
         _userData.value=updateUserData
+        updateSignUpButtonState()
     }
 
     fun updateUserName(name: String){
         Log.d("AuthViewModel", "Updating name to: $name")
         val updateUserData= userData.value.copy(name = name)
         _userData.value=updateUserData
+        updateSignUpButtonState()
     }
-    fun updateUserSurname(surname: String){
-        Log.d("AuthViewModel", "Updating surname to: $surname")
-        val updateUserData= userData.value.copy(surname = surname)
+    fun updateUserSurname2(surname2: String){
+        Log.d("AuthViewModel", "Updating surname2 to: $surname2")
+        val updateUserData= userData.value.copy(surname2 = surname2)
         _userData.value=updateUserData
+        updateSignUpButtonState()
+    }
+    fun updateUserSurname1(surname1: String){
+        Log.d("AuthViewModel", "Updating surname1 to: $surname1")
+        val updateUserData= userData.value.copy(surname1 = surname1)
+        _userData.value=updateUserData
+        updateSignUpButtonState()
     }
     fun updateUserDescription(userDescription: String) {
         Log.d("AuthViewModel", "Updating postTitle to: $userDescription")
@@ -195,6 +246,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun onCheckBoxCheckedChanged(isChecked: Boolean) {
         _isCheckBoxChecked.value = isChecked
+        updateSignUpButtonState()
     }
 
     fun toggleExpanded() {

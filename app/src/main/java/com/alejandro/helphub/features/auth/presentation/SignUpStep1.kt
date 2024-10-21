@@ -57,6 +57,8 @@ fun SignUpStep1(
     authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
+    val userData by authViewModel.userData.collectAsState()
+    val isNextButtonEnabled=userData.userDescription.isNotEmpty()&&userData.postalCode.isNotEmpty()
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -84,7 +86,8 @@ fun SignUpStep1(
                 Spacer(modifier = Modifier.height(104.dp))
                 StepButtons(
                     onBackClick = { navController.navigate("SignUpCredsScreen") },
-                    onNextClick = { navController.navigate("SignUpStep2") }
+                    onNextClick = { navController.navigate("SignUpStep2") },
+                    enabled = isNextButtonEnabled
                 )
             }
         }
@@ -94,7 +97,8 @@ fun SignUpStep1(
 @Composable
 fun StepButtons(
     onBackClick: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    enabled:Boolean
 ) {
     Row(
         modifier = Modifier
@@ -102,6 +106,7 @@ fun StepButtons(
     ) {
         Button(
             onClick = { onBackClick() },
+            enabled = true,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .wrapContentWidth(),
@@ -113,7 +118,9 @@ fun StepButtons(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
-                modifier=Modifier.size(16.dp).offset((-8).dp),
+                modifier= Modifier
+                    .size(16.dp)
+                    .offset((-8).dp),
                 tint = Color.Black,
                 contentDescription = stringResource(id = R.string.go_back)
             )
@@ -126,18 +133,20 @@ fun StepButtons(
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = { onNextClick() },
+            enabled = enabled,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .wrapContentWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent
+                containerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent
             ),
-            border = BorderStroke(1.dp, color = Color.Blue)
+            border = BorderStroke(1.dp, color = if(enabled)Color.Blue else Color.LightGray)
         ) {
             Text(
                 text = stringResource(id = R.string.next),
-                color = Color.Blue
+                color = if(enabled) Color.Blue else Color.LightGray
             )
         }
     }
@@ -155,8 +164,8 @@ fun Location(authViewModel: AuthViewModel) {
     OutlinedTextField(
         value = userData.postalCode,
         onValueChange = {
-            //postalCode = it
-            authViewModel.updatePostalCode(it)
+            if(it.length<=5 && it.all{char-> char.isDigit()})
+            { authViewModel.updatePostalCode(it) }
         },
         modifier = Modifier
             .fillMaxWidth(),

@@ -46,6 +46,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +67,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -73,16 +75,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.features.auth.data.CountryProvider
+import kotlinx.coroutines.selects.select
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignUpCredsScreen(
-    authViewModel: AuthViewModel= hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
     val userData by authViewModel.userData.collectAsState()
-    val isChecked:Boolean by authViewModel.isCheckBoxChecked.observeAsState(initial=false)
+    val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
+        initial = false
+    )
+    val isSignUpEnabled by authViewModel.isSignUpButtonEnabled.collectAsState(initial = false)
+
 
     Scaffold { innerPadding ->
         Box(
@@ -96,32 +103,50 @@ fun SignUpCredsScreen(
                     .fillMaxWidth()
                     .zIndex(0f)
             ) {
-                item { TopCard() }
+                // item { TopCard() }
+                item { Logo() }
                 item { SignUpText() }
                 item {
                     CustomTextField(
                         value = userData.name,
                         onValueChange = {
                             authViewModel.updateUserName(it)
-                        }
-                        //{ authViewModel.onSignUp(name = it, surname = userData.surname) }
-                        ,
-                        label = stringResource(id = R.string.name),
+                        },
                         placeholder = stringResource(id = R.string.name)
                     )
                 }
                 item {
                     CustomTextField(
-                        value = userData.surname,
+                        value = userData.surname1,
                         onValueChange =
-                        {authViewModel.updateUserSurname(it)},
-                        //{ authViewModel.onSignUp(name = name, surname = it) },
-                        label = stringResource(id = R.string.surname),
-                        placeholder = stringResource(id = R.string.surname)
+                        { authViewModel.updateUserSurname1(it) },
+                        placeholder = stringResource(id = R.string.surname1)
+                    )
+                }
+                item {
+                    CustomTextField(
+                        value = userData.surname2,
+                        onValueChange =
+                        { authViewModel.updateUserSurname2(it) },
+                        placeholder = stringResource(id = R.string.surname2)
                     )
                 }
                 item { PhoneTextfield(authViewModel) }
-                item { Spacer(modifier = Modifier.height(80.dp)) }
+                item {
+                    EmailTextfield(userData.email) {
+                        authViewModel.updateUserEmail(it)
+
+                    }
+                }
+                item {
+                    PasswordTextfield(userData.password) {
+                        authViewModel.updateUserPassword(it)
+
+                    }
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { PasswordReminder() }
+                item { Spacer(modifier = Modifier.height(30.dp)) }
                 item { Optional() }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
                 item {
@@ -129,29 +154,24 @@ fun SignUpCredsScreen(
                         authViewModel = authViewModel
                     )
                 }
-                item { SignUpText() }
-                item {
-                    EmailTextfield(userData.email) {
-                        authViewModel.updateUserEmail(it)
-
-                    }
-                }
-                item { Spacer(modifier = Modifier.size(8.dp)) }
-                item {
-                    PasswordTextfield(userData.password) {
-                        authViewModel.updateUserPassword(it)
-
-                    }
-                }
-                item { PasswordReminder() }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { PrivacyCheck(isChecked=isChecked,authViewModel = authViewModel) }
+                item {
+                    PrivacyCheck(
+                        isChecked = isChecked,
+                        authViewModel = authViewModel
+                    )
+                }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { SignUpButton(isChecked=isChecked,navController=navController) }
+                item {
+                    SignUpButton(
+                        isEnabled=isSignUpEnabled,
+                        navController = navController
+                    )
+                }
                 item { ToLogin(navController = navController) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
             }
-            Logo()
+
         }
     }
 }
@@ -175,16 +195,17 @@ fun ToLogin(navController: NavHostController) {
                 .padding(horizontal = 8.dp)
                 .clickable { navController.navigate("LoginScreen") },
             fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            color = Color.Blue
         )
     }
 }
 
 @Composable
-fun SignUpButton(isChecked:Boolean,navController:NavHostController) {
+fun SignUpButton(isEnabled:Boolean,navController: NavHostController) {
     Button(
-        onClick = {navController.navigate("SignUpStep1")},
-        enabled = isChecked,
+        onClick = { navController.navigate("SignUpStep1") },
+        enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
@@ -199,7 +220,7 @@ fun SignUpButton(isChecked:Boolean,navController:NavHostController) {
 }
 
 @Composable
-fun PrivacyCheck(isChecked: Boolean,authViewModel: AuthViewModel) {
+fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel) {
 
     Row(
         modifier = Modifier
@@ -233,7 +254,8 @@ fun PasswordReminder() {
     Text(
         text = stringResource(id = R.string.password_condition),
         fontSize = 16.sp,
-        color = Color.Gray,
+        color = Color.DarkGray,
+        fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 16.dp)
     )
 }
@@ -241,19 +263,14 @@ fun PasswordReminder() {
 @Composable
 fun PasswordTextfield(password: String, onTextChanged: (String) -> Unit) {
     var passwordVisibility by remember { mutableStateOf(false) }
-    Text(
-        text = stringResource(id = R.string.password),
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 16.dp)
-    )
+
     OutlinedTextField(
         value = password,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxWidth()
-            .absolutePadding(left = 16.dp, right = 16.dp, top = 16.dp)
-            .offset(y = (-8).dp),
+            .padding(horizontal = 16.dp),
+        //.offset(y = (-8).dp),
         shape = RoundedCornerShape(12.dp),
         placeholder = { Text(text = stringResource(id = R.string.password_example)) },
         colors = OutlinedTextFieldDefaults.colors(
@@ -261,8 +278,8 @@ fun PasswordTextfield(password: String, onTextChanged: (String) -> Unit) {
             unfocusedTextColor = Color.Gray,
             focusedPlaceholderColor = Color.Gray,
             unfocusedPlaceholderColor = Color.Gray,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.Gray
         ),
@@ -292,18 +309,13 @@ fun PasswordTextfield(password: String, onTextChanged: (String) -> Unit) {
 
 @Composable
 fun EmailTextfield(email: String, onTextChanged: (String) -> Unit) {
-    Text(
-        text = stringResource(id = R.string.email),
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 16.dp)
-    )
+
     OutlinedTextField(
         value = email, onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .offset(y = (-8).dp),
+            .padding(16.dp),
+        // .offset(y = (-8).dp),
         shape = RoundedCornerShape(12.dp),
         placeholder = { Text(text = stringResource(id = R.string.email_example)) },
         maxLines = 1,
@@ -314,8 +326,8 @@ fun EmailTextfield(email: String, onTextChanged: (String) -> Unit) {
             unfocusedTextColor = Color.Gray,
             focusedPlaceholderColor = Color.Gray,
             unfocusedPlaceholderColor = Color.Gray,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.Gray
         )
@@ -324,7 +336,7 @@ fun EmailTextfield(email: String, onTextChanged: (String) -> Unit) {
 
 @Composable
 fun PhoneSwitch(authViewModel: AuthViewModel) {
-    val isSwitched: Boolean by authViewModel.isSwitchChecked.observeAsState(
+    val isSwitched: Boolean by authViewModel.isSwitchChecked.collectAsState(
         initial = false
     )
     Row(
@@ -361,8 +373,20 @@ fun Optional() {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = stringResource(id = R.string.set_up_call), fontSize = 14.sp, color = Color.White) },
-            text = { Text(text = stringResource(id = R.string.dialog_text),fontSize = 14.sp, color = Color.LightGray) },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.set_up_call),
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.dialog_text),
+                    fontSize = 14.sp,
+                    color = Color.LightGray
+                )
+            },
             confirmButton = {
             },
             modifier = Modifier.padding(16.dp),
@@ -385,7 +409,7 @@ fun Optional() {
                 .clickable {
                     showDialog = true
                 }
-                .padding(8.dp)
+               //.padding(8.dp)
         )
         Text(
             text = "Opcional",
@@ -407,7 +431,7 @@ fun Optional() {
 fun PhoneTextfield(authViewModel: AuthViewModel) {
     val countries = CountryProvider.countries
     val userData by authViewModel.userData.collectAsState()
-    val expanded by authViewModel.isExpanded.observeAsState(false)
+    val expanded by authViewModel.isExpanded.collectAsState(false)
 
 
     Row(
@@ -421,6 +445,8 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val selectedCountry =
+            countries.find { it.code == userData.countryCode.ifEmpty { "+34" } }
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -431,20 +457,20 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                countries.find { it.code == userData.countryCode }
+                selectedCountry
                     ?.let {
                         Image(
-                            painter = painterResource(id=it.flagResId),
+                            painter = painterResource(id = it.flagResId),
                             contentDescription = it.name,
                             modifier = Modifier.size(12.dp)
                         )
                     }
                 Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = userData.countryCode.ifEmpty { "+34" },
-                        color = Color.Gray
-                    )
+                Text(
+                    text = userData.countryCode.ifEmpty { "+34" },
+                    color = Color.Gray
+                )
 
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -492,7 +518,12 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
                 .weight(3f)
                 .fillMaxHeight()
                 .padding(start = 8.dp),
-            placeholder = { Text(text = stringResource(id = R.string.mobile_numer), color = Color.Gray) },
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.mobile_numer),
+                    color = Color.Gray
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             maxLines = 1,
             singleLine = true,
@@ -520,23 +551,16 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
     placeholder: String,
     keyboardType: KeyboardType = KeyboardType.Text,
     isSingleLine: Boolean = true
 ) {
-    Text(
-        text = label,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 16.dp)
-    )
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .offset(y = (-8).dp),
         shape = RoundedCornerShape(12.dp),
         placeholder = { Text(text = placeholder) },
@@ -551,7 +575,8 @@ fun CustomTextField(
             unfocusedContainerColor = Color.Transparent,
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.Gray
-        ))
+        )
+    )
 }
 
 @Composable
@@ -561,42 +586,6 @@ fun SignUpText() {
         fontSize = 28.sp,
         modifier = Modifier.padding(16.dp)
     )
-}
-
-@Composable
-fun TopCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(380.dp)
-            .offset(y = (-25).dp)
-            .clip(
-                RoundedCornerShape(
-                    bottomEnd = 36.dp,
-                    bottomStart = 36.dp
-                )
-            ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-    ) {
-        Spacer(modifier = Modifier.height(190.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.welcome_to_the_community),
-                fontSize = 45.sp,
-                fontWeight = FontWeight.Light
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(id = R.string.motto),
-                fontSize = 18.sp
-            )
-        }
-    }
 }
 
 @Composable
@@ -610,7 +599,7 @@ fun Logo() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(130.dp)
                 .clip(
                     RoundedCornerShape(
                         bottomStart = 36.dp,
