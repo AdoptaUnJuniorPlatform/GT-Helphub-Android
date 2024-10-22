@@ -136,17 +136,14 @@ fun SignUpCredsScreen(
                         authViewModel.updateUserPassword(it)
                     }
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { Spacer(modifier = Modifier.height(12.dp)) }
                 item { PasswordReminder() }
-                item { Spacer(modifier = Modifier.height(30.dp)) }
-                item { Optional() }
-                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     PhoneSwitch(
                         authViewModel = authViewModel
                     )
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     PrivacyCheck(
                         isChecked = isChecked,
@@ -200,14 +197,14 @@ fun SignUpButton(isEnabled: Boolean, navController: NavHostController) {
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp, top=6.dp, bottom=8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Blue,
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Text(text = stringResource(id = R.string.signup))
+        Text(text = stringResource(id = R.string.signup).uppercase())
     }
 }
 
@@ -244,7 +241,7 @@ fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel) {
 fun PasswordReminder() {
     Text(
         text = stringResource(id = R.string.password_condition),
-        fontSize = 16.sp,
+        fontSize = 14.sp,
         color = Color.DarkGray,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -329,7 +326,7 @@ fun PhoneSwitch(authViewModel: AuthViewModel) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(top=8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -343,72 +340,14 @@ fun PhoneSwitch(authViewModel: AuthViewModel) {
         Column(modifier = Modifier.weight(4f)) {
             Text(
                 text = stringResource(id = R.string.activate_call),
-                fontSize = 20.sp
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = stringResource(id = R.string.show_number),
                 fontSize = 16.sp
             )
         }
-    }
-}
-
-@Composable
-fun Optional() {
-    var showDialog by remember { mutableStateOf(false) }
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    text = stringResource(id = R.string.set_up_call),
-                    fontSize = 14.sp,
-                    color = Color.White
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(id = R.string.dialog_text),
-                    fontSize = 14.sp,
-                    color = Color.LightGray
-                )
-            },
-            confirmButton = {
-            },
-            modifier = Modifier.padding(16.dp),
-            shape = RoundedCornerShape(12.dp),
-            containerColor = Color(0xFF565B5E)
-
-        )
-    }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .absolutePadding(left = 40.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_info),
-            tint = MaterialTheme.colorScheme.primary,
-            contentDescription = "",
-            modifier = Modifier
-                .clickable {
-                    showDialog = true
-                }
-        )
-        Text(
-            text = "Opcional",
-            modifier = Modifier.padding(horizontal = 18.dp),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary
-        )
-        HorizontalDivider(
-            Modifier
-                .background(Color.Black)
-                .height(1.dp)
-                .fillMaxWidth()
-        )
     }
 }
 
@@ -571,20 +510,15 @@ fun SignUpText() {
 
 @Composable
 fun Logo() {
-    Column(
-        modifier = Modifier.absolutePadding(
-            left = 16.dp,
-            right = 16.dp
-        )
-    ) {
+    Column{
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(130.dp)
                 .clip(
                     RoundedCornerShape(
-                        bottomStart = 36.dp,
-                        bottomEnd = 36.dp
+                        bottomStart = 46.dp,
+                        bottomEnd = 46.dp
                     )
                 )
                 .background(MaterialTheme.colorScheme.primary)

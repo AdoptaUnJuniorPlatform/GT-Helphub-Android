@@ -14,9 +14,9 @@
     <string name="surname1">Apellido 1</string>
     <string name="surname2">Apellido 2 (opcional)</string>
     <string name="account_question">¿Ya tienes una cuenta?</string>
-    <string name="i_agree_to_the">Estoy de acuerdo con sus</string>
+    <string name="i_agree_to_the">Estoy de acuerdo con sus </string>
     <string name="terms_and_conditions">Términos de sercicio y Política de provacidad</string>
-    <string name="password_condition">La contraseña debe incluir al menos 12&#10;caracteres, una letra y un número</string>
+    <string name="password_condition">La contraseña debe incluir al menos 12&#10;caracteres, una letra mayúscula y un número.</string>
     <string name="password">Contraseña</string>
     <string name="ic_visibility_content_description">Icono de visibilidad</string>
     <string name="email">Email</string>
