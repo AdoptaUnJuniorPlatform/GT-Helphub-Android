@@ -153,7 +153,7 @@ fun PopularCategories(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Puedes seleccionar hasta 3 categorias",
+                text = stringResource(id = R.string.select_up_to_3_categories),
                 fontSize = 16.sp,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
