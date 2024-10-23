@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
+import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
 import com.alejandro.helphub.features.auth.presentation.MainScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
@@ -86,5 +87,9 @@ fun RootNavGraph(navController: NavHostController) {
         composable("Home"){
             Home( )}
 
+        composable("ForgotPasswordScreen"){
+            ForgotPasswordScreen()
+        }
     }
+
 }

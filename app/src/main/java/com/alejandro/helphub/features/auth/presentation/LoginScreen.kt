@@ -1,218 +1,169 @@
 package com.alejandro.helphub.features.auth.presentation
 
-import android.app.Activity
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 
 @Composable
-fun LoginScreen(authViewModel: AuthViewModel= hiltViewModel(), modifier: Modifier = Modifier, navController: NavHostController) {
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .absolutePadding(left = 32.dp, right = 32.dp, top = 32.dp)
-    ) {
-        val isLoading: Boolean by authViewModel.isLoading.observeAsState(
-            initial = false
-        )
-        if (isLoading) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-            ) { CircularProgressIndicator() }
-        } else {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-            ) {
-                Header(Modifier.align(Alignment.TopEnd))
-                Body(Modifier.align(Alignment.Center), authViewModel)
-                Footer(Modifier.align(Alignment.BottomCenter), navController = navController)
-            }
-        }
-
-
-    }
-
-
-}
-
-@Composable
-fun Header(modifier: Modifier) {
-    val activity = LocalContext.current as Activity
-    Icon(
-        imageVector = Icons.Default.Close,
-        contentDescription = "close",
-        modifier = modifier.clickable { activity.finish() })
-
-}
-
-@Composable
-fun Body(modifier: Modifier, authViewModel: AuthViewModel) {
-    val email: String by authViewModel.email.collectAsState(initial = "")
-    val password: String by authViewModel.password.collectAsState(initial = "")
-    val isLoginEnable: Boolean by authViewModel.isLoginEnable.observeAsState(
+fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel = hiltViewModel()) {
+    val userData by authViewModel.userData.collectAsState()
+    val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
     )
-
-    Column(modifier = modifier) {
-        ImageLogo()
-        Quote()
-        Spacer(modifier = Modifier.size(16.dp))
-        Email(email) {
-            authViewModel.onLoginChanged(email = it, password = password)
+    Scaffold { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = 16.dp
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .zIndex(0f)
+            ) {
+                Logo()
+                Spacer(modifier = Modifier.height(20.dp))
+                LoginTitle()
+                EmailLabel()
+                Email(userData.email) { authViewModel.updateUserEmail(it)}
+                Spacer(modifier = Modifier.height(4.dp))
+                PasswordLabel(onClick = {navController.navigate("ForgotPasswordScreen")})
+                Spacer(modifier = Modifier.height(10.dp))
+                Password(userData.password) { authViewModel.updateUserPassword(it)}
+                Spacer(modifier = Modifier.height(20.dp))
+                Remember(isChecked = isChecked,
+                    authViewModel=authViewModel) //cambiar con Flow
+                Spacer(modifier = Modifier.height(300.dp))
+                LoginButton ( onClick = { navController.navigate("Home") } )
+                Spacer(modifier = Modifier.height(12.dp))
+                SignUpLink(onClick = {navController.navigate("SignUpCredsScreen")})
+            }
         }
-        Spacer(modifier = Modifier.size(8.dp))
-        Password(password) {
-            authViewModel.onLoginChanged(email = email, password = it)
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-        ForgotPassword(Modifier.align(Alignment.End))
-        Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable, authViewModel)
-        Spacer(modifier = Modifier.size(16.dp))
-        LoginDivider()
-        Spacer(modifier = Modifier.size(32.dp))
-        SocialLogin()
     }
 }
 
 @Composable
-fun ImageLogo() {
+fun SignUpLink(onClick: () -> Unit){
+    Row (modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.Center){
+        Text(text = stringResource(id = R.string.register_question))
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(text = stringResource(id = R.string.signup), color = Color.Blue,
+            modifier = Modifier.clickable { onClick() })
+    }
+}
+
+@Composable
+fun LoginButton(
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = { onClick() },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(6.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.login).uppercase()
+        )
+    }
+}
+
+@Composable
+fun Remember(isChecked: Boolean,authViewModel: AuthViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
-        horizontalArrangement = Arrangement.Center
+            .padding(horizontal = 16.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.helphub_morado),
-            contentDescription = "logo Helphub",
-            modifier = Modifier
-                .fillMaxWidth(fraction = 0.8f)
-                .aspectRatio(2.5f)
-        )
-
-    }
-}
-
-@Composable
-fun Quote() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+        Checkbox(checked = isChecked, onCheckedChange = {newValue->
+            authViewModel.onCheckBoxCheckedChanged(newValue)
+        })
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = stringResource(id = R.string.quote),
-            fontSize = 16.sp,
-            fontStyle = FontStyle.Italic,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium
+            text = stringResource(id = R.string.remember_me),
+            fontSize = 20.sp,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
-
-
     }
 }
 
 @Composable
-fun Email(email: String, onTextChanged: (String) -> Unit) {
-    TextField(
-        value = email, onValueChange = { onTextChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        placeholder = { Text(text = stringResource(id = R.string.email)) },
-        maxLines = 1,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        )
-    )
-}
-
-@Composable
-fun Password(password: String, onTextChanged: (String) -> Unit) {
+fun Password(password:String,onTextChanged: (String) -> Unit) {
     var passwordVisibility by remember { mutableStateOf(false) }
-    TextField(
+    OutlinedTextField(
         value = password,
         onValueChange = { onTextChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        placeholder = { Text(text = stringResource(id = R.string.password)) },
-        colors = TextFieldDefaults.colors(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(12.dp),
+        placeholder = { Text(text = stringResource(id = R.string.password_example)) },
+        colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
             focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            focusedBorderColor = Color.Gray,
+            unfocusedBorderColor = Color.Gray
         ),
         singleLine = true,
         maxLines = 1,
@@ -224,8 +175,10 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
                 Icons.Filled.Visibility
             }
             IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(imageVector = image, contentDescription = "visibility icon")
-
+                Icon(
+                    imageVector = image,
+                    contentDescription = stringResource(id = R.string.ic_visibility_content_description)
+                )
             }
         },
         visualTransformation = if (passwordVisibility) {
@@ -237,133 +190,68 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun ForgotPassword(modifier: Modifier) {
-    Text(
-        text = stringResource(id = R.string.forgot_password),
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier
+fun PasswordLabel(onClick: () -> Unit) {
+    Row {
+        Text(
+            text = stringResource(id = R.string.password),
+            fontSize = 16.sp,
+            modifier = Modifier
+                .padding(start = 16.dp),
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.width(60.dp))
+        Text(
+            text = stringResource(id = R.string.forgot_password),
+            fontSize = 16.sp,
+            color = Color.Blue,
+            modifier = Modifier.clickable { onClick() }
+        )
+    }
+}
+
+@Composable
+fun Email(email:String,onTextChanged: (String) -> Unit) {
+    OutlinedTextField(
+        value = email, onValueChange = { onTextChanged(it) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(12.dp),
+        placeholder = { Text(text = stringResource(id = R.string.email_example)) },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedBorderColor = Color.Gray,
+            unfocusedBorderColor = Color.Gray
+        )
     )
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, authViewModel: AuthViewModel) {
-    Button(
-        onClick = { },
-        enabled = loginEnable,
-        modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = (MaterialTheme.colorScheme.primary),
-            disabledContainerColor = (MaterialTheme.colorScheme.primary),
-            contentColor = Color.White,
-            disabledContentColor = Color.White
-        )
-    ) {
-        Text(text = stringResource(id = R.string.login))
-    }
-}
-
-
-@Composable
-fun LoginDivider() {
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        HorizontalDivider(
-            Modifier
-                .background(Color(0xFFF9F9F9))
-                .height(1.dp)
-                .weight(1f)
-        )
-        Text(
-            text = stringResource(id = R.string.alternative_login),
-            modifier = Modifier.padding(horizontal = 18.dp),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFB5B5B5)
-        )
-        HorizontalDivider(
-            Modifier
-                .background(Color(0xFFF9F9F9))
-                .height(1.dp)
-                .weight(1f)
-        )
-    }
+fun EmailLabel() {
+    Text(
+        text = stringResource(id = R.string.email),
+        fontSize = 16.sp,
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .offset(y = 5.dp),
+        fontWeight = FontWeight.Bold
+    )
 }
 
 @Composable
-fun SocialLogin() {
-
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-
-        Image(
-            painter = painterResource(id = R.drawable.gmail),
-            contentDescription = "gmail logo",
-            modifier = Modifier
-                .size(40.dp)
-                .weight(1f)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.linkedin),
-            contentDescription = "linkedin logo",
-            modifier = Modifier
-                .size(40.dp)
-                .weight(1f)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.facebook),
-            contentDescription = "facebook logo",
-            modifier = Modifier
-                .size(40.dp)
-                .weight(1f)
-        )
-
-    }
+fun LoginTitle() {
+    Text(
+        text = stringResource(id = R.string.login),
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 26.sp,
+        modifier = Modifier.padding(16.dp)
+    )
 }
-
-
-@Composable
-fun Footer(modifier: Modifier, navController: NavHostController) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        HorizontalDivider(
-            Modifier
-                .background(Color(0xFFF9F9F9))
-                .height(1.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.size(24.dp))
-        SignUp(navController = navController)
-        Spacer(modifier = Modifier.size(24.dp))
-    }
-
-}
-
-@Composable
-fun SignUp(navController:NavHostController) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Text(
-            text = stringResource(id = R.string.signup_invitation),
-            fontSize = 12.sp,
-            color = Color(0xFFB5B5B5)
-        )
-        Text(
-            text = stringResource(id = R.string.signup),
-            Modifier
-                .padding(horizontal = 8.dp)
-                .clickable { navController.navigate("SignUpCredsScreen") },
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-
-

@@ -4,11 +4,11 @@
     <string name="quote">"Uniendo talentos, creando comunidad"</string>
     <string name="email_example">ejemplo@gmail.com</string>
     <string name="password_example">*******</string>
-    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="forgot_password">¿Ha olvidado su contraseña?</string>
     <string name="login">Inicia Sesión</string>
-    <string name="alternative_login">O Inicia Sesión con</string>
-    <string name="signup_invitation">¿Es tu primera vez aquí?</string>
-    <string name="signup">Regístrate</string>
+    <string name="signup">Regístrarse</string>
+    <string name="remember_me">Recuérdame</string>
+    <string name="register_question">¿No tienes una cuenta?</string>
     <!--SignUp Screen -->
     <string name="name">Nombre</string>
     <string name="surname1">Apellido 1</string>
@@ -179,5 +179,7 @@
     <string name="diego_availability">08:00 a 17:00</string>
     <string name="diego_skill">Sesiones de entrenamiento personal en la playa enfocadas en mejorar tu resistencia y fuerza, con rutinas sencillas.</string>
     <string name="diego_category">Fitness</string>
+    <!--Login Screen -->
+
 
 </resources>
