@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -32,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -51,15 +53,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
 
 @Composable
@@ -154,8 +159,9 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 "selectedLevel: ${userData.selectedLevel}, " +
                 "mode: ${userData.mode}, " +
                 "skilLDescription: ${userData.skillDescription}, " +
-                "selectedCategory: ${userData.selectedCategory},"
+                "selectedCategory: ${userData.selectedCategories},"
     )
+
     Card(
         modifier = Modifier
             .wrapContentHeight()
@@ -176,20 +182,24 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 .padding(horizontal = 15.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.congrats),
-                contentDescription = ""
-            )
+            Row() {
+                Image(
+                    painter = painterResource(id = R.drawable.congrats),
+                    contentDescription = stringResource(id = R.string.congratulations),
+                    modifier = Modifier.size(50.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = stringResource(id = R.string.congratulations),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
             Spacer(modifier = Modifier.height(14.dp))
             Text(
-                text = "¡Felicidades!",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = "Ya tienes tu primera habilidad cargada en tu cuenta",
+                text = stringResource(id = R.string.skill_success_message),
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 30.dp)
@@ -210,7 +220,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
         ) {
             Box(modifier = Modifier.width(300.dp)) {
                 Text(
-                    text = "Puedes editarla o eliminarla cuando quieras desde la sección de tu perfil.",
+                    text = stringResource(id = R.string.skill_edit_message),
                     fontSize = 16.sp,
                     modifier = Modifier
                         .padding(
@@ -227,12 +237,6 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(modifier = Modifier.height(18.dp))
-            Text(
-                text = "Vista previa",
-                textAlign = TextAlign.Start,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
             Spacer(modifier = Modifier.height(12.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -242,26 +246,51 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 elevation = CardDefaults.cardElevation(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    Box(modifier = Modifier.size(50.dp)) {
+                        Image(
+                            painter = rememberAsyncImagePainter(userData.userPhotoUri),
+                            contentDescription = stringResource(id = R.string.user_photo_content_description),
+                            modifier = Modifier
+                                .size(124.dp)
+                                .clip(CircleShape)
+                                .background(Color.Gray),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Text(
+                        text = "${userData.name} ${userData.surname1}",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(text = userData.postTitle, fontSize = 24.sp)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(text = userData.postalCode, fontSize = 16.sp)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = userData.mode ?: "Modo no seleccionado",
-                        fontSize = 14.sp
+                        text = userData.mode
+                            ?: stringResource(id = R.string.not_available),
+                        fontSize = 16.sp
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = "Nivel", fontSize = 14.sp)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    //borrar de aqui abajo
-                    listOf("Básico", "Medio", "Avanzado").forEach { level ->
+                    listOf(
+                        stringResource(id = R.string.basic), stringResource(
+                            id = R.string.amateur
+                        ), stringResource(id = R.string.advanced)
+                    ).forEach { level ->
                         Box(
                             modifier = Modifier
                                 .background(
@@ -285,25 +314,60 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 26.dp)) {
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.availability),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Spacer(modifier = Modifier.width(50.dp))
                     Box(
                         modifier = Modifier
                             .border(
                                 width = 1.dp,
                                 color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(6.dp)
                             )
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                            .padding(horizontal = 10.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = userData.selectedCategory
-                                ?: "No seleccionado", fontSize = 14.sp
+                            text = userData.availability
+                                ?: stringResource(id = R.string.not_available),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = userData.skillDescription,
+                        fontSize = 16.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 26.dp)) {
+                    userData.selectedCategories.forEach { category ->
+                        Box(
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = category,
+                                fontSize = 16.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.height(26.dp))
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
@@ -314,7 +378,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                     containerColor = Color.Blue
                 )
             ) {
-                Text(text = "CONTINUAR")
+                Text(text = stringResource(id = R.string.continue_button).uppercase())
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -325,7 +389,21 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
 fun CategorySelection(authViewModel: AuthViewModel) {
     val userData by authViewModel.userData.collectAsState()
     val expanded by authViewModel.expanded.collectAsState()
-    val categories = authViewModel.categories
+    val selectedCategories by authViewModel.selectedCategories.collectAsState()
+
+    val categories = listOf(
+        stringResource(id = R.string.animals),
+        stringResource(id = R.string.help),
+        stringResource(id = R.string.consultancy),
+        stringResource(id = R.string.design),
+        stringResource(id = R.string.languages),
+        stringResource(id = R.string.it),
+        stringResource(id = R.string.fixes),
+        stringResource(id = R.string.health),
+        stringResource(id = R.string.private_lessons),
+        stringResource(id = R.string.others)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,9 +428,13 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (userData.selectedCategory.isNullOrEmpty()) stringResource(
-                        id = R.string.categories
-                    ) else userData.selectedCategory!!,
+                    text = if (userData.selectedCategories.isEmpty()) {
+                        stringResource(
+                            id = R.string.categories
+                        )
+                    } else {
+                        userData.selectedCategories.joinToString(", ")
+                    },
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
@@ -360,17 +442,30 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                     contentDescription = null
                 )
             }
+
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { authViewModel.toggleDropdown() }
             ) {
                 categories.forEach { category ->
+                    var isChecked = selectedCategories.contains(category)
                     DropdownMenuItem(
-                        text = { Text(text = category) },
-                        onClick = {
-                            authViewModel.updateSelectedCategory(category)
-                            authViewModel.toggleDropdown()
-                        })
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = isChecked,
+                                    onCheckedChange = {
+                                        authViewModel.onCategoryChecked(
+                                            category,
+                                            it
+                                        )
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = category)
+                            }
+                        },
+                        onClick = { })
                 }
             }
         }
@@ -401,7 +496,7 @@ fun SkillTextBox(
             .clickable { onShowCardChange(!showCard) }) {
             Row(horizontalArrangement = Arrangement.End) {
                 Text(
-                    text = stringResource(id = R.string.photo_advice),
+                    text = stringResource(id = R.string.photo_advice).uppercase(),
                     color = Color.Blue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -411,7 +506,7 @@ fun SkillTextBox(
                     imageVector = if (showCard) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                     contentDescription = stringResource(
                         id = R.string.photo_advice
-                    ),
+                    ).uppercase(),
                     tint = Color.Blue,
                     modifier = Modifier
                         .size(20.dp)
@@ -430,7 +525,11 @@ fun SkillTextBox(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF1FF))
+            colors = CardDefaults.cardColors(
+                containerColor = Color(
+                    0xFFEEF1FF
+                )
+            )
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -469,7 +568,7 @@ fun SkillTextBox(
         OutlinedTextField(
             value = userData.skillDescription,
             onValueChange = {
-                if (it.length <= 200) {
+                if (it.length <= 90) {
                     authViewModel.updateSkillDescription(it)
                 }
             },
@@ -494,5 +593,18 @@ fun SkillTextBox(
                 unfocusedBorderColor = Color.LightGray
             )
         )
+        Text(
+            text = stringResource(
+                id = R.string.character_limit_ninety,
+                userData.skillDescription.length
+            ),
+            fontSize = 18.sp,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 12.dp),
+            color = Color.LightGray,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
+
