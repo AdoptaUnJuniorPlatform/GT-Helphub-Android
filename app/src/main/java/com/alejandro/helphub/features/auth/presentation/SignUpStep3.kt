@@ -125,7 +125,7 @@ fun DaySelection(authViewModel: AuthViewModel) {
         ) {
             Text(
                 text = if (selectedDays.isEmpty()) stringResource(id = R.string.select_day)
-                else selectedDays.joinToString(","),
+                else selectedDays.joinToString(", "),
                 modifier = Modifier.weight(1f)
             )
             Icon(
@@ -198,7 +198,7 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
-                text = stringResource(id = R.string.availability), fontSize = 22.sp,
+                text = stringResource(id = R.string.availability_hours), fontSize = 22.sp,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )

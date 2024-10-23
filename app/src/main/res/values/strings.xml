@@ -47,6 +47,7 @@
     <string name="step_2">Paso 2</string>
     <string name="choose_photo">Escoger una foto</string>
     <string name="step_two_description">En Helphub, todas las personas deben tener una fotografía en donde se muestre claramente su rostro</string>
+    <string name="ic_check_photo">Subida con éxito</string>
     <string name="upload_photo">Subir foto</string>
     <string name="photobox_text">Selecciona una foto de&#10;perfil de tu equipo</string>
     <string name="profile_examples">Ejemplos de perfil</string>
@@ -57,11 +58,11 @@
     <string name="photo_third_indication_dialog">Un fondo limpio y sin distracciones hará que te destaques más.</string>
     <string name="photo_fourth_indication_dialog">Mantén la edición de la foto al mínimo.</string>
     <string name="photo_fifth_indication_dialog">Asegúrate de que la foto sea reciente y refleje cómo te ves actualmente.</string>
-    <string name="confirm_button">ENTIENDO</string>
-    <string name="photo_advice">CONSEJOS</string>
+    <string name="confirm_button">Entiendo</string>
+    <string name="photo_advice">Consejos</string>
     <!--SignUp Screen Step 3 -->
     <string name="step_3">Paso 3</string>
-    <string name="availability">Disponibilidad horaria</string>
+    <string name="availability_hours">Disponibilidad horaria</string>
     <string name="step_3_title">Selecciona tus horarios</string>
     <string name="availability_question">¿Qué día estás disponible?</string>
     <string name="step_three_description">En Helphub queremos facilitar a los usuarios la coordinación de horarios.</string>
@@ -87,7 +88,7 @@
     <string name="add_first_skill">Añade tu primera habilidad</string>
     <string name="add_skills">Puedes agregar varias habilidades y editarlas más tarde.</string>
     <string name="post_title">Título de la publicación</string>
-    <string name="post_title_examples_dialog">EJEMPLOS</string>
+    <string name="post_title_examples_dialog">Ejemplos</string>
     <string name="skill_placeholder">Ej: Pintar óleo</string>
     <string name="character_limit_twenty">%1$d/20</string>
     <string name="advanced">Avanzado</string>
@@ -109,19 +110,26 @@
     <string name="how_to_text_message">Asegúrate de que tu mensaje sea fácil de entender y vaya directo al grano.</string>
     <string name="how_to_text_details">Incluye detalles interesantes de tu intercambio.</string>
     <string name="how_to_text_value">Resalta las ventajas y el valor que obtendrán al participar.</string>
+    <string name="character_limit_ninety">%1$d/90</string>
     <string name="select_category">¿Qué categoría se ajusta mejor a tu habilidad?</string>
     <string name="categories">Categorías</string>
-    <string name="congratulations">¡Felicitaciones!</string>
-    <string name="languages">Idiomas</string>
-    <string name="fitness">Fitness</string>
-    <string name="design">Diseño</string>
-    <string name="private_lessons">Tutorías</string>
     <string name="animals">Animales</string>
-    <string name="diy">Bricolaje</string>
-    <string name="consultancy">Consultoría</string>
-    <string name="it">Informática</string>
-    <string name="self_care">Cuidado Personal</string>
     <string name="help">Ayuda</string>
+    <string name="consultancy">Consultoría</string>
+    <string name="design">Diseño</string>
+    <string name="languages">Idiomas</string>
+    <string name="it">Informática</string>
+    <string name="fixes">Reparaciones</string>
+    <string name="health">Salud</string>
+    <string name="private_lessons">Tutorías</string>
+    <string name="others">Otros</string>
+    <string name="congratulations">¡Felicitaciones!</string>
+    <string name="skill_success_message">Ya tienes tu primera habilidad cargada en tu cuenta</string>
+    <string name="skill_edit_message">Puedes editarla o eliminarla cuando quieras desde la sección de tu perfil.</string>
+    <string name="user_photo_content_description">Foto de usuario</string>
+    <string name="not_available">No disponible</string>
+    <string name="availability">Disponibilidad</string>
+    <string name="continue_button">Continuar</string>
     <!--SignUp Screen Step 5 -->
     <string name="step_5">Último paso</string>
     <string name="step_5_title">Intercambiando habilidades</string>
@@ -129,7 +137,6 @@
     <string name="step_five_description">Nos encantaría saber qué te gustaría aprender, para que los demás usuarios puedan ofrecerte su ayuda.</string>
     <string name="popular_categories">Categorías populares</string>
     <string name="more_categories">Busca más categorías</string>
-
 
 
 </resources>

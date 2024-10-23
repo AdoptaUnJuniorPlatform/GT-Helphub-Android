@@ -194,7 +194,7 @@ fun UploadPhoto(authViewModel: AuthViewModel) {
                     } else {
                         painterResource(id = R.drawable.default_profile_icon)
                     },
-                    contentDescription = "",
+                    contentDescription = stringResource(id = R.string.user_photo_content_description),
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
@@ -212,7 +212,7 @@ fun UploadPhoto(authViewModel: AuthViewModel) {
                 if (photoUri != null) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_check_circle),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.ic_check_photo),
                         modifier = Modifier
                             .size(24.dp)
                             .align(Alignment.TopEnd)
@@ -304,7 +304,7 @@ fun ChooseImage(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
                         .size(20.dp)
                 )
                 Text(
-                    text = stringResource(id = R.string.photo_advice),
+                    text = stringResource(id = R.string.photo_advice).uppercase(),
                     color = Color.Blue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -347,7 +347,7 @@ fun StepTwoProgressIndicator() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.step_two),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.step_2),
                 modifier = Modifier
                     .size(300.dp)
                     .align(Alignment.BottomCenter)

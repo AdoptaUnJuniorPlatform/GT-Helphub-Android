@@ -223,7 +223,7 @@ fun PostTitle(
             .clickable { onShowCardChange(!showCard) }) {
             Row(horizontalArrangement = Arrangement.End) {
                 Text(
-                    text = stringResource(id = R.string.post_title_examples_dialog),
+                    text = stringResource(id = R.string.post_title_examples_dialog).uppercase(),
                     color = Color.Blue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -234,7 +234,7 @@ fun PostTitle(
                     if (showCard) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                     contentDescription = stringResource(
                         id = R.string.post_title_examples_dialog
-                    ),
+                    ).uppercase(),
                     tint = Color.Blue,
                     modifier = Modifier
                         .size(20.dp)
@@ -380,7 +380,7 @@ fun StepFourProgressIndicator() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.step_four),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.step_4),
                 modifier = Modifier
                     .size(300.dp)
                     .align(Alignment.BottomCenter)
