@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
+import com.alejandro.helphub.features.auth.presentation.MainScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpStep1
 import com.alejandro.helphub.features.auth.presentation.SignUpStep2
@@ -26,7 +27,7 @@ fun RootNavGraph(navController: NavHostController) {
 
         composable("SplashScreen") {
             SplashScreen(onNavigateToLogin = {
-                navController.navigate("LoginScreen") {
+                navController.navigate("MainScreen") {
                     popUpTo("SplashScreen") { inclusive = true }
                 }
             })
@@ -79,6 +80,12 @@ fun RootNavGraph(navController: NavHostController) {
                 navController=navController
             )
         }
+        composable("MainScreen"){
+            MainScreen(
+                //navController = navController
+            )
+        }
+        
         composable("Home"){
             Home( )}
 

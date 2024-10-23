@@ -139,6 +139,45 @@
     <string name="more_categories">Busca más categorías</string>
     <string name="select_up_to_3_categories">Puedes seleccionar hasta 3 categorías.</string>
 
-
+    <!--Main Screen -->
+    <string name="main_screen_title1">Conecta y Comparte</string>
+    <string name="main_screen_title2">Habilidades</string>
+    <string name="to_singUp">Crear cuenta nueva</string>
+    <string name="to_login">Iniciar sesión</string>
+    <string name="pedro_name">Pedro</string>
+    <string name="pedro_surname">García</string>
+    <string name="pedro_postTitle">Clases de Guitarra</string>
+    <string name="pedro_mode">Online</string>
+    <string name="pedro_availability">17:00 a 21:00</string>
+    <string name="pedro_skill">Me apasiona el análisis e identificación de errores y el diseño de soluciones creativas principalmente en aplicaciones móviles.</string>
+    <string name="pedro_category">Tutorías</string>
+    <string name="laura_name">Laura</string>
+    <string name="laura_surname">Martínez</string>
+    <string name="laura_postTitle">Fotografía de Paisajes</string>
+    <string name="laura_mode">28001 Madrid, Madrid</string>
+    <string name="laura_availability">8:00 a 17:00</string>
+    <string name="laura_skill">Descubre cómo capturar la luz natural, elegir los mejores ángulos y ajustar la configuración de la cámara para obtener fotos impresionantes.</string>
+    <string name="laura_category">Arte y creatividad</string>
+    <string name="joaquin_name">Joaquín</string>
+    <string name="joaquin_surname">Rodríguez</string>
+    <string name="joaquin_postTitle">Clases de Cocina Vegana</string>
+    <string name="joaquin_mode">Online</string>
+    <string name="joaquin_availability">17:00 a 21:00</string>
+    <string name="joaquin_skill">Aprende a preparar un plato vegano delicioso y nutritivo (desde entrantes hasta postres)</string>
+    <string name="joaquin_category">Tutorías</string>
+    <string name="marta_name">Marta</string>
+    <string name="marta_surname">Fernández</string>
+    <string name="marta_postTitle">Paseo de Perros</string>
+    <string name="marta_mode">08007 Barcelona, Cataluña</string>
+    <string name="marta_availability">Horario flexible</string>
+    <string name="marta_skill">Paseo de perros con atención personalizada, garantizando que tu mascota reciba el ejercicio adecuado, relajante y seguro.</string>
+    <string name="marta_category">Animales</string>
+    <string name="diego_name">Diego</string>
+    <string name="diego_surname">Torres</string>
+    <string name="diego_postTitle">Entrenamiento Personal</string>
+    <string name="diego_mode">03001 Alicante, Valencia</string>
+    <string name="diego_availability">08:00 a 17:00</string>
+    <string name="diego_skill">Sesiones de entrenamiento personal en la playa enfocadas en mejorar tu resistencia y fuerza, con rutinas sencillas.</string>
+    <string name="diego_category">Fitness</string>
 
 </resources>
