@@ -81,10 +81,7 @@ fun RootNavGraph(navController: NavHostController) {
             )
         }
         composable("MainScreen"){
-            MainScreen(
-                //navController = navController
-            )
-        }
+            MainScreen(navController = navController) }
         
         composable("Home"){
             Home( )}
