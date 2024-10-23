@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -46,8 +47,7 @@ fun SignUpStep5(
     authViewModel: AuthViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    val userData by authViewModel.userData.collectAsState()
-    val isNextEnabled = userData.categoriesOfInterest.isNotEmpty()
+    val isHomeEnabled by authViewModel.isNavigationToHomeEnabled.collectAsState(initial = false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -72,78 +72,12 @@ fun SignUpStep5(
                 Spacer(modifier = Modifier.height(16.dp))
                 PopularCategories(authViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
-                MoreCategories(authViewModel)
-                Spacer(modifier = Modifier.height(76.dp))
+                Spacer(modifier = Modifier.height(124.dp))
                 StepButtons(
                     onBackClick = { navController.navigate("SignUpStep4Skill") },
-                    onNextClick = { },
-                    enabled = isNextEnabled
+                    onNextClick = { navController.navigate("Home") },
+                    enabled = isHomeEnabled
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun MoreCategories(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
-    val expanded by authViewModel.expanded.collectAsState()
-    val selectedCategories = userData.categoriesOfInterest ?: emptyList()
-    val availableCategories =
-        authViewModel.categories.filterNot { it in selectedCategories }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = stringResource(id = R.string.more_categories),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .background(Color.LightGray)
-                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-                .clickable { authViewModel.toggleDropdown() },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = if (selectedCategories.isEmpty()) stringResource(
-                        id = R.string.categories
-                    ) else selectedCategories.joinToString(","),
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { authViewModel.toggleDropdown() }
-            ) {
-                availableCategories.forEach { category ->
-                    val isSelected = selectedCategories.contains(category)
-                    DropdownMenuItem(
-                        text = { Text(text = category) },
-                        onClick = {
-                            if (isSelected) {
-                                authViewModel.removeCategoryOfInterest(category)
-                            } else {
-                                authViewModel.updateSelectedCategoriesOfInterest(
-                                    category
-                                )
-                            }
-                            authViewModel.toggleDropdown()
-                        })
-                }
             }
         }
     }
@@ -167,11 +101,11 @@ fun CategoryBox(
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onItemSelected(!isSelected) }
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(
             text = category,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             color = if (isSelected) Color.White else Color.Black
         )
     }
@@ -182,8 +116,25 @@ fun CategoryBox(
 fun PopularCategories(
     authViewModel: AuthViewModel
 ) {
-    val categories = authViewModel.popularCategories
+    val categories = listOf(
+        stringResource(id = R.string.animals),
+        stringResource(id = R.string.help),
+        stringResource(id = R.string.consultancy),
+        stringResource(id = R.string.design),
+        stringResource(id = R.string.languages),
+        stringResource(id = R.string.it),
+        stringResource(id = R.string.fixes),
+        stringResource(id = R.string.health),
+        stringResource(id = R.string.private_lessons),
+        stringResource(id = R.string.others)
+    )
+    val chunkedCategories= listOf(
+        categories.take(4),
+        categories.subList(4,7),
+        categories.takeLast(3)
+    )
     val userData by authViewModel.userData.collectAsState()
+    val selectedCategories by authViewModel.selectedCategoriesOfInterest.collectAsState()
     Column {
         Row(
             modifier = Modifier
@@ -197,17 +148,26 @@ fun PopularCategories(
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
-        categories.chunked(3).forEach { categoryRow ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Puedes seleccionar hasta 3 categorias",
+                fontSize = 16.sp,
+                modifier = Modifier.align(Alignment.CenterVertically),
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        chunkedCategories.forEach { categoryRow ->
             Row {
                 categoryRow.forEach { category ->
                     val isSelected =
-                        userData.categoriesOfInterest.contains(category)
+                        selectedCategories.contains(category)
                     CategoryBox(category = category, isSelected = isSelected,
-                        onItemSelected = { isSelected ->
-                            authViewModel.updateCategoriesOfInterest(
-                                category,
-                                isSelected
-                            )
+                        onItemSelected = {
+                            authViewModel.onCategoriesOfInterestChecked(category,it)
                         }
                     )
                 }

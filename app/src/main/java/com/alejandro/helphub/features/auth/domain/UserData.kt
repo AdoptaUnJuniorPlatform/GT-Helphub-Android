@@ -21,6 +21,6 @@ data class UserData (
     val selectedLevel:String?=null,
     val mode:String?=null,
     val skillDescription:String="",
-    val selectedCategory:String?=null,
+    val selectedCategories:List<String> = emptyList(),
     val categoriesOfInterest:List<String> =emptyList()
 )

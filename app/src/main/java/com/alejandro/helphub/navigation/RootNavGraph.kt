@@ -1,6 +1,8 @@
 package com.alejandro.helphub.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.internal.composableLambda
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +16,7 @@ import com.alejandro.helphub.features.auth.presentation.SignUpStep3
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Post
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Skill
 import com.alejandro.helphub.features.auth.presentation.SignUpStep5
+import com.alejandro.helphub.features.home.presentation.Home
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
 @Composable
@@ -76,7 +79,8 @@ fun RootNavGraph(navController: NavHostController) {
                 navController=navController
             )
         }
-
+        composable("Home"){
+            Home( )}
 
     }
 }
