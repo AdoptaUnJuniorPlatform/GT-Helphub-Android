@@ -54,6 +54,9 @@ android {
 
 dependencies {
 
+    //Retrofit
+    implementation(libs.retrofit)
+
      //Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
