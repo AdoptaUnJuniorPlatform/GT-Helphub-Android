@@ -11,6 +11,7 @@ import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
 import com.alejandro.helphub.features.auth.presentation.MainScreen
+import com.alejandro.helphub.features.auth.presentation.ResetPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpStep1
 import com.alejandro.helphub.features.auth.presentation.SignUpStep2
@@ -88,7 +89,12 @@ fun RootNavGraph(navController: NavHostController) {
             Home( )}
 
         composable("ForgotPasswordScreen"){
-            ForgotPasswordScreen()
+            ForgotPasswordScreen(authViewModel=authViewModel,
+                navController=navController)
+        }
+        composable("ResetPasswordScreen"){
+            ResetPasswordScreen(authViewModel=authViewModel,
+                navController=navController)
         }
     }
 

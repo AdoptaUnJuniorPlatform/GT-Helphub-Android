@@ -51,7 +51,10 @@ import com.alejandro.helphub.R
 
 
 @Composable
-fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel = hiltViewModel()) {
+fun LoginScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
     val userData by authViewModel.userData.collectAsState()
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
@@ -74,29 +77,41 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
                 Spacer(modifier = Modifier.height(20.dp))
                 LoginTitle()
                 EmailLabel()
-                Email(userData.email) { authViewModel.updateUserEmail(it)}
+                Email(
+                    userData.email,
+                    colorContainer = MaterialTheme.colorScheme.primaryContainer,
+                    onTextChanged = { authViewModel.updateUserEmail(it) }
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                PasswordLabel(onClick = {navController.navigate("ForgotPasswordScreen")})
+                PasswordLabel(onClick = { navController.navigate("ForgotPasswordScreen") })
                 Spacer(modifier = Modifier.height(10.dp))
-                Password(userData.password) { authViewModel.updateUserPassword(it)}
+                Password(userData.password) {
+                    authViewModel.updateUserPassword(
+                        it
+                    )
+                }
                 Spacer(modifier = Modifier.height(20.dp))
-                Remember(isChecked = isChecked,
-                    authViewModel=authViewModel) //cambiar con Flow
+                Remember(
+                    isChecked = isChecked,
+                    authViewModel = authViewModel
+                ) //cambiar con Flow
                 Spacer(modifier = Modifier.height(300.dp))
-                LoginButton ( onClick = { navController.navigate("Home") } )
+                LoginButton(text = stringResource(id = R.string.login), onClick = { navController.navigate("Home") })
                 Spacer(modifier = Modifier.height(12.dp))
-                SignUpLink(onClick = {navController.navigate("SignUpCredsScreen")})
+                SignUpLink(onClick = { navController.navigate("SignUpCredsScreen") })
             }
         }
     }
 }
 
 @Composable
-fun SignUpLink(onClick: () -> Unit){
-    Row (modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.Center){
+fun SignUpLink(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
         Text(text = stringResource(id = R.string.register_question))
         Spacer(modifier = Modifier.width(6.dp))
         Text(text = stringResource(id = R.string.signup), color = Color.Blue,
@@ -106,6 +121,7 @@ fun SignUpLink(onClick: () -> Unit){
 
 @Composable
 fun LoginButton(
+    text:String,
     onClick: () -> Unit
 ) {
     Button(
@@ -120,19 +136,19 @@ fun LoginButton(
         shape = RoundedCornerShape(6.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.login).uppercase()
+            text = text.uppercase()
         )
     }
 }
 
 @Composable
-fun Remember(isChecked: Boolean,authViewModel: AuthViewModel) {
+fun Remember(isChecked: Boolean, authViewModel: AuthViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Checkbox(checked = isChecked, onCheckedChange = {newValue->
+        Checkbox(checked = isChecked, onCheckedChange = { newValue ->
             authViewModel.onCheckBoxCheckedChanged(newValue)
         })
         Spacer(modifier = Modifier.width(12.dp))
@@ -145,7 +161,7 @@ fun Remember(isChecked: Boolean,authViewModel: AuthViewModel) {
 }
 
 @Composable
-fun Password(password:String,onTextChanged: (String) -> Unit) {
+fun Password(password: String, onTextChanged: (String) -> Unit) {
     var passwordVisibility by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = password,
@@ -210,7 +226,11 @@ fun PasswordLabel(onClick: () -> Unit) {
 }
 
 @Composable
-fun Email(email:String,onTextChanged: (String) -> Unit) {
+fun Email(
+    email: String,
+    onTextChanged: (String) -> Unit,
+    colorContainer: Color
+) {
     OutlinedTextField(
         value = email, onValueChange = { onTextChanged(it) },
         modifier = Modifier
@@ -226,8 +246,8 @@ fun Email(email:String,onTextChanged: (String) -> Unit) {
             unfocusedTextColor = Color.Gray,
             focusedPlaceholderColor = Color.Gray,
             unfocusedPlaceholderColor = Color.Gray,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = colorContainer,
+            unfocusedContainerColor = colorContainer,
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.Gray
         )

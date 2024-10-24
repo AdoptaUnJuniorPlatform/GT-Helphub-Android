@@ -9,6 +9,17 @@
     <string name="signup">Regístrarse</string>
     <string name="remember_me">Recuérdame</string>
     <string name="register_question">¿No tienes una cuenta?</string>
+    <!--Password Reset Screens -->
+    <string name="password_reset">Reseteo de contraseña</string>
+    <string name="reset_text">Por favor, introduce tu correo electrónico y te enviaremos un código para restablecer tu contraseña.</string>
+    <string name="reset_password">Restablecer contraseña</string>
+    <string name="reset_instructions">Por favor, introduce el código de verificación para restablecer tu contraseña.</string>
+    <string name="reset_alert">Revisa tu bandeja de entrada para continuar con el reseteo de tu contraseña</string>
+    <string name="mail_sent">¡Correo enviado!</string>
+    <string name="success">Éxito</string>
+    <string name="code">Código</string>
+    <string name="new_password">Nueva contraseña</string>
+    <string name="confirm_new_passord">Confirmar nueva contraseña</string>
     <!--SignUp Screen -->
     <string name="name">Nombre</string>
     <string name="surname1">Apellido 1</string>
