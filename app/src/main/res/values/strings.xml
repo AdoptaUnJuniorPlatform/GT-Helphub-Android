@@ -20,6 +20,20 @@
     <string name="code">Código</string>
     <string name="new_password">Nueva contraseña</string>
     <string name="confirm_new_passord">Confirmar nueva contraseña</string>
+    <!--2fa Screen -->
+    <string name="enter_code">Introduce el código que hemos enviado a usuario@gmail.com</string>
+    <string name="code_warning">Puede que tarde un minuto en recibir el correo</string>
+    <string name="email_code">Código email</string>
+    <string name="code_digit">Escribe aquí tu código (5 dígitos)</string>
+    <string name="code_question">¿Aún no recibes el código?</string>
+    <string name="send_code_again">Reenviar código</string>
+    <string name="send_code_again_ic">Flecha a la derecha</string>
+    <string name="verify_email">Verifica tu cuenta con tu mail</string>
+    <string name="verification_warning">¡No compartas este código de verificación con nadie, este lo utilizarás para autentificar tu cuenta!</string>
+    <string name="verification_success">Tu cuenta ha sido verificada con éxito</string>
+    <string name="login_allowed">Ingresa tus datos para navegar por la app</string>
+    <string name="close">Cerrar</string>
+
     <!--SignUp Screen -->
     <string name="name">Nombre</string>
     <string name="surname1">Apellido 1</string>

@@ -193,7 +193,7 @@ fun ToLogin(navController: NavHostController) {
 @Composable
 fun SignUpButton(isEnabled: Boolean, navController: NavHostController) {
     Button(
-        onClick = { navController.navigate("SignUpStep1") },
+        onClick = { navController.navigate("DoubleAuthFactorScreen") },
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()

@@ -96,7 +96,10 @@ fun LoginScreen(
                     authViewModel = authViewModel
                 ) //cambiar con Flow
                 Spacer(modifier = Modifier.height(300.dp))
-                LoginButton(text = stringResource(id = R.string.login), onClick = { navController.navigate("Home") })
+                LoginButton(
+                    text = stringResource(id = R.string.login),
+                    onClick = { navController.navigate("Home") })
+                //Si el usuario no es nuevo nos llevará a los pasos de creación de perfil
                 Spacer(modifier = Modifier.height(12.dp))
                 SignUpLink(onClick = { navController.navigate("SignUpCredsScreen") })
             }
@@ -121,7 +124,7 @@ fun SignUpLink(onClick: () -> Unit) {
 
 @Composable
 fun LoginButton(
-    text:String,
+    text: String,
     onClick: () -> Unit
 ) {
     Button(

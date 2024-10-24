@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
+import com.alejandro.helphub.features.auth.presentation.DoubleAuthFactorScreen
 import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
 import com.alejandro.helphub.features.auth.presentation.MainScreen
@@ -95,6 +96,10 @@ fun RootNavGraph(navController: NavHostController) {
         composable("ResetPasswordScreen"){
             ResetPasswordScreen(authViewModel=authViewModel,
                 navController=navController)
+        }
+        composable("DoubleAuthFactorScreen"){
+            DoubleAuthFactorScreen(authViewModel=authViewModel,
+                navController = navController)
         }
     }
 
