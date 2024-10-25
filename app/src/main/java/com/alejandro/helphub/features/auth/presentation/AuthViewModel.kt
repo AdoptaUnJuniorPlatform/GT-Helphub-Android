@@ -7,18 +7,21 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.alejandro.helphub.R
+import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
+import com.alejandro.helphub.features.auth.domain.usecases.TwofaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) :
+    ViewModel() {
 
     private val _userData = MutableStateFlow(UserData())
     val userData: StateFlow<UserData> = _userData.asStateFlow()
@@ -29,6 +32,9 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     private val _isExpanded = MutableStateFlow(false)
     val isExpanded: StateFlow<Boolean> = _isExpanded.asStateFlow()
+
+    private val _isLoading = MutableStateFlow<Boolean>(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _isSwitchChecked = MutableStateFlow(false)
     val isSwitchChecked: StateFlow<Boolean> = _isSwitchChecked.asStateFlow()
@@ -43,12 +49,14 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun onSwitchCheckedChanged(isChecked: Boolean) {
         _isSwitchChecked.value = isChecked
+        _userData.value=_userData.value.copy(optionCall = isChecked, showPhone = isChecked)
     }
 
+
     fun updateSignUpButtonState() {
-        _isSignUpButtonEnabled.value = userData.value.name.isNotBlank() &&
-                userData.value.surname1.isNotBlank() &&
-                userData.value.phoneNumber.isNotBlank() &&
+        _isSignUpButtonEnabled.value = userData.value.nameUser.isNotBlank() &&
+                userData.value.surnameUser.isNotBlank() &&
+                userData.value.phone.isNotBlank() &&
                 userData.value.email.isNotBlank() &&
                 userData.value.password.isNotBlank() &&
                 _isCheckBoxChecked.value == true
@@ -56,7 +64,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun updatePhoneNumber(phoneNumber: String) {
         Log.d("AuthViewModel", "Updating phoneNumber to: $phoneNumber")
-        _userData.update { it.copy(phoneNumber = phoneNumber) }
+        _userData.update { it.copy(phone = phoneNumber) }
         updateSignUpButtonState()
     }
 
@@ -80,7 +88,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun updateUserName(name: String) {
         Log.d("AuthViewModel", "Updating name to: $name")
-        val updateUserData = userData.value.copy(name = name)
+        val updateUserData = userData.value.copy(nameUser = name)
         _userData.value = updateUserData
         updateSignUpButtonState()
     }
@@ -94,7 +102,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
     fun updateUserSurname1(surname1: String) {
         Log.d("AuthViewModel", "Updating surname1 to: $surname1")
-        val updateUserData = userData.value.copy(surname1 = surname1)
+        val updateUserData = userData.value.copy(surnameUser = surname1)
         _userData.value = updateUserData
         updateSignUpButtonState()
     }
@@ -102,6 +110,14 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     fun onCheckBoxCheckedChanged(isChecked: Boolean) {
         _isCheckBoxChecked.value = isChecked
         updateSignUpButtonState()
+    }
+    fun onTwofaSelected(){
+        viewModelScope.launch {
+            _isLoading.value=true
+            val result=twofaUseCase(userData.value)
+            if(result.isNotEmpty()){Log.i("this", "funciona")}
+        }
+        _isLoading.value=false
     }
 
     //<!--------------------SignUpStep1 Screen ---------------->
@@ -302,6 +318,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             isSelected && currentCategories.size < 3 -> currentCategories.add(
                 category
             )
+
             !isSelected -> currentCategories.remove(category)
         }
         _selectedCategoriesOfInterest.value = currentCategories
@@ -354,8 +371,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+
 
     fun updateUserPhotoBitmap(bitmap: Bitmap) {
         _userData.value = _userData.value.copy(photoBitmap = bitmap)

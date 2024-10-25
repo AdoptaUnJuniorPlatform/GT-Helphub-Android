@@ -54,8 +54,8 @@ android {
 
 dependencies {
 
-    //Okhttp
-    implementation(libs.okhttp)
+
+
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
