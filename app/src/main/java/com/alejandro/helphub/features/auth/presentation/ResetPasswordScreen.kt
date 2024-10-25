@@ -39,7 +39,8 @@ import com.alejandro.helphub.R
 @Composable
 fun ResetPasswordScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel= hiltViewModel()) {
+    authViewModel: AuthViewModel
+) {
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier

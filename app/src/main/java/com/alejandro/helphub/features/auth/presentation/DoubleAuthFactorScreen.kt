@@ -53,7 +53,9 @@ import com.alejandro.helphub.R
 @Composable
 fun DoubleAuthFactorScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel= hiltViewModel()) {
+    authViewModel: AuthViewModel
+   // = hiltViewModel()
+) {
     var showSuccessCard by remember { mutableStateOf(false) }
     Scaffold { innerPadding ->
         Box(

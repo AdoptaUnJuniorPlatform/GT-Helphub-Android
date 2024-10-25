@@ -58,7 +58,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -69,7 +68,7 @@ import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep4Skill(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
@@ -143,13 +142,13 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
     val userData by authViewModel.userData.collectAsState()
     Log.d(
         "CongratulationsBox",
-        "name: ${userData.name}," +
-                "surname1: ${userData.surname1}," +
+        "name: ${userData.nameUser}," +
+                "surname1: ${userData.surnameUser}," +
                 "surname2: ${userData.surname2}," +
                 "email: ${userData.email}," +
                 "password: ${userData.password}," +
                 "countryCode:${userData.countryCode}" +
-                "phoneNumber: ${userData.phoneNumber}" +
+                "phoneNumber: ${userData.phone}" +
                 "userDescription: ${userData.userDescription}" +
                 "postalCode: ${userData.postalCode}, " +
                 "userPhotoUri: ${userData.userPhotoUri}, " +
@@ -260,7 +259,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = "${userData.name} ${userData.surname1}",
+                        text = "${userData.nameUser} ${userData.surnameUser}",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)

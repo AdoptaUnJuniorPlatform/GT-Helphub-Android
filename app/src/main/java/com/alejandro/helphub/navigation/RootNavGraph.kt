@@ -24,8 +24,8 @@ import com.alejandro.helphub.features.home.presentation.Home
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
 @Composable
-fun RootNavGraph(navController: NavHostController) {
-    val authViewModel:AuthViewModel= hiltViewModel()
+fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) {
+  // val authViewModel:AuthViewModel= hiltViewModel()
     NavHost(navController = navController, startDestination = "SplashScreen") {
 
         composable("SplashScreen") {

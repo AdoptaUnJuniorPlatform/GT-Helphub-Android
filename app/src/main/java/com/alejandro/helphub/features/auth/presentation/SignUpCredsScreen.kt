@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,13 +26,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -74,7 +72,7 @@ import com.alejandro.helphub.features.auth.data.CountryProvider
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignUpCredsScreen(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel ,
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
@@ -85,82 +83,95 @@ fun SignUpCredsScreen(
     val isSignUpEnabled by authViewModel.isSignUpButtonEnabled.collectAsState(
         initial = false
     )
-
+val isLoading by authViewModel.isLoading.collectAsState(initial = false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
-        ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .zIndex(0f)
-            ) {
-                item { Logo() }
-                item { SignUpText() }
-                item {
-                    CustomTextField(
-                        value = userData.name,
-                        onValueChange = {
-                            authViewModel.updateUserName(it)
-                        },
-                        placeholder = stringResource(id = R.string.name)
-                    )
-                }
-                item {
-                    CustomTextField(
-                        value = userData.surname1,
-                        onValueChange =
-                        { authViewModel.updateUserSurname1(it) },
-                        placeholder = stringResource(id = R.string.surname1)
-                    )
-                }
-                item {
-                    CustomTextField(
-                        value = userData.surname2,
-                        onValueChange =
-                        { authViewModel.updateUserSurname2(it) },
-                        placeholder = stringResource(id = R.string.surname2)
-                    )
-                }
-                item { PhoneTextfield(authViewModel) }
-                item {
-                    EmailTextfield(userData.email) {
-                        authViewModel.updateUserEmail(it)
-                    }
-                }
-                item {
-                    PasswordTextfield(userData.password) {
-                        authViewModel.updateUserPassword(it)
-                    }
-                }
-                item { Spacer(modifier = Modifier.height(12.dp)) }
-                item { PasswordReminder() }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
-                    PhoneSwitch(
-                        authViewModel = authViewModel
-                    )
-                }
-                item {
-                    PrivacyCheck(
-                        isChecked = isChecked,
-                        authViewModel = authViewModel
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
-                    SignUpButton(
-                        isEnabled = isSignUpEnabled,
-                        navController = navController
-                    )
-                }
-                item { ToLogin(navController = navController) }
-                item { Spacer(modifier = Modifier.height(24.dp)) }
-            }
+        )
 
+        {
+            if(isLoading){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                    contentAlignment = Alignment.Center){
+                    CircularProgressIndicator()
+                }
+
+            }else{
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .zIndex(0f)
+                ) {
+                    item { Logo() }
+                    item { SignUpText() }
+                    item {
+                        CustomTextField(
+                            value = userData.nameUser,
+                            onValueChange = {
+                                authViewModel.updateUserName(it)
+                            },
+                            placeholder = stringResource(id = R.string.name)
+                        )
+                    }
+                    item {
+                        CustomTextField(
+                            value = userData.surnameUser,
+                            onValueChange =
+                            { authViewModel.updateUserSurname1(it) },
+                            placeholder = stringResource(id = R.string.surname1)
+                        )
+                    }
+                    item {
+                        CustomTextField(
+                            value = userData.surname2,
+                            onValueChange =
+                            { authViewModel.updateUserSurname2(it) },
+                            placeholder = stringResource(id = R.string.surname2)
+                        )
+                    }
+                    item { PhoneTextfield(authViewModel) }
+                    item {
+                        EmailTextfield(userData.email) {
+                            authViewModel.updateUserEmail(it)
+                        }
+                    }
+                    item {
+                        PasswordTextfield(userData.password) {
+                            authViewModel.updateUserPassword(it)
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(12.dp)) }
+                    item { PasswordReminder() }
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    item {
+                        PhoneSwitch(
+                            authViewModel = authViewModel
+                        )
+                    }
+                    item {
+                        PrivacyCheck(
+                            isChecked = isChecked,
+                            authViewModel = authViewModel
+                        )
+                    }
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    item {
+                        SignUpButton(
+                            authViewModel,
+                            isEnabled = isSignUpEnabled,
+                            navController = navController
+                        )
+                    }
+                    item { ToLogin(navController = navController) }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                }
+
+            }
         }
     }
 }
@@ -191,13 +202,14 @@ fun ToLogin(navController: NavHostController) {
 }
 
 @Composable
-fun SignUpButton(isEnabled: Boolean, navController: NavHostController) {
+fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController: NavHostController) {
     Button(
-        onClick = { navController.navigate("DoubleAuthFactorScreen") },
+        onClick = {authViewModel.onTwofaSelected()
+            navController.navigate("DoubleAuthFactorScreen") },
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top=6.dp, bottom=8.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Blue,
             contentColor = Color.White
@@ -326,7 +338,7 @@ fun PhoneSwitch(authViewModel: AuthViewModel) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(top=8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -432,7 +444,7 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
                 .background(Color.Gray)
         )
         OutlinedTextField(
-            value = userData.phoneNumber,
+            value = userData.phone,
             onValueChange = { authViewModel.updatePhoneNumber(it) },
             modifier = Modifier
                 .weight(3f)

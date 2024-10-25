@@ -28,7 +28,8 @@ import com.alejandro.helphub.R
 @Composable
 fun ForgotPasswordScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel
+    //= hiltViewModel()
 ) {
     val userData by authViewModel.userData.collectAsState()
     Scaffold { innerPadding ->

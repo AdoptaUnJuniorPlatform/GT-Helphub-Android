@@ -44,7 +44,7 @@ import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep5(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     val isHomeEnabled by authViewModel.isNavigationToHomeEnabled.collectAsState(initial = false)

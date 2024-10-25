@@ -56,7 +56,7 @@ import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep2(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }

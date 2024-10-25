@@ -54,7 +54,7 @@ import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep4Post(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()

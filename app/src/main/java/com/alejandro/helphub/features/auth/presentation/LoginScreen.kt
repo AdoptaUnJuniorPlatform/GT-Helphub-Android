@@ -53,7 +53,7 @@ import com.alejandro.helphub.R
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel
 ) {
     val userData by authViewModel.userData.collectAsState()
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
@@ -98,7 +98,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(300.dp))
                 LoginButton(
                     text = stringResource(id = R.string.login),
-                    onClick = { navController.navigate("Home") })
+                    onClick = { navController.navigate("SignUpStep1") })
                 //Si el usuario no es nuevo nos llevará a los pasos de creación de perfil
                 Spacer(modifier = Modifier.height(12.dp))
                 SignUpLink(onClick = { navController.navigate("SignUpCredsScreen") })

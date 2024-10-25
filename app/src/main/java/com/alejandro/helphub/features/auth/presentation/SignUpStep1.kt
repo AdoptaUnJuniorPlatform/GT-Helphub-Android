@@ -48,7 +48,7 @@ import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep1(
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     val isStep2Enabled by authViewModel.isNavigationToStep2Enabled.collectAsState(
