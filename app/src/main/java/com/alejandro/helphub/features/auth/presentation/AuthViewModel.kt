@@ -10,21 +10,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
-import com.alejandro.helphub.features.auth.domain.usecases.TwofaUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.GetUserUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) :
+class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase, private val getUserUseCase: GetUserUseCase) :
     ViewModel() {
+
 
     private val _userData = MutableStateFlow(UserData())
     val userData: StateFlow<UserData> = _userData.asStateFlow()
+
+
 
     //<!--------------------Credentials Screen ---------------->
     private val _isCheckBoxChecked = MutableStateFlow(false)
@@ -42,6 +49,12 @@ class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) 
     private val _isSignUpButtonEnabled = MutableStateFlow(false)
     val isSignUpButtonEnabled: StateFlow<Boolean> =
         _isSignUpButtonEnabled.asStateFlow()
+
+    private val _twoFaCode = MutableStateFlow<String>("")
+    val twoFaCode: StateFlow<String> get() = _twoFaCode
+
+    val isPasswordValid: StateFlow<Boolean> = _userData.map { isPasswordValid(it.password) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun toggleExpanded() {
         _isExpanded.value = !(_isExpanded.value ?: false)
@@ -111,10 +124,34 @@ class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) 
         _isCheckBoxChecked.value = isChecked
         updateSignUpButtonState()
     }
-    fun onTwofaSelected(){
+
+    fun isPasswordValid(password: String):Boolean{
+        val hasUpperCase = password.any { it.isUpperCase() }
+        val hasDigit = password.any { it.isDigit() }
+        val hasSpecialChar = password.any { !it.isLetterOrDigit() }
+        val isValidLength = password.length >= 6
+
+        return hasUpperCase && hasDigit && hasSpecialChar && isValidLength
+    }
+    fun onPasswordChanged(newPassword: String) {
+        Log.d("AuthViewModel", "Updating password to: $newPassword")
+        _userData.value = _userData.value.copy(password = newPassword)
+        updateSignUpButtonState()
+    }
+
+    fun generateTwoFaCode():String {
+        // Genera un número aleatorio de 6 cifras
+        val code= (100000..999999).random().toString()
+        Log.i("2FA Code", "Código generado: $code") // opcional, solo para depuración
+        return code
+    }
+
+    fun generateAndSendTwoFaCode(){
         viewModelScope.launch {
             _isLoading.value=true
-            val result=twofaUseCase(userData.value)
+            val generatedTwoFa= generateTwoFaCode()
+            val updatedUserData=userData.value.copy(twoFa = generatedTwoFa)
+            val result=sendTwoFaRegisterUseCase(updatedUserData)
             if(result.isNotEmpty()){Log.i("this", "funciona")}
         }
         _isLoading.value=false
@@ -340,26 +377,6 @@ class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) 
             userData.value.categoriesOfInterest.isNotEmpty()
     }
 
-    /*
-        fun updateSelectedCategoriesOfInterest(category: String) {
-            val currentCategories =
-                userData.value.categoriesOfInterest.toMutableList()
-                    ?: mutableListOf()
-            currentCategories.add(category)
-            _userData.value =
-                _userData.value.copy(categoriesOfInterest = currentCategories)
-        }
-
-        fun removeCategoryOfInterest(category: String) {
-            val currentCategories =
-                _userData.value.categoriesOfInterest?.toMutableList()
-                    ?: mutableListOf()
-            currentCategories.remove(category)
-            _userData.value =
-                _userData.value.copy(categoriesOfInterest = currentCategories)
-        }
-        */
-
     //Otros
 
     private val _email = MutableStateFlow("")
@@ -385,4 +402,33 @@ class AuthViewModel @Inject constructor(private val twofaUseCase: TwofaUseCase) 
 
     private fun enableLogin(email: String, password: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
+
+
+    private val _userState = MutableStateFlow<UserState>(UserState.Initial)
+    val userState = _userState.asStateFlow()
+
+    fun testDatabaseQuery(email:String){
+        viewModelScope.launch {
+            try {
+                val userData = getUserUseCase(email)
+                if (userData != null) {
+                    _userState.value = UserState.Success(userData)
+                    Log.i("DB", "Datos de usuario: $userData")
+                } else {
+                    _userState.value = UserState.Error("No se encontraron datos")
+                    Log.e("DB", "No se encontraron datos para el usuario con ID: $email")
+                }
+            } catch (e: Exception) {
+                _userState.value = UserState.Error(e.message ?: "Error desconocido")
+                Log.e("DB", "Error al acceder a la base de datos: ${e.message}")
+            }
+        }
+
+        }
+    sealed class UserState {
+        object Initial : UserState()
+        object Loading : UserState()
+        data class Success(val userData: UserData) : UserState()
+        data class Error(val message: String) : UserState()
+    }
 }

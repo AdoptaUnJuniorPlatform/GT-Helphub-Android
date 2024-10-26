@@ -4,9 +4,9 @@ import com.alejandro.helphub.features.auth.data.TwofaRepository
 import com.alejandro.helphub.features.auth.domain.UserData
 import javax.inject.Inject
 
-class TwofaUseCase @Inject constructor(private val twofaRepository: TwofaRepository) {
+class SendTwoFaRegisterUseCase @Inject constructor(private val twofaRepository: TwofaRepository) {
 
     suspend operator fun invoke(userData: UserData):String{
-        return twofaRepository.twofaUser(userData)
+        return twofaRepository.sendTwoFaRegister(userData)
     }
 }

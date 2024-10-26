@@ -55,7 +55,7 @@ android {
 dependencies {
 
 
-
+implementation(libs.logging.interceptor)
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

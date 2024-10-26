@@ -64,7 +64,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.features.auth.data.CountryProvider
@@ -141,9 +140,7 @@ val isLoading by authViewModel.isLoading.collectAsState(initial = false)
                         }
                     }
                     item {
-                        PasswordTextfield(userData.password) {
-                            authViewModel.updateUserPassword(it)
-                        }
+                        PasswordTextfield(authViewModel)
                     }
                     item { Spacer(modifier = Modifier.height(12.dp)) }
                     item { PasswordReminder() }
@@ -204,7 +201,7 @@ fun ToLogin(navController: NavHostController) {
 @Composable
 fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController: NavHostController) {
     Button(
-        onClick = {authViewModel.onTwofaSelected()
+        onClick = {authViewModel.generateAndSendTwoFaCode()
             navController.navigate("DoubleAuthFactorScreen") },
         enabled = isEnabled,
         modifier = Modifier
@@ -261,11 +258,18 @@ fun PasswordReminder() {
 }
 
 @Composable
-fun PasswordTextfield(password: String, onTextChanged: (String) -> Unit) {
+fun PasswordTextfield(authViewModel: AuthViewModel) {
+    val userData by authViewModel.userData.collectAsState()
     var passwordVisibility by remember { mutableStateOf(false) }
+    val isPasswordValid by authViewModel.isPasswordValid.collectAsState()
+    val errorMessage = if (!isPasswordValid) {
+        "La contraseña debe tener al menos una mayúscula, un número, un símbolo y ser de al menos 6 caracteres."
+    } else {
+        ""
+    }
     OutlinedTextField(
-        value = password,
-        onValueChange = { onTextChanged(it) },
+        value = userData.password,
+        onValueChange = { authViewModel.onPasswordChanged(it) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -445,7 +449,11 @@ fun PhoneTextfield(authViewModel: AuthViewModel) {
         )
         OutlinedTextField(
             value = userData.phone,
-            onValueChange = { authViewModel.updatePhoneNumber(it) },
+            onValueChange = {
+                if (it.length <= 9) {
+                    authViewModel.updatePhoneNumber(it)
+                }
+            },
             modifier = Modifier
                 .weight(3f)
                 .fillMaxHeight()
