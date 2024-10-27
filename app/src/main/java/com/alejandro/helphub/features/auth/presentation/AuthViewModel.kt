@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.usecases.GetUserUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,13 +25,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase, private val getUserUseCase: GetUserUseCase) :
+class AuthViewModel @Inject constructor(
+    private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val registerNewUserUseCase: RegisterNewUserUseCase
+) :
     ViewModel() {
 
 
     private val _userData = MutableStateFlow(UserData())
     val userData: StateFlow<UserData> = _userData.asStateFlow()
-
 
 
     //<!--------------------Credentials Screen ---------------->
@@ -53,8 +57,13 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
     private val _twoFaCode = MutableStateFlow<String>("")
     val twoFaCode: StateFlow<String> get() = _twoFaCode
 
-    val isPasswordValid: StateFlow<Boolean> = _userData.map { isPasswordValid(it.password) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val isPasswordValid: StateFlow<Boolean> =
+        _userData.map { isPasswordValid(it.password) }
+            .stateIn(viewModelScope, SharingStarted.Lazily, false)
+
+    fun isValidEmail(email:String):Boolean{
+        return email.matches(Regex("^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"))
+    }
 
     fun toggleExpanded() {
         _isExpanded.value = !(_isExpanded.value ?: false)
@@ -62,7 +71,8 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
 
     fun onSwitchCheckedChanged(isChecked: Boolean) {
         _isSwitchChecked.value = isChecked
-        _userData.value=_userData.value.copy(optionCall = isChecked, showPhone = isChecked)
+        _userData.value =
+            _userData.value.copy(optionCall = isChecked, showPhone = isChecked)
     }
 
 
@@ -71,6 +81,7 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
                 userData.value.surnameUser.isNotBlank() &&
                 userData.value.phone.isNotBlank() &&
                 userData.value.email.isNotBlank() &&
+                isValidEmail(userData.value.email) &&
                 userData.value.password.isNotBlank() &&
                 _isCheckBoxChecked.value == true
     }
@@ -125,38 +136,77 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
         updateSignUpButtonState()
     }
 
-    fun isPasswordValid(password: String):Boolean{
+    fun isPasswordValid(password: String): Boolean {
         val hasUpperCase = password.any { it.isUpperCase() }
         val hasDigit = password.any { it.isDigit() }
         val hasSpecialChar = password.any { !it.isLetterOrDigit() }
         val isValidLength = password.length >= 6
 
+
         return hasUpperCase && hasDigit && hasSpecialChar && isValidLength
     }
+
     fun onPasswordChanged(newPassword: String) {
         Log.d("AuthViewModel", "Updating password to: $newPassword")
         _userData.value = _userData.value.copy(password = newPassword)
         updateSignUpButtonState()
     }
 
-    fun generateTwoFaCode():String {
+    fun generateTwoFaCode(): String {
         // Genera un número aleatorio de 6 cifras
-        val code= (100000..999999).random().toString()
-        Log.i("2FA Code", "Código generado: $code") // opcional, solo para depuración
+        val code = (100000..999999).random().toString()
+        Log.i(
+            "2FA Code",
+            "Código generado: $code"
+        ) // opcional, solo para depuración
         return code
     }
 
-    fun generateAndSendTwoFaCode(){
+    fun generateAndSendTwoFaCode() {
         viewModelScope.launch {
-            _isLoading.value=true
-            val generatedTwoFa= generateTwoFaCode()
-            val updatedUserData=userData.value.copy(twoFa = generatedTwoFa)
-            val result=sendTwoFaRegisterUseCase(updatedUserData)
-            if(result.isNotEmpty()){Log.i("this", "funciona")}
+            _isLoading.value = true
+            val generatedTwoFa = generateTwoFaCode()
+            val updatedUserData = userData.value.copy(twoFa = generatedTwoFa)
+            Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+            val result = sendTwoFaRegisterUseCase(updatedUserData)
+            if (result.isNotEmpty()) {
+                Log.i("this", "funciona")
+            }
+            _userData.value=updatedUserData
+            _isLoading.value = false
         }
-        _isLoading.value=false
+
+    }
+    //<!--------------------DoubleAuthFactor Screen ---------------->
+
+    private val _inputTwoFaCode = MutableStateFlow("")
+    val inputTwoFaCode: StateFlow<String> = _inputTwoFaCode
+
+    private val _registrationResult = MutableStateFlow<String?>(null)
+    val registrationResult: StateFlow<String?> get() = _registrationResult
+
+    fun isTwoFaCodeValid(): Boolean {
+        Log.i("2FA", "Código 2FA ingresado: ${inputTwoFaCode.value}")
+        Log.i("2FA", "Código 2FA almacenado: ${userData.value.twoFa}")
+        return userData.value.twoFa == inputTwoFaCode.value
     }
 
+    fun onTwoFaCodeChanged(newCode: String) {
+        Log.i("2FA", "Nuevo código 2FA ingresado: $newCode")
+        _inputTwoFaCode.value = newCode
+    }
+
+    fun registerUser() {
+        viewModelScope.launch {
+            try {
+                val result = registerNewUserUseCase(userData.value)
+                _registrationResult.value = result
+            } catch (e: Exception) {
+                Log.e("Registro", "Error durante el registro: ${e.message}")
+                _registrationResult.value = null
+            }
+        }
+    }
     //<!--------------------SignUpStep1 Screen ---------------->
 
     fun updateUserDescription(userDescription: String) {
@@ -389,7 +439,6 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
 
 
-
     fun updateUserPhotoBitmap(bitmap: Bitmap) {
         _userData.value = _userData.value.copy(photoBitmap = bitmap)
     }
@@ -407,7 +456,7 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
     private val _userState = MutableStateFlow<UserState>(UserState.Initial)
     val userState = _userState.asStateFlow()
 
-    fun testDatabaseQuery(email:String){
+    fun testDatabaseQuery(email: String) {
         viewModelScope.launch {
             try {
                 val userData = getUserUseCase(email)
@@ -415,16 +464,22 @@ class AuthViewModel @Inject constructor(private val sendTwoFaRegisterUseCase: Se
                     _userState.value = UserState.Success(userData)
                     Log.i("DB", "Datos de usuario: $userData")
                 } else {
-                    _userState.value = UserState.Error("No se encontraron datos")
-                    Log.e("DB", "No se encontraron datos para el usuario con ID: $email")
+                    _userState.value =
+                        UserState.Error("No se encontraron datos")
+                    Log.e(
+                        "DB",
+                        "No se encontraron datos para el usuario con ID: $email"
+                    )
                 }
             } catch (e: Exception) {
-                _userState.value = UserState.Error(e.message ?: "Error desconocido")
+                _userState.value =
+                    UserState.Error(e.message ?: "Error desconocido")
                 Log.e("DB", "Error al acceder a la base de datos: ${e.message}")
             }
         }
 
-        }
+    }
+
     sealed class UserState {
         object Initial : UserState()
         object Loading : UserState()

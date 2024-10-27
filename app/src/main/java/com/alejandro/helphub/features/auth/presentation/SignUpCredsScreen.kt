@@ -167,7 +167,6 @@ val isLoading by authViewModel.isLoading.collectAsState(initial = false)
                     item { ToLogin(navController = navController) }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                 }
-
             }
         }
     }
@@ -262,11 +261,8 @@ fun PasswordTextfield(authViewModel: AuthViewModel) {
     val userData by authViewModel.userData.collectAsState()
     var passwordVisibility by remember { mutableStateOf(false) }
     val isPasswordValid by authViewModel.isPasswordValid.collectAsState()
-    val errorMessage = if (!isPasswordValid) {
-        "La contraseña debe tener al menos una mayúscula, un número, un símbolo y ser de al menos 6 caracteres."
-    } else {
-        ""
-    }
+    val borderColor=if(isPasswordValid) Color.Gray else Color.Red
+
     OutlinedTextField(
         value = userData.password,
         onValueChange = { authViewModel.onPasswordChanged(it) },
@@ -282,7 +278,7 @@ fun PasswordTextfield(authViewModel: AuthViewModel) {
             unfocusedPlaceholderColor = Color.Gray,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            focusedBorderColor = Color.Gray,
+            focusedBorderColor = borderColor,
             unfocusedBorderColor = Color.Gray
         ),
         singleLine = true,

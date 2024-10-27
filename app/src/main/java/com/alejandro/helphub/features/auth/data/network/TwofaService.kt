@@ -14,4 +14,11 @@ class TwofaService @Inject constructor(private val twofaClient: TwofaClient){
             response.body()?.code ?: "No code"
         }
     }
+
+    suspend fun registerNewUser(twofaDTO: TwofaDTO):String{
+        return withContext(Dispatchers.IO){
+            val response= twofaClient.registerNewUser(twofaDTO)
+            response.body()?.code ?: "No code"
+        }
+    }
 }

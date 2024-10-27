@@ -9,5 +9,8 @@ import retrofit2.http.POST
 interface TwofaClient {
     @POST("/api/helphub/email-service/emailAcount")
     suspend fun sendTwoFaRegister(@Body twofaDTO: TwofaDTO): Response<TwofaResponse>
+
+    @POST("/api/helphub/user/register")
+    suspend fun registerNewUser(@Body twofaDTO: TwofaDTO):Response<TwofaResponse>
 }
 
