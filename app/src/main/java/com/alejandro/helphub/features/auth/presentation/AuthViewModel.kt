@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
+import com.alejandro.helphub.utils.ResultStatus
 import com.alejandro.helphub.features.auth.domain.usecases.GetUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.Callback
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,7 +63,10 @@ class AuthViewModel @Inject constructor(
         _userData.map { isPasswordValid(it.password) }
             .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    fun isValidEmail(email:String):Boolean{
+    private val _twoFaStatus = MutableStateFlow<ResultStatus<Unit>>(ResultStatus.Idle)
+    val twoFaStatus: StateFlow<ResultStatus<Unit>> = _twoFaStatus
+
+    fun isValidEmail(email: String): Boolean {
         return email.matches(Regex("^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"))
     }
 
@@ -153,29 +158,40 @@ class AuthViewModel @Inject constructor(
     }
 
     fun generateTwoFaCode(): String {
-        // Genera un número aleatorio de 6 cifras
         val code = (100000..999999).random().toString()
         Log.i(
             "2FA Code",
             "Código generado: $code"
-        ) // opcional, solo para depuración
+        )
         return code
     }
+    fun resetTwoFaStatus() {
+        _twoFaStatus.value = ResultStatus.Idle
+    }
+
 
     fun generateAndSendTwoFaCode() {
         viewModelScope.launch {
             _isLoading.value = true
-            val generatedTwoFa = generateTwoFaCode()
-            val updatedUserData = userData.value.copy(twoFa = generatedTwoFa)
-            Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
-            val result = sendTwoFaRegisterUseCase(updatedUserData)
-            if (result.isNotEmpty()) {
-                Log.i("this", "funciona")
-            }
-            _userData.value=updatedUserData
-            _isLoading.value = false
+            try {
+                val generatedTwoFa = generateTwoFaCode()
+                val updatedUserData =
+                    userData.value.copy(twoFa = generatedTwoFa)
+                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                val result = sendTwoFaRegisterUseCase(updatedUserData)
+                if (result.isNotEmpty()) {
+                    _twoFaStatus.value = ResultStatus.Success(Unit)
+                    Log.i("this", "funciona")
+                }else{
+                    _twoFaStatus.value=ResultStatus.Error("Credenciales no válidas")
+                    Log.i("this", "Credenciales no válidas")
+                }
+                _userData.value = updatedUserData
+            } catch (e: Exception) {
+                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
+                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+            } finally { _isLoading.value = false }
         }
-
     }
     //<!--------------------DoubleAuthFactor Screen ---------------->
 
@@ -196,14 +212,16 @@ class AuthViewModel @Inject constructor(
         _inputTwoFaCode.value = newCode
     }
 
-    fun registerUser() {
+    fun registerUser(callback: (Boolean)->Unit) {
         viewModelScope.launch {
             try {
                 val result = registerNewUserUseCase(userData.value)
                 _registrationResult.value = result
+                callback(true)
             } catch (e: Exception) {
                 Log.e("Registro", "Error durante el registro: ${e.message}")
                 _registrationResult.value = null
+                callback(false)
             }
         }
     }

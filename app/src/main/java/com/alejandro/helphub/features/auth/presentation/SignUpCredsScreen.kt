@@ -1,6 +1,7 @@
 package com.alejandro.helphub.features.auth.presentation
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -67,6 +69,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.features.auth.data.CountryProvider
+import com.alejandro.helphub.utils.ResultStatus
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -199,6 +202,9 @@ fun ToLogin(navController: NavHostController) {
 
 @Composable
 fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController: NavHostController) {
+    val twoFaStatus by authViewModel.twoFaStatus.collectAsState()
+    val context = LocalContext.current
+
     Button(
         onClick = {authViewModel.generateAndSendTwoFaCode()
             navController.navigate("DoubleAuthFactorScreen") },
@@ -213,6 +219,18 @@ fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController:
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(text = stringResource(id = R.string.signup).uppercase())
+    }
+    when (twoFaStatus) {
+        is ResultStatus.Success -> {
+            authViewModel.resetTwoFaStatus()
+            navController.navigate("DoubleAuthFactorScreen")
+        }
+        is ResultStatus.Error -> {
+            authViewModel.resetTwoFaStatus()
+            Toast.makeText(context, (twoFaStatus as ResultStatus.Error).message, Toast.LENGTH_SHORT).show()
+            navController.navigate("LoginScreen")
+        }
+        else -> {} // No hacer nada en el estado Idle
     }
 }
 

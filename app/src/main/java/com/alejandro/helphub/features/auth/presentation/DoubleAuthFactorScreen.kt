@@ -1,6 +1,7 @@
 package com.alejandro.helphub.features.auth.presentation
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +59,8 @@ fun DoubleAuthFactorScreen(
     authViewModel: AuthViewModel
 ) {
     var showSuccessCard by remember { mutableStateOf(false) }
-    var buttonsEnabled by remember{ mutableStateOf(true) }
+    var buttonsEnabled by remember { mutableStateOf(true) }
+    val context = LocalContext.current
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -76,7 +79,7 @@ fun DoubleAuthFactorScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Column(modifier=Modifier.weight(1f)){
+                Column(modifier = Modifier.weight(1f)) {
                     RegisterHeader()
                     Spacer(modifier = Modifier.height(30.dp))
                     AuthCode(authViewModel)
@@ -89,8 +92,23 @@ fun DoubleAuthFactorScreen(
                     navController,
                     authViewModel,
                     buttonsEnabled
-                ) { showSuccessCard = true
-                buttonsEnabled=false }
+                ) { result ->
+                    if (result) {
+                        showSuccessCard = true
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Error durante el registro",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        navController.navigate("LoginScreen") {
+                            popUpTo("DoubleAuthFactorScreen") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                    buttonsEnabled = false
+                }
             }
         }
     }
@@ -103,22 +121,30 @@ fun DoubleAuthFactorScreen(
 fun RegisterValidationButton(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    enabled:Boolean,
-    onSuccess: () -> Unit
+    enabled: Boolean,
+    onSuccess: (Boolean) -> Unit
 ) {
     val isTwoFaValid = remember { mutableStateOf(false) }
     StepButtons(
         onBackClick = {
-            if(enabled){navController.popBackStack() }
-            },
+            if (enabled) {
+                navController.popBackStack()
+            }
+        },
         onNextClick = {
             isTwoFaValid.value = authViewModel.isTwoFaCodeValid()
             if (isTwoFaValid.value) {
                 Log.i("2FA", "Código 2FA correcto.")
-                authViewModel.registerUser()
-                onSuccess()
+                authViewModel.registerUser() { result ->
+                    if (result) {
+                        onSuccess(true)
+                    } else {
+                        onSuccess(false)
+                    }
+                }
             } else {
                 Log.i("2FA", "Código 2FA incorrecto.")
+                onSuccess(false)
             }
         },
         enabled = enabled
@@ -249,8 +275,10 @@ fun Retry(authViewModel: AuthViewModel) {
             fontSize = 14.sp
         )
         Spacer(modifier = Modifier.width(30.dp))
-        Row(modifier=Modifier.clickable { authViewModel.generateAndSendTwoFaCode() },
-            verticalAlignment = Alignment.CenterVertically){
+        Row(
+            modifier = Modifier.clickable { authViewModel.generateAndSendTwoFaCode() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = stringResource(id = R.string.send_code_again).uppercase(),
                 color = Color.Blue,
@@ -270,11 +298,11 @@ fun Retry(authViewModel: AuthViewModel) {
 fun AuthCode(authViewModel: AuthViewModel) {
     val inputCode by authViewModel.inputTwoFaCode.collectAsState()
     val userData by authViewModel.userData.collectAsState()
-    val userEmail=userData.email
+    val userEmail = userData.email
 
     Column(modifier = Modifier.wrapContentSize()) {
         Text(
-            text = stringResource(id = R.string.enter_code, userEmail ),
+            text = stringResource(id = R.string.enter_code, userEmail),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
@@ -284,10 +312,16 @@ fun AuthCode(authViewModel: AuthViewModel) {
             fontSize = 18.sp
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Textfield(value = inputCode, keyboardType = KeyboardType.Number, placeholder = stringResource(
-            id = R.string.code
-        ),
-            onTextChanged = { if(it.length<=6){ authViewModel.onTwoFaCodeChanged(it) } })
+        Textfield(value = inputCode,
+            keyboardType = KeyboardType.Number,
+            placeholder = stringResource(
+                id = R.string.code
+            ),
+            onTextChanged = {
+                if (it.length <= 6) {
+                    authViewModel.onTwoFaCodeChanged(it)
+                }
+            })
         Spacer(modifier = Modifier.height(15.dp))
         Text(text = stringResource(id = R.string.code_digit), fontSize = 12.sp)
     }
