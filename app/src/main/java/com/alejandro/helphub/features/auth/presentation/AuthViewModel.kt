@@ -2,7 +2,6 @@ package com.alejandro.helphub.features.auth.presentation
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.JsonReader
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
@@ -11,14 +10,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.CountriesModel
-import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.usecases.LoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
 import com.alejandro.helphub.utils.ResultStatus
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,14 +26,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.StringReader
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase,
     private val registerNewUserUseCase: RegisterNewUserUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val sendTwoFaResetPasswordUseCase: SendTwoFaResetPasswordUseCase
 ) :
     ViewModel() {
 
@@ -273,6 +271,37 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+//<!--------------------ResetPassword Screen ---------------->
+
+    fun generateAndSendTwoFaCodeResetPassword() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val generatedTwoFa = generateTwoFaCode()
+                val updatedUserData =
+                    userData.value.copy(twoFa = generatedTwoFa)
+                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                val result = sendTwoFaResetPasswordUseCase(updatedUserData)
+                if (result.isNotEmpty()) {
+                    _twoFaStatus.value = ResultStatus.Success(Unit)
+                    Log.i("this", "funciona")
+                } else {
+                    _twoFaStatus.value =
+                        ResultStatus.Error("Credenciales no válidas")
+                    Log.i("this", "Credenciales no válidas")
+                }
+                _userData.value = updatedUserData
+            } catch (e: Exception) {
+                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
+                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
 
     //<!--------------------SignUpStep1 Screen ---------------->
 

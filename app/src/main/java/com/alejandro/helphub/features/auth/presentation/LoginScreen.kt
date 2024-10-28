@@ -143,7 +143,6 @@ fun LoginButton(
                 navController.navigate("Home") {
                     popUpTo("Login") { inclusive = true }
                 }
-                // Reset the login status after successful navigation
                 authViewModel.resetLoginStatus()
             }
             is ResultStatus.Error ->{
