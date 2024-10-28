@@ -1,6 +1,6 @@
 package com.alejandro.helphub.core.di
 
-import com.alejandro.helphub.features.auth.data.network.clients.InfoClient
+import com.alejandro.helphub.features.auth.data.network.clients.AuthClient
 import com.alejandro.helphub.features.auth.data.network.clients.TwofaClient
 import dagger.Module
 import dagger.Provides
@@ -41,9 +41,11 @@ class NetworkModule {
     fun provideTwofaClient(retrofit: Retrofit):TwofaClient{
        return  retrofit.create(TwofaClient::class.java)
     }
+
     @Singleton
     @Provides
-    fun provideInfoClient(retrofit:Retrofit):InfoClient{
-        return retrofit.create(InfoClient::class.java)
+    fun provideAuthClient(retrofit: Retrofit):AuthClient{
+        return  retrofit.create(AuthClient::class.java)
     }
+
 }

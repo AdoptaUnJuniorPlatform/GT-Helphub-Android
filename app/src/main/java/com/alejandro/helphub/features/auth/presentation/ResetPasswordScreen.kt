@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
@@ -61,9 +60,9 @@ fun ResetPasswordScreen(
                 Spacer(modifier = Modifier.height(30.dp))
                 ResetData(authViewModel)
                 Spacer(modifier = Modifier.height(184.dp))
-                LoginButton(text = stringResource(id = R.string.reset_password)) {
-                    navController.navigate("LoginScreen")
-                }
+                //LoginButton(text = stringResource(id = R.string.reset_password)) {
+                //    navController.navigate("LoginScreen")
+               // }
             }
         }
     }
@@ -71,19 +70,21 @@ fun ResetPasswordScreen(
 
 @Composable
 fun Textfield(
-    text: String,
-    onTextChanged: (String) -> Unit
+    value: String,
+    placeholder:String,
+    onTextChanged: (String) -> Unit,
+    keyboardType:KeyboardType=KeyboardType.Email
 ) {
     OutlinedTextField(
-        value = text, onValueChange = { onTextChanged(it) },
+        value = value, onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(12.dp),
-        placeholder = { Text(text = text) },
+        placeholder = { Text(text = placeholder) },
         maxLines = 1,
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.Gray,
@@ -112,11 +113,11 @@ fun ResetData(authViewModel: AuthViewModel) {
         modifier = Modifier.padding(horizontal = 16.dp)
     )
     Spacer(modifier = Modifier.height(40.dp))
-    Textfield(text = stringResource(id = R.string.code)) {}
+    Textfield(value = stringResource(id = R.string.code), keyboardType = KeyboardType.Number, onTextChanged =  {}, placeholder = "Código")
     Spacer(modifier = Modifier.height(16.dp))
-    Textfield(text = stringResource(id = R.string.new_password)) {authViewModel.updateUserPassword(it)}
+    Textfield(value = stringResource(id = R.string.new_password), keyboardType=KeyboardType.Password, placeholder = "Nueva Contraseña", onTextChanged = {authViewModel.updateUserPassword(it)})
     Spacer(modifier = Modifier.height(16.dp))
-    Textfield(text = stringResource(id = R.string.confirm_new_passord)) {authViewModel.updateUserPassword(it)}
+    Textfield(value = stringResource(id = R.string.confirm_new_passord),keyboardType=KeyboardType.Password, placeholder = "Confirmar Nueva Contraseña", onTextChanged = {authViewModel.updateUserPassword(it)})
 }
 
 @Composable

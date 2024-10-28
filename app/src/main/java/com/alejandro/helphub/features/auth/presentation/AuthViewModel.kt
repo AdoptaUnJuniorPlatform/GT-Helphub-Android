@@ -2,18 +2,23 @@ package com.alejandro.helphub.features.auth.presentation
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.JsonReader
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.CountriesModel
+import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.UserData
-import com.alejandro.helphub.utils.ResultStatus
-import com.alejandro.helphub.features.auth.domain.usecases.GetUserUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.LoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
+import com.alejandro.helphub.utils.ResultStatus
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,14 +28,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.Callback
+import java.io.StringReader
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val registerNewUserUseCase: RegisterNewUserUseCase
+    private val registerNewUserUseCase: RegisterNewUserUseCase,
+    private val loginUseCase: LoginUseCase
 ) :
     ViewModel() {
 
@@ -63,7 +68,8 @@ class AuthViewModel @Inject constructor(
         _userData.map { isPasswordValid(it.password) }
             .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    private val _twoFaStatus = MutableStateFlow<ResultStatus<Unit>>(ResultStatus.Idle)
+    private val _twoFaStatus =
+        MutableStateFlow<ResultStatus<Unit>>(ResultStatus.Idle)
     val twoFaStatus: StateFlow<ResultStatus<Unit>> = _twoFaStatus
 
     fun isValidEmail(email: String): Boolean {
@@ -165,6 +171,7 @@ class AuthViewModel @Inject constructor(
         )
         return code
     }
+
     fun resetTwoFaStatus() {
         _twoFaStatus.value = ResultStatus.Idle
     }
@@ -182,15 +189,18 @@ class AuthViewModel @Inject constructor(
                 if (result.isNotEmpty()) {
                     _twoFaStatus.value = ResultStatus.Success(Unit)
                     Log.i("this", "funciona")
-                }else{
-                    _twoFaStatus.value=ResultStatus.Error("Credenciales no válidas")
+                } else {
+                    _twoFaStatus.value =
+                        ResultStatus.Error("Credenciales no válidas")
                     Log.i("this", "Credenciales no válidas")
                 }
                 _userData.value = updatedUserData
             } catch (e: Exception) {
                 _twoFaStatus.value = ResultStatus.Error("Error de conexión")
                 Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
-            } finally { _isLoading.value = false }
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
     //<!--------------------DoubleAuthFactor Screen ---------------->
@@ -212,7 +222,7 @@ class AuthViewModel @Inject constructor(
         _inputTwoFaCode.value = newCode
     }
 
-    fun registerUser(callback: (Boolean)->Unit) {
+    fun registerUser(callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
                 val result = registerNewUserUseCase(userData.value)
@@ -225,6 +235,45 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    //<!--------------------Login Screen ---------------->
+    private val _loginStatus = MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
+    val loginStatus: StateFlow<ResultStatus<String>> = _loginStatus
+
+    fun resetLoginStatus() {
+        _loginStatus.value = ResultStatus.Idle
+    }
+
+    private val _isLoginLoading = MutableStateFlow(false)
+    val isLoginLoading: StateFlow<Boolean> = _isLoginLoading
+
+    private val _loginResult = MutableStateFlow<Result<LoginResponse>?>(null)
+    val loginResult: StateFlow<Result<LoginResponse>?> = _loginResult
+
+    private val gson= Gson()
+
+    fun loginUser() {
+        viewModelScope.launch {
+            _isLoginLoading.value=true
+            _loginStatus.value = ResultStatus.Idle
+            try {
+                val result = loginUseCase(userData.value)
+
+
+                _loginStatus.value = result.fold(
+                    onSuccess = { token -> ResultStatus.Success(token) },
+                    onFailure = { e -> ResultStatus.Error(e.message ?: "Unknown error") }
+                )
+
+            } catch (e: Exception) {
+                _loginStatus.value = ResultStatus.Error(e.message ?: "Unexpected error")
+                Log.e("LoginError", "Failed to login", e)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     //<!--------------------SignUpStep1 Screen ---------------->
 
     fun updateUserDescription(userDescription: String) {
@@ -470,38 +519,4 @@ class AuthViewModel @Inject constructor(
     private fun enableLogin(email: String, password: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 
-
-    private val _userState = MutableStateFlow<UserState>(UserState.Initial)
-    val userState = _userState.asStateFlow()
-
-    fun testDatabaseQuery(email: String) {
-        viewModelScope.launch {
-            try {
-                val userData = getUserUseCase(email)
-                if (userData != null) {
-                    _userState.value = UserState.Success(userData)
-                    Log.i("DB", "Datos de usuario: $userData")
-                } else {
-                    _userState.value =
-                        UserState.Error("No se encontraron datos")
-                    Log.e(
-                        "DB",
-                        "No se encontraron datos para el usuario con ID: $email"
-                    )
-                }
-            } catch (e: Exception) {
-                _userState.value =
-                    UserState.Error(e.message ?: "Error desconocido")
-                Log.e("DB", "Error al acceder a la base de datos: ${e.message}")
-            }
-        }
-
-    }
-
-    sealed class UserState {
-        object Initial : UserState()
-        object Loading : UserState()
-        data class Success(val userData: UserData) : UserState()
-        data class Error(val message: String) : UserState()
-    }
 }

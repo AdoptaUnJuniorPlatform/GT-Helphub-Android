@@ -1,5 +1,7 @@
 package com.alejandro.helphub.features.auth.presentation
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +31,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,18 +40,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.utils.ResultStatus
 
 
 @Composable
@@ -59,6 +63,8 @@ fun LoginScreen(
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
     )
+
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -97,9 +103,9 @@ fun LoginScreen(
                 ) //cambiar con Flow
                 Spacer(modifier = Modifier.height(300.dp))
                 LoginButton(
-                    text = stringResource(id = R.string.login),
-                    onClick = { navController.navigate("SignUpStep1") })
-                //Si el usuario no es nuevo nos llevará a los pasos de creación de perfil
+                    authViewModel, navController = navController,
+                    text = stringResource(id = R.string.login)
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 SignUpLink(onClick = { navController.navigate("SignUpCredsScreen") })
             }
@@ -124,11 +130,30 @@ fun SignUpLink(onClick: () -> Unit) {
 
 @Composable
 fun LoginButton(
+    authViewModel: AuthViewModel,
     text: String,
-    onClick: () -> Unit
+    navController: NavHostController
 ) {
+    val isLoading by authViewModel.isLoading.collectAsState()
+    val loginStatus by authViewModel.loginStatus.collectAsState()
+
+    LaunchedEffect(loginStatus) {
+        when(loginStatus){
+            is ResultStatus.Success ->{
+                navController.navigate("Home") {
+                    popUpTo("Login") { inclusive = true }
+                }
+                // Reset the login status after successful navigation
+                authViewModel.resetLoginStatus()
+            }
+            is ResultStatus.Error ->{
+                Log.e("LoginError", "Login failed: ${(loginStatus as ResultStatus.Error).message}")
+            }
+            else ->{}
+        }
+    }
     Button(
-        onClick = { onClick() },
+        onClick = { authViewModel.loginUser() },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
@@ -141,6 +166,9 @@ fun LoginButton(
         Text(
             text = text.uppercase()
         )
+    }
+    if (isLoading) {
+        CircularProgressIndicator(modifier = Modifier.padding(top = 8.dp))
     }
 }
 

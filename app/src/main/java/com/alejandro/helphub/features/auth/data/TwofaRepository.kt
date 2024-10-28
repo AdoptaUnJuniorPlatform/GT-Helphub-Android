@@ -1,34 +1,15 @@
 package com.alejandro.helphub.features.auth.data
 
 import com.alejandro.helphub.features.auth.data.network.TwofaService
-import com.alejandro.helphub.features.auth.domain.TwofaDTO
 import com.alejandro.helphub.features.auth.domain.UserData
+import com.alejandro.helphub.features.auth.domain.mappers.UserDataMapper
 import javax.inject.Inject
 
-class TwofaRepository @Inject constructor(private val twofaService: TwofaService) {
+class TwofaRepository @Inject constructor(private val twofaService: TwofaService, private val userDataMapper: UserDataMapper) {
 
     suspend fun sendTwoFaRegister(userData: UserData): String {
-        val twofaDTO = createTwofaDTO(userData)
+        val twofaDTO = userDataMapper.toUserDTO(userData)
         return twofaService.sendTwoFaRegister(twofaDTO)
     }
 
-    suspend fun registerNewUser(userData: UserData): String {
-        val twofaDTO = createTwofaDTO(userData)
-        return twofaService.registerNewUser(twofaDTO)
-    }
-
-    private fun createTwofaDTO(userData: UserData): TwofaDTO {
-        return TwofaDTO(
-            email = userData.email,
-            twoFa = userData.twoFa,
-            password = userData.password,
-            nameUser = userData.nameUser,
-            surnameUser = userData.surnameUser,
-            phone = userData.phone,
-            optionCall = userData.optionCall,
-            showPhone = userData.showPhone,
-            blocked = userData.blocked,
-            role = userData.role
-        )
-    }
 }

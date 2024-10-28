@@ -55,9 +55,9 @@ fun ForgotPasswordScreen(
                     colorContainer = Color.Transparent,
                     onTextChanged = { authViewModel.updateUserEmail(it) })
                 Spacer(modifier = Modifier.height(410.dp))
-                LoginButton(text = stringResource(id = R.string.reset_password)) {
-                    navController.navigate("ResetPasswordScreen")
-                }
+                //LoginButton(text = stringResource(id = R.string.reset_password), authViewModel = AuthViewModel(), onClick = navController.navigate("ResetPasswordScreen")) {
+
+                //}
             }
         }
     }

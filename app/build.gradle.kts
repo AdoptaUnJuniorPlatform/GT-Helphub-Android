@@ -55,12 +55,14 @@ android {
 dependencies {
 
 
-implementation(libs.logging.interceptor)
+
+//Okhttp3
+    implementation(libs.logging.interceptor)
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-     //Dagger Hilt
+    //Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
     implementation(libs.androidx.runtime.livedata)
@@ -69,7 +71,7 @@ implementation(libs.logging.interceptor)
     implementation(libs.coil.compose)
 
     //Material Icons Extended
-    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

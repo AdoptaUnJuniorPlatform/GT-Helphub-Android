@@ -1,6 +1,6 @@
 package com.alejandro.helphub.features.auth.domain
 
-data class TwofaDTO (
+data class UserDTO (
     val email: String,
     val password: String,
     val nameUser: String,
@@ -12,3 +12,5 @@ data class TwofaDTO (
     val twoFa: String,
     val role: String
 )
+
+//Used for register and 2fa register.
