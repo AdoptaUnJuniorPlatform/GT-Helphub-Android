@@ -1,7 +1,7 @@
 package com.alejandro.helphub.features.auth.data.network
 
 import com.alejandro.helphub.features.auth.data.network.clients.TwofaClient
-import com.alejandro.helphub.features.auth.domain.LoginDTO
+import com.alejandro.helphub.features.auth.domain.SendTwofaResetPasswordDTO
 import com.alejandro.helphub.features.auth.domain.UserDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,9 +15,9 @@ class TwofaService @Inject constructor(private val twofaClient: TwofaClient) {
             response.body()?.code ?: "No code"
         }}
 
-        suspend fun sendTwoFaResetPassword(loginDTO: LoginDTO): String {
+        suspend fun sendTwoFaResetPassword(sendTwofaResetPasswordDTO: SendTwofaResetPasswordDTO): String {
             return withContext(Dispatchers.IO) {
-                val response = twofaClient.sendTwoFaResetPassword(loginDTO)
+                val response = twofaClient.sendTwoFaResetPassword(sendTwofaResetPasswordDTO)
                 response.body()?.code ?: "No code"
             }
         }

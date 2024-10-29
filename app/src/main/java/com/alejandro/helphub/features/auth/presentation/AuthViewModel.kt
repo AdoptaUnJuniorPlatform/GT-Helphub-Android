@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.CountriesModel
+import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.usecases.LoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.RequestResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
 import com.alejandro.helphub.utils.ResultStatus
@@ -33,7 +35,8 @@ class AuthViewModel @Inject constructor(
     private val sendTwoFaRegisterUseCase: SendTwoFaRegisterUseCase,
     private val registerNewUserUseCase: RegisterNewUserUseCase,
     private val loginUseCase: LoginUseCase,
-    private val sendTwoFaResetPasswordUseCase: SendTwoFaResetPasswordUseCase
+    private val sendTwoFaResetPasswordUseCase: SendTwoFaResetPasswordUseCase,
+    private val requestResetPasswordUseCase: RequestResetPasswordUseCase
 ) :
     ViewModel() {
 
@@ -235,9 +238,30 @@ class AuthViewModel @Inject constructor(
     }
 
     //<!--------------------Login Screen ---------------->
-    private val _loginStatus = MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
+    private val _loginStatus =
+        MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
     val loginStatus: StateFlow<ResultStatus<String>> = _loginStatus
 
+
+    //fun updatePostalCode(postalCode: String) {
+    //        Log.d("AuthViewModel", "Updating postalCode to: $postalCode")
+    //        val updateUserData = userData.value.copy(postalCode = postalCode)
+    //        _userData.value = updateUserData
+    //        navigateToStep2()
+    //    }
+    //
+    //    private val _isNavigationToStep2Enabled = MutableStateFlow(false)
+    //    val isNavigationToStep2Enabled: StateFlow<Boolean> =
+    //        _isNavigationToStep2Enabled.asStateFlow()
+    //
+    //    fun navigateToStep2() {
+    //        _isNavigationToStep2Enabled.value =
+    //            userData.value.userDescription.isNotBlank() &&
+    //                    userData.value.postalCode.isNotBlank()
+    //    }
+
+
+    //
     fun resetLoginStatus() {
         _loginStatus.value = ResultStatus.Idle
     }
@@ -248,11 +272,11 @@ class AuthViewModel @Inject constructor(
     private val _loginResult = MutableStateFlow<Result<LoginResponse>?>(null)
     val loginResult: StateFlow<Result<LoginResponse>?> = _loginResult
 
-    private val gson= Gson()
+    private val gson = Gson()
 
     fun loginUser() {
         viewModelScope.launch {
-            _isLoginLoading.value=true
+            _isLoginLoading.value = true
             _loginStatus.value = ResultStatus.Idle
             try {
                 val result = loginUseCase(userData.value)
@@ -260,19 +284,29 @@ class AuthViewModel @Inject constructor(
 
                 _loginStatus.value = result.fold(
                     onSuccess = { token -> ResultStatus.Success(token) },
-                    onFailure = { e -> ResultStatus.Error(e.message ?: "Unknown error") }
+                    onFailure = { e ->
+                        ResultStatus.Error(
+                            e.message ?: "Unknown error"
+                        )
+                    }
                 )
 
             } catch (e: Exception) {
-                _loginStatus.value = ResultStatus.Error(e.message ?: "Unexpected error")
+                _loginStatus.value =
+                    ResultStatus.Error(e.message ?: "Unexpected error")
                 Log.e("LoginError", "Failed to login", e)
-            }finally {
+            } finally {
                 _isLoading.value = false
             }
         }
     }
 
 //<!--------------------ResetPassword Screen ---------------->
+
+    private val _resetPasswordState =
+        MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
+    val resetPasswordState: StateFlow<ResultStatus<String>> =
+        _resetPasswordState.asStateFlow()
 
     fun generateAndSendTwoFaCodeResetPassword() {
         viewModelScope.launch {
@@ -301,7 +335,66 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+       private val _inputNewPassword = MutableStateFlow("")
+    val inputNewPassword: StateFlow<String> = _inputNewPassword
 
+    private val _confirmNewPassword = MutableStateFlow("")
+    val confirmNewPassword: StateFlow<String> = _confirmNewPassword
+
+    fun onNewPasswordChanged(newPassword: String) {
+        _inputNewPassword.value = newPassword
+        enablePasswordReset()
+    }
+
+    fun onConfirmPasswordChanged(newConfirmPassword: String) {
+        _confirmNewPassword.value = newConfirmPassword
+        enablePasswordReset()
+    }
+
+    fun isPasswordMatching(): Boolean {
+        return inputNewPassword.value == confirmNewPassword.value
+    }
+
+
+    private val _isPasswordResetEnabled = MutableStateFlow(false)
+    val isPasswordResetEnabled: StateFlow<Boolean> =
+        _isPasswordResetEnabled.asStateFlow()
+
+
+    fun enablePasswordReset() {
+        _isPasswordResetEnabled.value =
+            isPasswordMatching() && isTwoFaCodeValid()
+
+    }
+
+    fun requestResetPassword() {
+        viewModelScope.launch {
+            _resetPasswordState.value = ResultStatus.Idle
+            _resetPasswordState.value = try {
+
+                val updatedUserData =
+                    userData.value.copy(password = inputNewPassword.value)
+                val result = requestResetPasswordUseCase(updatedUserData)
+                if (result.isSuccess) {
+                    ResultStatus.Success(result.getOrThrow())
+                } else {
+                    ResultStatus.Error(
+                        result.exceptionOrNull()?.message ?: "An error occurred"
+                    )
+                }
+            } catch (e: Exception) {
+                ResultStatus.Error(e.message ?: "An error occurred")
+            }
+        }
+    }
+
+  fun clearPasswordsField(){
+
+        _userData.value=_userData.value.copy(password = "")
+    }
+ fun clearTwofaField(){
+        _userData.value=_userData.value.copy(twoFa = "")
+    }
 
     //<!--------------------SignUpStep1 Screen ---------------->
 

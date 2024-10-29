@@ -63,7 +63,10 @@ fun LoginScreen(
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
     )
-
+    LaunchedEffect(Unit) {
+        authViewModel.clearTwofaField()
+        authViewModel.clearPasswordsField()
+    }
 
     Scaffold { innerPadding ->
         Box(
@@ -138,17 +141,22 @@ fun LoginButton(
     val loginStatus by authViewModel.loginStatus.collectAsState()
 
     LaunchedEffect(loginStatus) {
-        when(loginStatus){
-            is ResultStatus.Success ->{
+        when (loginStatus) {
+            is ResultStatus.Success -> {
                 navController.navigate("Home") {
                     popUpTo("Login") { inclusive = true }
                 }
                 authViewModel.resetLoginStatus()
             }
-            is ResultStatus.Error ->{
-                Log.e("LoginError", "Login failed: ${(loginStatus as ResultStatus.Error).message}")
+
+            is ResultStatus.Error -> {
+                Log.e(
+                    "LoginError",
+                    "Login failed: ${(loginStatus as ResultStatus.Error).message}"
+                )
             }
-            else ->{}
+
+            else -> {}
         }
     }
     Button(
