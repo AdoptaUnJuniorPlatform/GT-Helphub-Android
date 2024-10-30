@@ -1,24 +1,18 @@
 package com.alejandro.helphub.features.auth.presentation
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
-import android.util.Patterns
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.CountriesModel
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.usecases.LoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RequestResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaLoginUseCase
-import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaResetPasswordUseCase
 import com.alejandro.helphub.utils.ResultStatus
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,14 +31,12 @@ class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val sendTwoFaResetPasswordUseCase: SendTwoFaResetPasswordUseCase,
     private val requestResetPasswordUseCase: RequestResetPasswordUseCase,
-    private val sendTwoFaLoginUseCase:SendTwoFaLoginUseCase
+    private val sendTwoFaLoginUseCase: SendTwoFaLoginUseCase
 ) :
     ViewModel() {
 
-
     private val _userData = MutableStateFlow(UserData())
     val userData: StateFlow<UserData> = _userData.asStateFlow()
-
 
     //<!--------------------Credentials Screen ---------------->
     private val _isCheckBoxChecked = MutableStateFlow(false)
@@ -62,9 +54,6 @@ class AuthViewModel @Inject constructor(
     private val _isSignUpButtonEnabled = MutableStateFlow(false)
     val isSignUpButtonEnabled: StateFlow<Boolean> =
         _isSignUpButtonEnabled.asStateFlow()
-
-    private val _twoFaCode = MutableStateFlow<String>("")
-    val twoFaCode: StateFlow<String> get() = _twoFaCode
 
     val isPasswordValid: StateFlow<Boolean> =
         _userData.map { isPasswordValid(it.password) }
@@ -87,7 +76,6 @@ class AuthViewModel @Inject constructor(
         _userData.value =
             _userData.value.copy(optionCall = isChecked, showPhone = isChecked)
     }
-
 
     fun updateSignUpButtonState() {
         _isSignUpButtonEnabled.value = userData.value.nameUser.isNotBlank() &&
@@ -154,8 +142,6 @@ class AuthViewModel @Inject constructor(
         val hasDigit = password.any { it.isDigit() }
         val hasSpecialChar = password.any { !it.isLetterOrDigit() }
         val isValidLength = password.length >= 6
-
-
         return hasUpperCase && hasDigit && hasSpecialChar && isValidLength
     }
 
@@ -177,7 +163,6 @@ class AuthViewModel @Inject constructor(
     fun resetTwoFaStatus() {
         _twoFaStatus.value = ResultStatus.Idle
     }
-
 
     fun generateAndSendTwoFaCode() {
         viewModelScope.launch {
@@ -205,6 +190,7 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
     //<!--------------------DoubleAuthFactor Screen ---------------->
 
     private val _inputTwoFaCode = MutableStateFlow("")
@@ -239,70 +225,66 @@ class AuthViewModel @Inject constructor(
     }
 
     //<!--------------------Login Screen ---------------->
+
     private val _loginStatus =
         MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
     val loginStatus: StateFlow<ResultStatus<String>> = _loginStatus
 
-    fun resetLoginStatus() {
-        _loginStatus.value = ResultStatus.Idle
-    }
-
     private val _isLoginLoading = MutableStateFlow(false)
     val isLoginLoading: StateFlow<Boolean> = _isLoginLoading
 
-    private val _loginResult = MutableStateFlow<Result<LoginResponse>?>(null)
-    val loginResult: StateFlow<Result<LoginResponse>?> = _loginResult
-
-    private val gson = Gson()
-
-    fun loginUser(){
+    fun loginUser() {
         viewModelScope.launch {
-            _isLoginLoading.value=true
-            _loginStatus.value=ResultStatus.Idle
+            _isLoginLoading.value = true
+            _loginStatus.value = ResultStatus.Idle
             try {
-                val result=loginUseCase(userData.value)
-                _loginStatus.value=result.fold(
-                    onSuccess = {token ->ResultStatus.Success(token)},
-                    onFailure = {e-> ResultStatus.Error(e.message?:"Error desconocido")}
+                val result = loginUseCase(userData.value)
+                _loginStatus.value = result.fold(
+                    onSuccess = { token -> ResultStatus.Success(token) },
+                    onFailure = { e ->
+                        ResultStatus.Error(
+                            e.message ?: "Error desconocido"
+                        )
+                    }
                 )
-            }catch (e:Exception){
-                _loginStatus.value=ResultStatus.Error(e.message?:"Error inesperado")
-                Log.e("LoginError","Failed to login", e)
-            }finally {
-                _isLoginLoading.value=false
+            } catch (e: Exception) {
+                _loginStatus.value =
+                    ResultStatus.Error(e.message ?: "Error inesperado")
+                Log.e("LoginError", "Failed to login", e)
+            } finally {
+                _isLoginLoading.value = false
             }
         }
     }
 
 //<!--------------------2fa Login Screen ---------------->
-fun generateAndSendTwoFaCodeLogin() {
-    viewModelScope.launch {
-        _isLoading.value = true
-        try {
-            val generatedTwoFa = generateTwoFaCode()
-            val updatedUserData =
-                userData.value.copy(twoFa = generatedTwoFa)
-            Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
-            val result = sendTwoFaLoginUseCase(updatedUserData)
-            if (result.isNotEmpty()) {
-                _twoFaStatus.value = ResultStatus.Success(Unit)
-                Log.i("this", "funciona")
-            } else {
-                _twoFaStatus.value =
-                    ResultStatus.Error("Credenciales no válidas")
-                Log.i("this", "Credenciales no válidas")
+
+    fun generateAndSendTwoFaCodeLogin() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val generatedTwoFa = generateTwoFaCode()
+                val updatedUserData =
+                    userData.value.copy(twoFa = generatedTwoFa)
+                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                val result = sendTwoFaLoginUseCase(updatedUserData)
+                if (result.isNotEmpty()) {
+                    _twoFaStatus.value = ResultStatus.Success(Unit)
+                    Log.i("this", "funciona")
+                } else {
+                    _twoFaStatus.value =
+                        ResultStatus.Error("Credenciales no válidas")
+                    Log.i("this", "Credenciales no válidas")
+                }
+                _userData.value = updatedUserData
+            } catch (e: Exception) {
+                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
+                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+            } finally {
+                _isLoading.value = false
             }
-            _userData.value = updatedUserData
-        } catch (e: Exception) {
-            _twoFaStatus.value = ResultStatus.Error("Error de conexión")
-            Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
-        } finally {
-            _isLoading.value = false
         }
     }
-}
-
-
 
 //<!--------------------ResetPassword Screen ---------------->
 
@@ -338,7 +320,7 @@ fun generateAndSendTwoFaCodeLogin() {
         }
     }
 
-       private val _inputNewPassword = MutableStateFlow("")
+    private val _inputNewPassword = MutableStateFlow("")
     val inputNewPassword: StateFlow<String> = _inputNewPassword
 
     private val _confirmNewPassword = MutableStateFlow("")
@@ -358,23 +340,19 @@ fun generateAndSendTwoFaCodeLogin() {
         return inputNewPassword.value == confirmNewPassword.value
     }
 
-
     private val _isPasswordResetEnabled = MutableStateFlow(false)
     val isPasswordResetEnabled: StateFlow<Boolean> =
         _isPasswordResetEnabled.asStateFlow()
 
-
     fun enablePasswordReset() {
         _isPasswordResetEnabled.value =
             isPasswordMatching() && isTwoFaCodeValid()
-
     }
 
     fun requestResetPassword() {
         viewModelScope.launch {
             _resetPasswordState.value = ResultStatus.Idle
             _resetPasswordState.value = try {
-
                 val updatedUserData =
                     userData.value.copy(password = inputNewPassword.value)
                 val result = requestResetPasswordUseCase(updatedUserData)
@@ -391,14 +369,13 @@ fun generateAndSendTwoFaCodeLogin() {
         }
     }
 
-  fun clearPasswordsField(){
-
-        _userData.value=_userData.value.copy(password = "")
-    }
- fun clearTwofaField(){
-        _inputTwoFaCode.value=""
+    fun clearPasswordsField() {
+        _userData.value = _userData.value.copy(password = "")
     }
 
+    fun clearTwofaField() {
+        _inputTwoFaCode.value = ""
+    }
     //<!--------------------SignUpStep1 Screen ---------------->
 
     fun updateUserDescription(userDescription: String) {
@@ -618,30 +595,4 @@ fun generateAndSendTwoFaCodeLogin() {
         _isNavigationToHomeEnabled.value =
             userData.value.categoriesOfInterest.isNotEmpty()
     }
-
-    //Otros
-
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> = _email.asStateFlow()
-
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> = _password.asStateFlow()
-
-    private val _isLoginEnable = MutableLiveData<Boolean>()
-    val isLoginEnable: LiveData<Boolean> = _isLoginEnable
-
-
-    fun updateUserPhotoBitmap(bitmap: Bitmap) {
-        _userData.value = _userData.value.copy(photoBitmap = bitmap)
-    }
-
-    fun onLoginChanged(email: String, password: String) {
-        _email.value = email
-        _password.value = password
-        _isLoginEnable.value = enableLogin(email, password)
-    }
-
-    private fun enableLogin(email: String, password: String) =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
-
 }
