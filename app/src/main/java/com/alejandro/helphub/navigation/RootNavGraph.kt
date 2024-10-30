@@ -48,7 +48,6 @@ fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) 
         }
         composable("PrivacyScreen") {
             PrivacyScreen(
-                authViewModel = authViewModel,
                 navController = navController
             )
         }
