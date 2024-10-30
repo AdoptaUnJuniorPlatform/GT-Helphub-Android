@@ -156,7 +156,8 @@ fun SignUpCredsScreen(
                     item {
                         PrivacyCheck(
                             isChecked = isChecked,
-                            authViewModel = authViewModel
+                            authViewModel = authViewModel,
+                            navController
                         )
                     }
                     item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -230,7 +231,6 @@ fun SignUpButton(
             authViewModel.resetTwoFaStatus()
             navController.navigate("TwofaRegisterScreen")
         }
-
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
             Toast.makeText(
@@ -240,13 +240,12 @@ fun SignUpButton(
             ).show()
             navController.navigate("LoginScreen")
         }
-
         else -> {} // No hacer nada en el estado Idle
     }
 }
 
 @Composable
-fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel) {
+fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel,navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,7 +260,7 @@ fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel) {
                 enabled = true
             )
         }
-        Column(modifier = Modifier.align(Alignment.Bottom)) {
+        Column(modifier = Modifier.align(Alignment.Bottom).clickable { navController.navigate("PrivacyScreen") }) {
             Text(text = buildAnnotatedString {
                 append(stringResource(id = R.string.i_agree_to_the))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {

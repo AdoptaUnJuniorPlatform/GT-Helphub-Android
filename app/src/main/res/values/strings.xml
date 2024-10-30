@@ -35,9 +35,6 @@
     <string name="close">Cerrar</string>
     <string name="twoFa_correct">Código 2FA Correcto</string>
     <string name="twoFa_wrong">Código 2FA Incorrecto</string>
-
-
-
     <!--SignUp Screen -->
     <string name="name">Nombre</string>
     <string name="surname1">Apellido 1</string>
@@ -59,6 +56,17 @@
     <string name="welcome_to_the_community">Bienvenido a&#10;la comunidad</string>
     <string name="motto">Comparte, aprende, crece.</string>
     <string name="logo_content_description">Logo Helphub.</string>
+    <!--Privacy Screen -->
+    <string name="privacy_title_1">Privacidad y seguridad en tu experiencia de intercambio</string>
+    <string name="privacy_text_1">Para ofrecerte recomendaciones personalizadas y facilitar conexiones seguras, requerimos tu consentimiento para procesar tus datos personales.</string>
+    <string name="privacy_title_2">Objetivos del tratamiento de datos:</string>
+    <string name="privacy_text_2_1">Proporcionar recomendaciones de habilidades y conexiones adaptadas a tus intereses y ubicación.</string>
+    <string name="privacy_text_2_2">Almacenar y acceder a información de tu dispositivo para mejorar la experiencia de usuario en la plataforma.</string>
+    <string name="privacy_text_2_3">Evaluar el rendimiento y el uso de la aplicación para optimizar su funcionamiento.</string>
+    <string name="privacy_title_3">Más información</string>
+    <string name="privacy_text_3">Tus datos personales y la información de tu dispositivo (como cookies y otros identificadores) podrán ser tratados con los fines mencionados y compartidos únicamente con proveedores autorizados y bajo estrictas medidas de seguridad. La información estará almacenada de manera segura.</string>
+    <string name="accept_everything">Aceptar todo</string>
+
     <!--SignUp Screen Step 1 -->
     <string name="go_back">ATRÁS</string>
     <string name="next">SIGUIENTE</string>
@@ -167,7 +175,6 @@
     <string name="popular_categories">Categorías populares</string>
     <string name="more_categories">Busca más categorías</string>
     <string name="select_up_to_3_categories">Puedes seleccionar hasta 3 categorías.</string>
-
     <!--Main Screen -->
     <string name="main_screen_title1">Conecta y Comparte</string>
     <string name="main_screen_title2">Habilidades</string>
@@ -208,7 +215,4 @@
     <string name="diego_availability">08:00 a 17:00</string>
     <string name="diego_skill">Sesiones de entrenamiento personal en la playa enfocadas en mejorar tu resistencia y fuerza, con rutinas sencillas.</string>
     <string name="diego_category">Fitness</string>
-    <!--Login Screen -->
-
-
-</resources>
+    </resources>

@@ -9,6 +9,7 @@ import com.alejandro.helphub.features.auth.presentation.TwofaRegisterScreen
 import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
 import com.alejandro.helphub.features.auth.presentation.MainScreen
+import com.alejandro.helphub.features.auth.presentation.PrivacyScreen
 import com.alejandro.helphub.features.auth.presentation.ResetPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpStep1
@@ -41,6 +42,12 @@ fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) 
         }
         composable("SignUpCredsScreen") {
             SignUpCredsScreen(
+                authViewModel = authViewModel,
+                navController = navController
+            )
+        }
+        composable("PrivacyScreen") {
+            PrivacyScreen(
                 authViewModel = authViewModel,
                 navController = navController
             )
