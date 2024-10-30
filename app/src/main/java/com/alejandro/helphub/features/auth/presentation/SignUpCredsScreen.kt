@@ -74,7 +74,7 @@ import com.alejandro.helphub.utils.ResultStatus
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SignUpCredsScreen(
-    authViewModel: AuthViewModel ,
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
@@ -85,24 +85,24 @@ fun SignUpCredsScreen(
     val isSignUpEnabled by authViewModel.isSignUpButtonEnabled.collectAsState(
         initial = false
     )
-val isLoading by authViewModel.isLoading.collectAsState(initial = false)
+    val isLoading by authViewModel.isLoading.collectAsState(initial = false)
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
         )
-
         {
-            if(isLoading){
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center),
-                    contentAlignment = Alignment.Center){
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
-
-            }else{
+            } else {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
@@ -201,13 +201,18 @@ fun ToLogin(navController: NavHostController) {
 }
 
 @Composable
-fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController: NavHostController) {
+fun SignUpButton(
+    authViewModel: AuthViewModel,
+    isEnabled: Boolean,
+    navController: NavHostController
+) {
     val twoFaStatus by authViewModel.twoFaStatus.collectAsState()
     val context = LocalContext.current
-
     Button(
-        onClick = {authViewModel.generateAndSendTwoFaCode()
-            navController.navigate("TwofaRegisterScreen") },
+        onClick = {
+            authViewModel.generateAndSendTwoFaCode()
+            navController.navigate("TwofaRegisterScreen")
+        },
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
@@ -225,11 +230,17 @@ fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController:
             authViewModel.resetTwoFaStatus()
             navController.navigate("TwofaRegisterScreen")
         }
+
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
-            Toast.makeText(context, (twoFaStatus as ResultStatus.Error).message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                (twoFaStatus as ResultStatus.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
             navController.navigate("LoginScreen")
         }
+
         else -> {} // No hacer nada en el estado Idle
     }
 }
@@ -279,8 +290,7 @@ fun PasswordTextfield(authViewModel: AuthViewModel) {
     val userData by authViewModel.userData.collectAsState()
     var passwordVisibility by remember { mutableStateOf(false) }
     val isPasswordValid by authViewModel.isPasswordValid.collectAsState()
-    val borderColor=if(isPasswordValid) Color.Gray else Color.Red
-
+    val borderColor = if (isPasswordValid) Color.Gray else Color.Red
     OutlinedTextField(
         value = userData.password,
         onValueChange = { authViewModel.onPasswordChanged(it) },
@@ -544,7 +554,7 @@ fun SignUpText() {
 
 @Composable
 fun Logo() {
-    Column{
+    Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

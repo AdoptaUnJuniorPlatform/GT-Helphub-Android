@@ -51,7 +51,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
-
 @Composable
 fun TwofaRegisterScreen(
     navController: NavHostController,
@@ -77,7 +76,6 @@ fun TwofaRegisterScreen(
                     .zIndex(0f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Column(modifier = Modifier.weight(1f)) {
                     RegisterHeader()
                     Spacer(modifier = Modifier.height(30.dp))
@@ -112,7 +110,7 @@ fun TwofaRegisterScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = {navController.navigate("LoginScreen")})
+        SuccessCard(onNavigate = { navController.navigate("LoginScreen") })
     }
 }
 
@@ -152,7 +150,7 @@ fun RegisterValidationButton(
 }
 
 @Composable
-fun SuccessCard(onNavigate:()->Unit) {
+fun SuccessCard(onNavigate: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()

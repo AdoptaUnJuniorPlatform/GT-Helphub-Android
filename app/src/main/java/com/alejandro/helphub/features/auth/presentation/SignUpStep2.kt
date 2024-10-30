@@ -53,7 +53,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
 
-
 @Composable
 fun SignUpStep2(
     authViewModel: AuthViewModel,

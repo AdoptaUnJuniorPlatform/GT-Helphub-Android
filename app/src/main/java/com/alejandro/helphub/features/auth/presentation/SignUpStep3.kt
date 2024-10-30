@@ -41,17 +41,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
 fun SignUpStep3(
-    authViewModel: AuthViewModel
-    ,
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
-    val isStep4Enabled by authViewModel.isNavigationToStep4PostEnabled.collectAsState(initial = false)
+    val isStep4Enabled by authViewModel.isNavigationToStep4PostEnabled.collectAsState(
+        initial = false
+    )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -199,7 +199,8 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
-                text = stringResource(id = R.string.availability_hours), fontSize = 22.sp,
+                text = stringResource(id = R.string.availability_hours),
+                fontSize = 22.sp,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )
@@ -217,8 +218,10 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                 RadioButton(
                     text = stringResource(id = R.string.three_to_five),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it
-                        authViewModel.updateAvailability(it)}
+                    onItemSelected = {
+                        selectedItem = it
+                        authViewModel.updateAvailability(it)
+                    }
                 )
             }
         }
@@ -228,16 +231,20 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                 RadioButton(
                     text = stringResource(id = R.string.five_to_nine),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it
-                        authViewModel.updateAvailability(it)}
+                    onItemSelected = {
+                        selectedItem = it
+                        authViewModel.updateAvailability(it)
+                    }
                 )
             }
             Box {
                 RadioButton(
                     text = stringResource(id = R.string.eight_to_five),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it
-                        authViewModel.updateAvailability(it)}
+                    onItemSelected = {
+                        selectedItem = it
+                        authViewModel.updateAvailability(it)
+                    }
                 )
             }
         }
@@ -247,8 +254,10 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                 RadioButton(
                     text = stringResource(id = R.string.availability_title),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it
-                        authViewModel.updateAvailability(it)}
+                    onItemSelected = {
+                        selectedItem = it
+                        authViewModel.updateAvailability(it)
+                    }
                 )
             }
         }

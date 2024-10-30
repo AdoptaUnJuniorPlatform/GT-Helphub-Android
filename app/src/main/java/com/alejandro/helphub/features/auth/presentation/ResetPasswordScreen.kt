@@ -23,11 +23,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,17 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
-import com.alejandro.helphub.utils.ResultStatus
-
-import com.alejandro.helphub.features.auth.domain.UserData
-
 
 @Composable
 fun ResetPasswordScreen(
@@ -73,23 +64,27 @@ fun ResetPasswordScreen(
                 Spacer(modifier = Modifier.height(30.dp))
                 ResetData(authViewModel)
                 Spacer(modifier = Modifier.height(184.dp))
-                ResetPasswordButton(authViewModel,navController)
+                ResetPasswordButton(authViewModel, navController)
             }
         }
     }
 }
 
-
 @Composable
-fun ResetPasswordButton(authViewModel: AuthViewModel,navController: NavHostController){
+fun ResetPasswordButton(
+    authViewModel: AuthViewModel,
+    navController: NavHostController
+) {
     val isResetEnabled by authViewModel.isPasswordResetEnabled.collectAsState()
     Button(
-        onClick = { if (isResetEnabled) {
-            Log.i("2FA", "Código 2FA correcto.")
-            authViewModel.requestResetPassword()
-            authViewModel.clearTwofaField()
-        navController.navigate("LoginScreen")}
-          },
+        onClick = {
+            if (isResetEnabled) {
+                Log.i("2FA", "Código 2FA correcto.")
+                authViewModel.requestResetPassword()
+                authViewModel.clearTwofaField()
+                navController.navigate("LoginScreen")
+            }
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
@@ -103,15 +98,14 @@ fun ResetPasswordButton(authViewModel: AuthViewModel,navController: NavHostContr
             text = stringResource(id = R.string.reset_password).uppercase()
         )
     }
-
 }
 
 @Composable
 fun Textfield(
     value: String,
-    placeholder:String,
+    placeholder: String,
     onTextChanged: (String) -> Unit,
-    keyboardType:KeyboardType=KeyboardType.Email
+    keyboardType: KeyboardType = KeyboardType.Email
 ) {
     OutlinedTextField(
         value = value, onValueChange = { onTextChanged(it) },
@@ -154,13 +148,28 @@ fun ResetData(authViewModel: AuthViewModel) {
         modifier = Modifier.padding(horizontal = 16.dp)
     )
     Spacer(modifier = Modifier.height(40.dp))
-    Textfield(value = inputCode, keyboardType = KeyboardType.Number, onTextChanged =  {if (it.length <= 6) {
-        authViewModel.onTwoFaCodeChanged(it)
-    }}, placeholder = stringResource(id = R.string.code))
+    Textfield(
+        value = inputCode,
+        keyboardType = KeyboardType.Number,
+        onTextChanged = {
+            if (it.length <= 6) {
+                authViewModel.onTwoFaCodeChanged(it)
+            }
+        },
+        placeholder = stringResource(id = R.string.code)
+    )
     Spacer(modifier = Modifier.height(16.dp))
-    Textfield(value = inputNewPassword , keyboardType=KeyboardType.Password, placeholder = stringResource(id = R.string.new_password), onTextChanged = {authViewModel.onNewPasswordChanged(it)})
+    Textfield(
+        value = inputNewPassword,
+        keyboardType = KeyboardType.Password,
+        placeholder = stringResource(id = R.string.new_password),
+        onTextChanged = { authViewModel.onNewPasswordChanged(it) })
     Spacer(modifier = Modifier.height(16.dp))
-    Textfield(value = inputAgainNewPassword ,keyboardType=KeyboardType.Password, placeholder = stringResource(id = R.string.confirm_new_passord), onTextChanged = {authViewModel.onConfirmPasswordChanged(it)})
+    Textfield(
+        value = inputAgainNewPassword,
+        keyboardType = KeyboardType.Password,
+        placeholder = stringResource(id = R.string.confirm_new_passord),
+        onTextChanged = { authViewModel.onConfirmPasswordChanged(it) })
 }
 
 @Composable

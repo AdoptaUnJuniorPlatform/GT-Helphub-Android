@@ -29,7 +29,6 @@ fun TwofaLoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
-
     var buttonsEnabled by remember { mutableStateOf(true) }
     var showSuccessCard by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -38,7 +37,11 @@ fun TwofaLoginScreen(
         when (loginStatus) {
             is ResultStatus.Success -> showSuccessCard = true
             is ResultStatus.Error -> {
-                Toast.makeText(context, "Error durante el login", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Error durante el login",
+                    Toast.LENGTH_SHORT
+                ).show()
                 navController.navigate("LoginScreen") {
                     popUpTo("TwofaLoginScreen") { inclusive = true }
                 }
@@ -46,7 +49,6 @@ fun TwofaLoginScreen(
             else -> {} // Manejo de otros estados si es necesario
         }
     }
-
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -64,7 +66,6 @@ fun TwofaLoginScreen(
                     .zIndex(0f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Column(modifier = Modifier.weight(1f)) {
                     RegisterHeader()
                     Spacer(modifier = Modifier.height(30.dp))
@@ -83,10 +84,9 @@ fun TwofaLoginScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = {navController.navigate("Home")})
+        SuccessCard(onNavigate = { navController.navigate("Home") })
     }
 }
-
 
 @Composable
 fun LoginValidationButton(

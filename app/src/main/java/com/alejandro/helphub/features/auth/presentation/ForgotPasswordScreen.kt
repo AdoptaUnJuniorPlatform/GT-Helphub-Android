@@ -21,15 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.utils.ResultStatus
-
 
 @Composable
 fun ForgotPasswordScreen(
@@ -61,19 +58,24 @@ fun ForgotPasswordScreen(
                     colorContainer = Color.Transparent,
                     onTextChanged = { authViewModel.updateUserEmail(it) })
                 Spacer(modifier = Modifier.height(410.dp))
-                ResetButton(authViewModel,navController)
+                ResetButton(authViewModel, navController)
             }
         }
     }
 }
 
 @Composable
-fun ResetButton(authViewModel: AuthViewModel, navController: NavHostController){
+fun ResetButton(
+    authViewModel: AuthViewModel,
+    navController: NavHostController
+) {
     val twoFaStatus by authViewModel.twoFaStatus.collectAsState()
     val context = LocalContext.current
     Button(
-        onClick = { authViewModel.generateAndSendTwoFaCodeResetPassword()
-            navController.navigate("ResetPasswordScreen")},
+        onClick = {
+            authViewModel.generateAndSendTwoFaCodeResetPassword()
+            navController.navigate("ResetPasswordScreen")
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
@@ -92,15 +94,20 @@ fun ResetButton(authViewModel: AuthViewModel, navController: NavHostController){
             authViewModel.resetTwoFaStatus()
             navController.navigate("ResetPasswordScreen")
         }
+
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
-            Toast.makeText(context, (twoFaStatus as ResultStatus.Error).message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                (twoFaStatus as ResultStatus.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
             navController.navigate("LoginScreen")
         }
+
         else -> {} // No hacer nada en el estado Idle
     }
 }
-
 
 @Composable
 fun ResetPassword() {

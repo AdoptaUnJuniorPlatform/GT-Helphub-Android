@@ -1,6 +1,5 @@
 package com.alejandro.helphub.features.auth.presentation
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +51,6 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.utils.ResultStatus
 
-
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -67,7 +64,6 @@ fun LoginScreen(
         authViewModel.clearTwofaField()
         authViewModel.clearPasswordsField()
     }
-
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -138,10 +134,12 @@ fun LoginButton(
     navController: NavHostController
 ) {
     val twoFaStatus by authViewModel.twoFaStatus.collectAsState()
-    val context= LocalContext.current
+    val context = LocalContext.current
     Button(
-        onClick = { authViewModel.generateAndSendTwoFaCodeLogin()
-                  navController.navigate("TwofaLoginScreen")},
+        onClick = {
+            authViewModel.generateAndSendTwoFaCodeLogin()
+            navController.navigate("TwofaLoginScreen")
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
@@ -162,7 +160,11 @@ fun LoginButton(
         }
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
-            Toast.makeText(context, (twoFaStatus as ResultStatus.Error).message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                (twoFaStatus as ResultStatus.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
             navController.navigate("LoginScreen")
         }
         else -> {} // No hacer nada en el estado Idle

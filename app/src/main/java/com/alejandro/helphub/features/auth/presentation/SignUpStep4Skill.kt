@@ -61,7 +61,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
@@ -402,7 +401,6 @@ fun CategorySelection(authViewModel: AuthViewModel) {
         stringResource(id = R.string.private_lessons),
         stringResource(id = R.string.others)
     )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -441,7 +439,6 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                     contentDescription = null
                 )
             }
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { authViewModel.toggleDropdown() }
@@ -606,4 +603,3 @@ fun SkillTextBox(
         )
     }
 }
-

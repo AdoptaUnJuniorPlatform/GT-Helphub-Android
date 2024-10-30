@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,21 +28,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
-
 
 @Composable
 fun SignUpStep5(
     authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
-    val isHomeEnabled by authViewModel.isNavigationToHomeEnabled.collectAsState(initial = false)
+    val isHomeEnabled by authViewModel.isNavigationToHomeEnabled.collectAsState(
+        initial = false
+    )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -128,9 +122,9 @@ fun PopularCategories(
         stringResource(id = R.string.private_lessons),
         stringResource(id = R.string.others)
     )
-    val chunkedCategories= listOf(
+    val chunkedCategories = listOf(
         categories.take(4),
-        categories.subList(4,7),
+        categories.subList(4, 7),
         categories.takeLast(3)
     )
     val userData by authViewModel.userData.collectAsState()
@@ -167,7 +161,10 @@ fun PopularCategories(
                         selectedCategories.contains(category)
                     CategoryBox(category = category, isSelected = isSelected,
                         onItemSelected = {
-                            authViewModel.onCategoriesOfInterestChecked(category,it)
+                            authViewModel.onCategoriesOfInterestChecked(
+                                category,
+                                it
+                            )
                         }
                     )
                 }
