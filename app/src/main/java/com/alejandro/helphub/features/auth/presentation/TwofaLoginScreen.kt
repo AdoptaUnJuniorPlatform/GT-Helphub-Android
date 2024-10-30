@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +29,24 @@ fun TwofaLoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
-    var showSuccessCard by remember { mutableStateOf(false) }
+
     var buttonsEnabled by remember { mutableStateOf(true) }
+    var showSuccessCard by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val loginStatus by authViewModel.loginStatus.collectAsState()
+    LaunchedEffect(loginStatus) {
+        when (loginStatus) {
+            is ResultStatus.Success -> showSuccessCard = true
+            is ResultStatus.Error -> {
+                Toast.makeText(context, "Error durante el login", Toast.LENGTH_SHORT).show()
+                navController.navigate("LoginScreen") {
+                    popUpTo("TwofaLoginScreen") { inclusive = true }
+                }
+            }
+            else -> {} // Manejo de otros estados si es necesario
+        }
+    }
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -58,32 +74,42 @@ fun TwofaLoginScreen(
                     Spacer(modifier = Modifier.height(180.dp))
                     VerificationMessage()
                 }
-                RegisterValidationButton(
+                LoginValidationButton(
                     navController,
                     authViewModel,
                     buttonsEnabled
-                ) { result ->
-                    if (result) {
-                        showSuccessCard = true
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Error durante el registro",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        navController.navigate("LoginScreen") {
-                            popUpTo("DoubleAuthFactorScreen") {
-                                inclusive = true
-                            }
-                        }
-                    }
-                    buttonsEnabled = false
-                }
+                )
             }
         }
     }
     if (showSuccessCard) {
-        SuccessCard(navController)
+        SuccessCard(onNavigate = {navController.navigate("Home")})
     }
 }
 
+
+@Composable
+fun LoginValidationButton(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    enabled: Boolean,
+) {
+    val isTwoFaValid = remember { mutableStateOf(false) }
+    StepButtons(
+        onBackClick = {
+            if (enabled) {
+                navController.popBackStack()
+            }
+        },
+        onNextClick = {
+            isTwoFaValid.value = authViewModel.isTwoFaCodeValid()
+            if (isTwoFaValid.value) {
+                Log.i("2FA", "Código 2FA correcto.")
+                authViewModel.loginUser()
+            } else {
+                Log.i("2FA", "Código 2FA incorrecto.")
+            }
+        },
+        enabled = enabled
+    )
+}

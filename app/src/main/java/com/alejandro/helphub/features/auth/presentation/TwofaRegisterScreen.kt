@@ -112,7 +112,7 @@ fun TwofaRegisterScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(navController)
+        SuccessCard(onNavigate = {navController.navigate("LoginScreen")})
     }
 }
 
@@ -151,7 +151,7 @@ fun RegisterValidationButton(
 }
 
 @Composable
-fun SuccessCard(navController: NavHostController) {
+fun SuccessCard(onNavigate:()->Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -190,7 +190,7 @@ fun SuccessCard(navController: NavHostController) {
                         contentDescription = stringResource(
                             id = R.string.close
                         ),
-                        modifier = Modifier.clickable { navController.navigate("LoginScreen") })
+                        modifier = Modifier.clickable { onNavigate() })
                 }
                 Spacer(modifier = Modifier.height(36.dp))
                 Image(

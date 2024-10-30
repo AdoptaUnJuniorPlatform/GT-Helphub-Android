@@ -17,6 +17,7 @@ import com.alejandro.helphub.features.auth.presentation.SignUpStep3
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Post
 import com.alejandro.helphub.features.auth.presentation.SignUpStep4Skill
 import com.alejandro.helphub.features.auth.presentation.SignUpStep5
+import com.alejandro.helphub.features.auth.presentation.TwofaLoginScreen
 import com.alejandro.helphub.features.home.presentation.Home
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
@@ -94,8 +95,12 @@ fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) 
             ResetPasswordScreen(authViewModel=authViewModel,
                 navController=navController)
         }
-        composable("DoubleAuthFactorScreen"){
+        composable("TwofaRegisterScreen"){
             TwofaRegisterScreen(authViewModel=authViewModel,
+                navController = navController)
+        }
+        composable("TwofaLoginScreen"){
+            TwofaLoginScreen(authViewModel=authViewModel,
                 navController = navController)
         }
     }

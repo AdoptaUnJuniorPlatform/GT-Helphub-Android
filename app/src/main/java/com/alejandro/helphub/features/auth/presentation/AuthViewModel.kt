@@ -255,32 +255,25 @@ class AuthViewModel @Inject constructor(
 
     private val gson = Gson()
 
-    fun loginUser() {
+    fun loginUser(){
         viewModelScope.launch {
-            _isLoginLoading.value = true
-            _loginStatus.value = ResultStatus.Idle
+            _isLoginLoading.value=true
+            _loginStatus.value=ResultStatus.Idle
             try {
-                val result = loginUseCase(userData.value)
-
-
-                _loginStatus.value = result.fold(
-                    onSuccess = { token -> ResultStatus.Success(token) },
-                    onFailure = { e ->
-                        ResultStatus.Error(
-                            e.message ?: "Unknown error"
-                        )
-                    }
+                val result=loginUseCase(userData.value)
+                _loginStatus.value=result.fold(
+                    onSuccess = {token ->ResultStatus.Success(token)},
+                    onFailure = {e-> ResultStatus.Error(e.message?:"Error desconocido")}
                 )
-
-            } catch (e: Exception) {
-                _loginStatus.value =
-                    ResultStatus.Error(e.message ?: "Unexpected error")
-                Log.e("LoginError", "Failed to login", e)
-            } finally {
-                _isLoading.value = false
+            }catch (e:Exception){
+                _loginStatus.value=ResultStatus.Error(e.message?:"Error inesperado")
+                Log.e("LoginError","Failed to login", e)
+            }finally {
+                _isLoginLoading.value=false
             }
         }
     }
+
 //<!--------------------2fa Login Screen ---------------->
 fun generateAndSendTwoFaCodeLogin() {
     viewModelScope.launch {

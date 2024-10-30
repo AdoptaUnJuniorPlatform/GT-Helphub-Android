@@ -137,30 +137,11 @@ fun LoginButton(
     text: String,
     navController: NavHostController
 ) {
-    val isLoading by authViewModel.isLoading.collectAsState()
-    val loginStatus by authViewModel.loginStatus.collectAsState()
-
-    LaunchedEffect(loginStatus) {
-        when (loginStatus) {
-            is ResultStatus.Success -> {
-                navController.navigate("Home") {
-                    popUpTo("Login") { inclusive = true }
-                }
-                authViewModel.resetLoginStatus()
-            }
-
-            is ResultStatus.Error -> {
-                Log.e(
-                    "LoginError",
-                    "Login failed: ${(loginStatus as ResultStatus.Error).message}"
-                )
-            }
-
-            else -> {}
-        }
-    }
+    val twoFaStatus by authViewModel.twoFaStatus.collectAsState()
+    val context= LocalContext.current
     Button(
-        onClick = { authViewModel.loginUser() },
+        onClick = { authViewModel.generateAndSendTwoFaCodeLogin()
+                  navController.navigate("TwofaLoginScreen")},
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
@@ -174,8 +155,17 @@ fun LoginButton(
             text = text.uppercase()
         )
     }
-    if (isLoading) {
-        CircularProgressIndicator(modifier = Modifier.padding(top = 8.dp))
+    when (twoFaStatus) {
+        is ResultStatus.Success -> {
+            authViewModel.resetTwoFaStatus()
+            navController.navigate("TwofaLoginScreen")
+        }
+        is ResultStatus.Error -> {
+            authViewModel.resetTwoFaStatus()
+            Toast.makeText(context, (twoFaStatus as ResultStatus.Error).message, Toast.LENGTH_SHORT).show()
+            navController.navigate("LoginScreen")
+        }
+        else -> {} // No hacer nada en el estado Idle
     }
 }
 

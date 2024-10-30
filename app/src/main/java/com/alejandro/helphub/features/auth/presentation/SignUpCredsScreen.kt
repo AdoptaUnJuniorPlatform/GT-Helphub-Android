@@ -207,7 +207,7 @@ fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController:
 
     Button(
         onClick = {authViewModel.generateAndSendTwoFaCode()
-            navController.navigate("DoubleAuthFactorScreen") },
+            navController.navigate("TwofaRegisterScreen") },
         enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
@@ -223,7 +223,7 @@ fun SignUpButton(authViewModel: AuthViewModel,isEnabled: Boolean, navController:
     when (twoFaStatus) {
         is ResultStatus.Success -> {
             authViewModel.resetTwoFaStatus()
-            navController.navigate("DoubleAuthFactorScreen")
+            navController.navigate("TwofaRegisterScreen")
         }
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
