@@ -1,7 +1,7 @@
 package com.alejandro.helphub.features.auth.domain.mappers
 
 import com.alejandro.helphub.features.auth.domain.LoginDTO
-import com.alejandro.helphub.features.auth.domain.SendTwofaResetPasswordDTO
+import com.alejandro.helphub.features.auth.domain.SendTwofaDTO
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.UserDTO
 import javax.inject.Inject
@@ -33,10 +33,11 @@ class UserDataMapper @Inject constructor() {
             password = userData.password
         )
     }
-    fun sendTwofaResetPassword(userData: UserData):SendTwofaResetPasswordDTO{
-        return SendTwofaResetPasswordDTO(
+    fun sendTwofaResetPasswordandLogin(userData: UserData):SendTwofaDTO{
+        return SendTwofaDTO(
             email = userData.email,
             twoFa = userData.twoFa
         )
     }
+
 }

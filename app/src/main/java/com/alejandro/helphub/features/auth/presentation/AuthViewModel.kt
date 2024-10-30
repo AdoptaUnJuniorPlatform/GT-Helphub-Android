@@ -10,11 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.CountriesModel
-import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.UserData
 import com.alejandro.helphub.features.auth.domain.usecases.LoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RegisterNewUserUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.RequestResetPasswordUseCase
+import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaLoginUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaResetPasswordUseCase
 import com.alejandro.helphub.features.auth.domain.usecases.SendTwoFaRegisterUseCase
 import com.alejandro.helphub.utils.ResultStatus
@@ -36,7 +36,8 @@ class AuthViewModel @Inject constructor(
     private val registerNewUserUseCase: RegisterNewUserUseCase,
     private val loginUseCase: LoginUseCase,
     private val sendTwoFaResetPasswordUseCase: SendTwoFaResetPasswordUseCase,
-    private val requestResetPasswordUseCase: RequestResetPasswordUseCase
+    private val requestResetPasswordUseCase: RequestResetPasswordUseCase,
+    private val sendTwoFaLoginUseCase:SendTwoFaLoginUseCase
 ) :
     ViewModel() {
 
@@ -242,26 +243,6 @@ class AuthViewModel @Inject constructor(
         MutableStateFlow<ResultStatus<String>>(ResultStatus.Idle)
     val loginStatus: StateFlow<ResultStatus<String>> = _loginStatus
 
-
-    //fun updatePostalCode(postalCode: String) {
-    //        Log.d("AuthViewModel", "Updating postalCode to: $postalCode")
-    //        val updateUserData = userData.value.copy(postalCode = postalCode)
-    //        _userData.value = updateUserData
-    //        navigateToStep2()
-    //    }
-    //
-    //    private val _isNavigationToStep2Enabled = MutableStateFlow(false)
-    //    val isNavigationToStep2Enabled: StateFlow<Boolean> =
-    //        _isNavigationToStep2Enabled.asStateFlow()
-    //
-    //    fun navigateToStep2() {
-    //        _isNavigationToStep2Enabled.value =
-    //            userData.value.userDescription.isNotBlank() &&
-    //                    userData.value.postalCode.isNotBlank()
-    //    }
-
-
-    //
     fun resetLoginStatus() {
         _loginStatus.value = ResultStatus.Idle
     }
@@ -300,6 +281,35 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+//<!--------------------2fa Login Screen ---------------->
+fun generateAndSendTwoFaCodeLogin() {
+    viewModelScope.launch {
+        _isLoading.value = true
+        try {
+            val generatedTwoFa = generateTwoFaCode()
+            val updatedUserData =
+                userData.value.copy(twoFa = generatedTwoFa)
+            Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+            val result = sendTwoFaLoginUseCase(updatedUserData)
+            if (result.isNotEmpty()) {
+                _twoFaStatus.value = ResultStatus.Success(Unit)
+                Log.i("this", "funciona")
+            } else {
+                _twoFaStatus.value =
+                    ResultStatus.Error("Credenciales no válidas")
+                Log.i("this", "Credenciales no válidas")
+            }
+            _userData.value = updatedUserData
+        } catch (e: Exception) {
+            _twoFaStatus.value = ResultStatus.Error("Error de conexión")
+            Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+        } finally {
+            _isLoading.value = false
+        }
+    }
+}
+
+
 
 //<!--------------------ResetPassword Screen ---------------->
 

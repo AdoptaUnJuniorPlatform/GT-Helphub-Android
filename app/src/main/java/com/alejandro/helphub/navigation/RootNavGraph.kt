@@ -1,14 +1,11 @@
 package com.alejandro.helphub.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.internal.composableLambda
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
-import com.alejandro.helphub.features.auth.presentation.DoubleAuthFactorScreen
+import com.alejandro.helphub.features.auth.presentation.TwofaRegisterScreen
 import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
 import com.alejandro.helphub.features.auth.presentation.MainScreen
@@ -98,7 +95,7 @@ fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) 
                 navController=navController)
         }
         composable("DoubleAuthFactorScreen"){
-            DoubleAuthFactorScreen(authViewModel=authViewModel,
+            TwofaRegisterScreen(authViewModel=authViewModel,
                 navController = navController)
         }
     }

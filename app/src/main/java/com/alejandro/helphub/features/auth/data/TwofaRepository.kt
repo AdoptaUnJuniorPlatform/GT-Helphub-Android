@@ -12,7 +12,11 @@ class TwofaRepository @Inject constructor(private val twofaService: TwofaService
         return twofaService.sendTwoFaRegister(twofaDTO)
     }
     suspend fun sendTwoFaResetPassword(userData: UserData): String {
-        val twofaDTO = userDataMapper.sendTwofaResetPassword(userData)
+        val twofaDTO = userDataMapper.sendTwofaResetPasswordandLogin(userData)
         return twofaService.sendTwoFaResetPassword(twofaDTO)
+    }
+    suspend fun sendTwoFaLogin(userData: UserData):String{
+        val twofaDTO=userDataMapper.sendTwofaResetPasswordandLogin(userData)
+        return twofaService.sendTwofaLogin(twofaDTO)
     }
 }
