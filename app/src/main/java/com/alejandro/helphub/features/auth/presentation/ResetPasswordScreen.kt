@@ -87,15 +87,9 @@ fun ResetPasswordButton(authViewModel: AuthViewModel,navController: NavHostContr
         onClick = { if (isResetEnabled) {
             Log.i("2FA", "Código 2FA correcto.")
             authViewModel.requestResetPassword()
+            authViewModel.clearTwofaField()
         navController.navigate("LoginScreen")}
-          // isTwoFaValid.value = authViewModel.isTwoFaCodeValid()
-            //            if (isTwoFaValid.value&&isPasswordValid) {
-            //                Log.i("2FA", "Código 2FA correcto.")
-            //                authViewModel.requestResetPassword()
-            //              }
-
-
-                  },
+          },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White

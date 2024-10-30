@@ -141,6 +141,7 @@ fun RegisterValidationButton(
                         onSuccess(false)
                     }
                 }
+                authViewModel.clearTwofaField()
             } else {
                 Log.i("2FA", "Código 2FA incorrecto.")
                 onSuccess(false)

@@ -396,7 +396,7 @@ fun generateAndSendTwoFaCodeLogin() {
         _userData.value=_userData.value.copy(password = "")
     }
  fun clearTwofaField(){
-        _userData.value=_userData.value.copy(twoFa = "")
+        _inputTwoFaCode.value=""
     }
 
     //<!--------------------SignUpStep1 Screen ---------------->

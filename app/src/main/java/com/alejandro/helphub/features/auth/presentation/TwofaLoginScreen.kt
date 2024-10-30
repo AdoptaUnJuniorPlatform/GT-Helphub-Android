@@ -106,6 +106,7 @@ fun LoginValidationButton(
             if (isTwoFaValid.value) {
                 Log.i("2FA", "Código 2FA correcto.")
                 authViewModel.loginUser()
+                authViewModel.clearTwofaField()
             } else {
                 Log.i("2FA", "Código 2FA incorrecto.")
             }
