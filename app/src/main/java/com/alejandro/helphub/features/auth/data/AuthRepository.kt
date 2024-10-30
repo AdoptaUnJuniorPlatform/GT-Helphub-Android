@@ -13,12 +13,14 @@ class AuthRepository @Inject constructor(
         val userDTO = userDataMapper.toUserDTO(userData)
         return authService.registerNewUser(userDTO)
     }
+
     suspend fun doLogin(userData: UserData): Result<String> {
         val loginDTO = userDataMapper.toLoginDTO(userData)
         return authService.doLogin(loginDTO)
     }
-    suspend fun requestResetPassword(userData:UserData):Result<String>{
-        val loginDTO=userDataMapper.requestResetPassword(userData)
+
+    suspend fun requestResetPassword(userData: UserData): Result<String> {
+        val loginDTO = userDataMapper.requestResetPassword(userData)
         return authService.requestResetPassword(loginDTO)
     }
 }

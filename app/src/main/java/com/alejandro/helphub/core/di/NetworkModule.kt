@@ -36,6 +36,7 @@ class NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
     @Singleton
     @Provides
     fun provideTwofaClient(retrofit: Retrofit):TwofaClient{
@@ -47,5 +48,4 @@ class NetworkModule {
     fun provideAuthClient(retrofit: Retrofit):AuthClient{
         return  retrofit.create(AuthClient::class.java)
     }
-
 }

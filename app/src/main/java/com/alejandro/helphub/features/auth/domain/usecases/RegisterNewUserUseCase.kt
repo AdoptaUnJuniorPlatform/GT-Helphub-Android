@@ -6,8 +6,7 @@ import com.alejandro.helphub.features.auth.domain.UserData
 import javax.inject.Inject
 
 class RegisterNewUserUseCase @Inject constructor(private val authRepository: AuthRepository) {
-
-        suspend operator fun invoke(userData: UserData):String{
-            return authRepository.registerNewUser(userData)
-        }
+    suspend operator fun invoke(userData: UserData): String {
+        return authRepository.registerNewUser(userData)
     }
+}

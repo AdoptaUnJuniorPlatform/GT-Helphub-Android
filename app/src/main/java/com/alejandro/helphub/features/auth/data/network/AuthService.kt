@@ -23,7 +23,13 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
                 response.body()?.access_token?.let { Result.success(it) }
                     ?: Result.failure(Exception("Token no disponible"))
             } else {
-                Result.failure(Exception("Error en inicio de sesión${response.errorBody()?.string()}"))
+                Result.failure(
+                    Exception(
+                        "Error en inicio de sesión${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
             }
         }
     }
@@ -35,7 +41,13 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
                 response.body()?.code?.let { Result.success(it) }
                     ?: Result.failure(Exception("Nueva contraseña no aceptada"))
             } else {
-                Result.failure(Exception("Error en cambio de contraseña${response.errorBody()?.string()}"))
+                Result.failure(
+                    Exception(
+                        "Error en cambio de contraseña${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
             }
         }
     }

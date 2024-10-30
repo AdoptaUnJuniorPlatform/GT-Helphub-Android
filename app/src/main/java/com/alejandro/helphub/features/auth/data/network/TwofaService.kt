@@ -13,19 +13,20 @@ class TwofaService @Inject constructor(private val twofaClient: TwofaClient) {
         return withContext(Dispatchers.IO) {
             val response = twofaClient.sendTwoFaRegister(userDTO)
             response.body()?.code ?: "No code"
-        }}
-
-        suspend fun sendTwoFaResetPassword(sendTwofaDTO: SendTwofaDTO): String {
-            return withContext(Dispatchers.IO) {
-                val response = twofaClient.sendTwoFaResetPassword(sendTwofaDTO)
-                response.body()?.code ?: "No code"
-            }
-        }
-
-    suspend fun sendTwofaLogin(sendTwofaDTO: SendTwofaDTO):String{
-        return withContext(Dispatchers.IO){
-            val response=twofaClient.sendTwoFaLogin(sendTwofaDTO)
-            response.body()?.code?:"No code"
         }
     }
+
+    suspend fun sendTwoFaResetPassword(sendTwofaDTO: SendTwofaDTO): String {
+        return withContext(Dispatchers.IO) {
+            val response = twofaClient.sendTwoFaResetPassword(sendTwofaDTO)
+            response.body()?.code ?: "No code"
+        }
     }
+
+    suspend fun sendTwofaLogin(sendTwofaDTO: SendTwofaDTO): String {
+        return withContext(Dispatchers.IO) {
+            val response = twofaClient.sendTwoFaLogin(sendTwofaDTO)
+            response.body()?.code ?: "No code"
+        }
+    }
+}

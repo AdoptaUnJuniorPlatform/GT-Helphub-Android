@@ -12,5 +12,3 @@ data class UserDTO (
     val twoFa: String,
     val role: String
 )
-
-//Used for register and 2fa register.

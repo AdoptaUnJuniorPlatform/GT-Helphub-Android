@@ -17,4 +17,3 @@ interface TwofaClient {
     @POST("/api/helphub/email-service/loginEmail")
     suspend fun sendTwoFaLogin(@Body sendTwofaDTO: SendTwofaDTO): Response<TwofaResponse>
 }
-

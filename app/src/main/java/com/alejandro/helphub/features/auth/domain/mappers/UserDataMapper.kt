@@ -21,23 +21,25 @@ class UserDataMapper @Inject constructor() {
             role = userData.role
         )
     }
-    fun toLoginDTO(userData: UserData):LoginDTO{
+
+    fun toLoginDTO(userData: UserData): LoginDTO {
         return LoginDTO(
             email = userData.email,
             password = userData.password
         )
     }
-    fun requestResetPassword(userData: UserData):LoginDTO{
+
+    fun requestResetPassword(userData: UserData): LoginDTO {
         return LoginDTO(
             email = userData.email,
             password = userData.password
         )
     }
-    fun sendTwofaResetPasswordandLogin(userData: UserData):SendTwofaDTO{
+
+    fun sendTwofaResetPasswordandLogin(userData: UserData): SendTwofaDTO {
         return SendTwofaDTO(
             email = userData.email,
             twoFa = userData.twoFa
         )
     }
-
 }
