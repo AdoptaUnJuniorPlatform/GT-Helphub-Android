@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.alejandro.helphub.features.profile.presentation.RegisterHeader
+import com.alejandro.helphub.features.profile.presentation.StepButtons
 import com.alejandro.helphub.utils.ResultStatus
 
 @Composable

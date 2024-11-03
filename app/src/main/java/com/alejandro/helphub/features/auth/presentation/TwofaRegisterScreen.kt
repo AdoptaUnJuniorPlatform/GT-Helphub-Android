@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.features.profile.presentation.RegisterHeader
+import com.alejandro.helphub.features.profile.presentation.StepButtons
 
 @Composable
 fun TwofaRegisterScreen(
@@ -295,7 +297,7 @@ fun Retry(authViewModel: AuthViewModel) {
 @Composable
 fun AuthCode(authViewModel: AuthViewModel) {
     val inputCode by authViewModel.inputTwoFaCode.collectAsState()
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     val userEmail = userData.email
 
     Column(modifier = Modifier.wrapContentSize()) {

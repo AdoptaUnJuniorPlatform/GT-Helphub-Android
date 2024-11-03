@@ -56,7 +56,7 @@ fun LoginScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
     )

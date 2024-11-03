@@ -1,23 +1,11 @@
-package com.alejandro.helphub.features.auth.domain
+package com.alejandro.helphub.features.profile.domain
 
 import android.graphics.Bitmap
 import android.net.Uri
 
-data class UserData (
-    val nameUser:String="",
-    val surnameUser:String="",
-    val surname2:String="",
-    val email:String="",
-    val password:String="",
-    val countryCode:String="",
-    val phone:String="",
-    val optionCall:Boolean=false,
-    val showPhone:Boolean=false,
-    val blocked:Boolean=false,
-    val twoFa:String="",
-    val role:String="user",
-    val userDescription:String="",
+data class UserProfileData (
     val postalCode:String="",
+    val userDescription:String="",
     val userPhotoUri: Uri? =null,
     val photoBitmap: Bitmap? = null,
     val availability:String?=null,

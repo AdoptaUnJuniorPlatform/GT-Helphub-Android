@@ -2,44 +2,44 @@ package com.alejandro.helphub.features.auth.domain.mappers
 
 import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.SendTwofaDTO
-import com.alejandro.helphub.features.auth.domain.UserData
+import com.alejandro.helphub.features.auth.domain.UserAuthData
 import com.alejandro.helphub.features.auth.domain.UserDTO
 import javax.inject.Inject
 
 class UserDataMapper @Inject constructor() {
-    fun toUserDTO(userData: UserData): UserDTO {
+    fun toUserDTO(userAuthData: UserAuthData): UserDTO {
         return UserDTO(
-            email = userData.email,
-            twoFa = userData.twoFa,
-            password = userData.password,
-            nameUser = userData.nameUser,
-            surnameUser = userData.surnameUser,
-            phone = userData.phone,
-            optionCall = userData.optionCall,
-            showPhone = userData.showPhone,
-            blocked = userData.blocked,
-            role = userData.role
+            email = userAuthData.email,
+            twoFa = userAuthData.twoFa,
+            password = userAuthData.password,
+            nameUser = userAuthData.nameUser,
+            surnameUser = userAuthData.surnameUser,
+            phone = userAuthData.phone,
+            optionCall = userAuthData.optionCall,
+            showPhone = userAuthData.showPhone,
+            blocked = userAuthData.blocked,
+            role = userAuthData.role
         )
     }
 
-    fun toLoginDTO(userData: UserData): LoginDTO {
+    fun toLoginDTO(userAuthData: UserAuthData): LoginDTO {
         return LoginDTO(
-            email = userData.email,
-            password = userData.password
+            email = userAuthData.email,
+            password = userAuthData.password
         )
     }
 
-    fun requestResetPassword(userData: UserData): LoginDTO {
+    fun requestResetPassword(userAuthData: UserAuthData): LoginDTO {
         return LoginDTO(
-            email = userData.email,
-            password = userData.password
+            email = userAuthData.email,
+            password = userAuthData.password
         )
     }
 
-    fun sendTwofaResetPasswordandLogin(userData: UserData): SendTwofaDTO {
+    fun sendTwofaResetPasswordandLogin(userAuthData: UserAuthData): SendTwofaDTO {
         return SendTwofaDTO(
-            email = userData.email,
-            twoFa = userData.twoFa
+            email = userAuthData.email,
+            twoFa = userAuthData.twoFa
         )
     }
 }

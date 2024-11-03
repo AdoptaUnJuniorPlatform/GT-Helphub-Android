@@ -78,7 +78,7 @@ fun SignUpCredsScreen(
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     val isChecked: Boolean by authViewModel.isCheckBoxChecked.collectAsState(
         initial = false
     )
@@ -286,7 +286,7 @@ fun PasswordReminder() {
 
 @Composable
 fun PasswordTextfield(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     var passwordVisibility by remember { mutableStateOf(false) }
     val isPasswordValid by authViewModel.isPasswordValid.collectAsState()
     val borderColor = if (isPasswordValid) Color.Gray else Color.Red
@@ -393,7 +393,7 @@ fun PhoneSwitch(authViewModel: AuthViewModel) {
 @Composable
 fun PhoneTextfield(authViewModel: AuthViewModel) {
     val countries = CountryProvider.countries
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     val expanded by authViewModel.isExpanded.collectAsState(false)
     Row(
         modifier = Modifier

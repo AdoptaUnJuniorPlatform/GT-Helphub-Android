@@ -34,7 +34,7 @@ fun ForgotPasswordScreen(
     authViewModel: AuthViewModel
 
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by authViewModel.userAuthData.collectAsState()
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
