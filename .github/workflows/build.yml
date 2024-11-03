@@ -34,7 +34,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build and analyze
         env:
-          SONAR_HOST_URL: https://sonarqubevm.zapto.org}
+          SONAR_HOST_URL: https://sonarqubevm.zapto.org
           SONAR_TOKEN: squ_5d5f3f6eb06776925ad366a622c30d5ed04eb2f8
           #${{ secrets.SONAR_TOKEN }}
         
