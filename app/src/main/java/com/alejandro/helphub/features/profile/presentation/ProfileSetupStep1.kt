@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -45,11 +45,11 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep1(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep1(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
-    val isStep2Enabled by authViewModel.isNavigationToStep2Enabled.collectAsState(
+    val isStep2Enabled by profileViewModel.isNavigationToStep2Enabled.collectAsState(
         initial = false
     )
     Scaffold { innerPadding ->
@@ -73,13 +73,13 @@ fun SignUpStep1(
                 StepOneTitle()
                 Spacer(modifier = Modifier.height(20.dp))
                 Description()
-                TextBox(authViewModel)
+                TextBox(profileViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                Location(authViewModel)
+                Location(profileViewModel)
                 Spacer(modifier = Modifier.height(104.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("SignUpCredsScreen") },
-                    onNextClick = { navController.navigate("SignUpStep2") },
+                    onBackClick = { navController.navigate("Home") },
+                    onNextClick = { navController.navigate("ProfileSetupStep2") },
                     enabled = isStep2Enabled
                 )
             }
@@ -149,8 +149,8 @@ fun StepButtons(
 }
 
 @Composable
-fun Location(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
+fun Location(profileViewModel:ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
     Text(
         text = stringResource(id = R.string.location),
         fontSize = 16.sp,
@@ -158,10 +158,10 @@ fun Location(authViewModel: AuthViewModel) {
     )
     Spacer(modifier = Modifier.height(10.dp))
     OutlinedTextField(
-        value = userData.postalCode,
+        value = userProfileData.postalCode,
         onValueChange = {
             if (it.length <= 5 && it.all { char -> char.isDigit() }) {
-                authViewModel.updatePostalCode(it)
+                profileViewModel.updatePostalCode(it)
             }
         },
         modifier = Modifier
@@ -199,17 +199,17 @@ fun Location(authViewModel: AuthViewModel) {
 }
 
 @Composable
-fun TextBox(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
+fun TextBox(profileViewModel: ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userData.userDescription,
+            value = userProfileData.userDescription,
             onValueChange = {
                 if (it.length <= 160) {
-                    authViewModel.updateUserDescription(it)
+                    profileViewModel.updateUserDescription(it)
                 }
             },
             placeholder = { Text(stringResource(id = R.string.description_placeholder)) },
@@ -231,7 +231,7 @@ fun TextBox(authViewModel: AuthViewModel) {
         Text(
             text = stringResource(
                 id = R.string.character_limit,
-                userData.userDescription.length
+                userProfileData.userDescription.length
             ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)

@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -61,18 +61,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
+import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 
 @Composable
-fun SignUpStep4Skill(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep4b(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
     var showDataCard by remember { mutableStateOf(false) }
-    val isStep5Enabled by authViewModel.isNavigationToStep5Enabled.collectAsState(
+    val isStep5Enabled by profileViewModel.isNavigationToStep5Enabled.collectAsState(
         initial = false
     )
     Box(modifier = Modifier.fillMaxSize()) {
@@ -96,13 +98,13 @@ fun SignUpStep4Skill(
                     StepFourProgressIndicator()
                     StepFourTitle()
                     Spacer(modifier = Modifier.height(20.dp))
-                    SkillTextBox(authViewModel, showCard = showCard,
+                    SkillTextBox(profileViewModel, showCard = showCard,
                         onShowCardChange = { showCard = it })
                     Spacer(modifier = Modifier.height(20.dp))
-                    CategorySelection(authViewModel)
+                    CategorySelection(profileViewModel)
                     Spacer(modifier = Modifier.height(58.dp))
                     StepButtons(
-                        onBackClick = { navController.navigate("SignUpStep4Post") },
+                        onBackClick = { navController.navigate("ProfileSetupStep4a") },
                         onNextClick = {
                             showDataCard = true
                         },
@@ -112,14 +114,14 @@ fun SignUpStep4Skill(
             }
         }
         if (showDataCard) {
-            OpeSkillCard(authViewModel, navController)
+            OpeSkillCard(profileViewModel, navController)
         }
     }
 }
 
 @Composable
 fun OpeSkillCard(
-    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
     Box(
@@ -132,32 +134,30 @@ fun OpeSkillCard(
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        DataCard(authViewModel, navController)
+        DataCard(profileViewModel, navController)
     }
 }
 
 @Composable
-fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
-    val userData by authViewModel.userData.collectAsState()
+fun DataCard(
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController
+) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val authViewModel:AuthViewModel= hiltViewModel()
+    val userData by authViewModel.userAuthData.collectAsState()
     Log.d(
         "CongratulationsBox",
-        "name: ${userData.nameUser}," +
-                "surname1: ${userData.surnameUser}," +
-                "surname2: ${userData.surname2}," +
-                "email: ${userData.email}," +
-                "password: ${userData.password}," +
-                "countryCode:${userData.countryCode}" +
-                "phoneNumber: ${userData.phone}" +
-                "userDescription: ${userData.userDescription}" +
-                "postalCode: ${userData.postalCode}, " +
-                "userPhotoUri: ${userData.userPhotoUri}, " +
-                "availability: ${userData.availability}, " +
-                "days: ${userData.selectedDays}, " +
-                "postTitle: ${userData.postTitle}, " +
-                "selectedLevel: ${userData.selectedLevel}, " +
-                "mode: ${userData.mode}, " +
-                "skilLDescription: ${userData.skillDescription}, " +
-                "selectedCategory: ${userData.selectedCategories},"
+        "userDescription: ${userProfileData.userDescription}" +
+                "postalCode: ${userProfileData.postalCode}, " +
+                "userPhotoUri: ${userProfileData.userPhotoUri}, " +
+                "availability: ${userProfileData.availability}, " +
+                "days: ${userProfileData.selectedDays}, " +
+                "postTitle: ${userProfileData.postTitle}, " +
+                "selectedLevel: ${userProfileData.selectedLevel}, " +
+                "mode: ${userProfileData.mode}, " +
+                "skilLDescription: ${userProfileData.skillDescription}, " +
+                "selectedCategory: ${userProfileData.selectedCategories},"
     )
 
     Card(
@@ -247,7 +247,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     Box(modifier = Modifier.size(50.dp)) {
                         Image(
-                            painter = rememberAsyncImagePainter(userData.userPhotoUri),
+                            painter = rememberAsyncImagePainter(userProfileData.userPhotoUri),
                             contentDescription = stringResource(id = R.string.user_photo_content_description),
                             modifier = Modifier
                                 .size(124.dp)
@@ -266,16 +266,16 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = userData.postTitle, fontSize = 24.sp)
+                    Text(text = userProfileData.postTitle, fontSize = 24.sp)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = userData.postalCode, fontSize = 16.sp)
+                    Text(text = userProfileData.postalCode, fontSize = 16.sp)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = userData.mode
+                        text = userProfileData.mode
                             ?: stringResource(id = R.string.not_available),
                         fontSize = 16.sp
                     )
@@ -292,7 +292,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = if (level == userData.selectedLevel) Color.Blue else Color.Transparent,
+                                    color = if (level == userProfileData.selectedLevel) Color.Blue else Color.Transparent,
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .border(
@@ -305,7 +305,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                             Text(
                                 text = level,
                                 fontSize = 14.sp,
-                                color = if (level == userData.selectedLevel) Color.White else Color.Black
+                                color = if (level == userProfileData.selectedLevel) Color.White else Color.Black
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -329,7 +329,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                             .padding(horizontal = 10.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = userData.availability
+                            text = userProfileData.availability
                                 ?: stringResource(id = R.string.not_available),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -339,7 +339,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = userData.skillDescription,
+                        text = userProfileData.skillDescription,
                         fontSize = 16.sp
                     )
                 }
@@ -347,7 +347,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    userData.selectedCategories.forEach { category ->
+                    userProfileData.selectedCategories.forEach { category ->
                         Box(
                             modifier = Modifier
                                 .border(
@@ -369,7 +369,7 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { navController.navigate("SignUpStep5") },
+                onClick = { navController.navigate("ProfileSetupStep5") },
                 shape = RoundedCornerShape(6.dp),
                 modifier = Modifier.align(Alignment.End),
                 colors = ButtonDefaults.buttonColors(
@@ -384,10 +384,10 @@ fun DataCard(authViewModel: AuthViewModel, navController: NavHostController) {
 }
 
 @Composable
-fun CategorySelection(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
-    val expanded by authViewModel.expanded.collectAsState()
-    val selectedCategories by authViewModel.selectedCategories.collectAsState()
+fun CategorySelection(profileViewModel: ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val expanded by profileViewModel.expanded.collectAsState()
+    val selectedCategories by profileViewModel.selectedCategories.collectAsState()
 
     val categories = listOf(
         stringResource(id = R.string.animals),
@@ -417,7 +417,7 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                 .padding(16.dp)
                 .background(Color.LightGray)
                 .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-                .clickable { authViewModel.toggleDropdown() },
+                .clickable { profileViewModel.toggleDropdown() },
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -425,12 +425,12 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (userData.selectedCategories.isEmpty()) {
+                    text = if (userProfileData.selectedCategories.isEmpty()) {
                         stringResource(
                             id = R.string.categories
                         )
                     } else {
-                        userData.selectedCategories.joinToString(", ")
+                        userProfileData.selectedCategories.joinToString(", ")
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -441,7 +441,7 @@ fun CategorySelection(authViewModel: AuthViewModel) {
             }
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { authViewModel.toggleDropdown() }
+                onDismissRequest = { profileViewModel.toggleDropdown() }
             ) {
                 categories.forEach { category ->
                     var isChecked = selectedCategories.contains(category)
@@ -451,7 +451,7 @@ fun CategorySelection(authViewModel: AuthViewModel) {
                                 Checkbox(
                                     checked = isChecked,
                                     onCheckedChange = {
-                                        authViewModel.onCategoryChecked(
+                                        profileViewModel.onCategoryChecked(
                                             category,
                                             it
                                         )
@@ -470,11 +470,11 @@ fun CategorySelection(authViewModel: AuthViewModel) {
 
 @Composable
 fun SkillTextBox(
-    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
     showCard: Boolean,
     onShowCardChange: (Boolean) -> Unit
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -562,10 +562,10 @@ fun SkillTextBox(
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userData.skillDescription,
+            value = userProfileData.skillDescription,
             onValueChange = {
                 if (it.length <= 90) {
-                    authViewModel.updateSkillDescription(it)
+                    profileViewModel.updateSkillDescription(it)
                 }
             },
             placeholder = {
@@ -592,7 +592,7 @@ fun SkillTextBox(
         Text(
             text = stringResource(
                 id = R.string.character_limit_ninety,
-                userData.skillDescription.length
+                userProfileData.skillDescription.length
             ),
             fontSize = 18.sp,
             modifier = Modifier

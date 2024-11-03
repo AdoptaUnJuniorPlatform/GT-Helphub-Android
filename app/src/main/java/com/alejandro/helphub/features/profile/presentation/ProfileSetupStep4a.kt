@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -51,13 +51,13 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep4Post(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep4a(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
-    val isStep4SkillEnabled by authViewModel.isNavigationToStep4SkillEnabled.collectAsState(
+    val isStep4SkillEnabled by profileViewModel.isNavigationToStep4SkillEnabled.collectAsState(
         initial = false
     )
     Scaffold { innerPadding ->
@@ -84,19 +84,19 @@ fun SignUpStep4Post(
                 item { AddSkill() }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
                 item {
-                    PostTitle(authViewModel,
+                    PostTitle(profileViewModel,
                         showCard = showCard,
                         onShowCardChange = { showCard = it })
                 }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { Level(authViewModel) }
+                item { Level(profileViewModel) }
                 item { Spacer(modifier = Modifier.height(20.dp)) }
-                item { Mode(authViewModel) }
+                item { Mode(profileViewModel) }
                 item { Spacer(modifier = Modifier.height(22.dp)) }
                 item {
                     StepButtons(
-                        onBackClick = { navController.navigate("SignUpStep3") },
-                        onNextClick = { navController.navigate("SignUpStep4Skill") },
+                        onBackClick = { navController.navigate("ProfileSetupStep3") },
+                        onNextClick = { navController.navigate("ProfileSetupStep4b") },
                         enabled = isStep4SkillEnabled
                     )
                 }
@@ -106,9 +106,9 @@ fun SignUpStep4Post(
 }
 
 @Composable
-fun Mode(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
-    var selectedItem by remember { mutableStateOf(userData.mode ?: "") }
+fun Mode(profileViewModel: ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    var selectedItem by remember { mutableStateOf(userProfileData.mode ?: "") }
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -125,7 +125,7 @@ fun Mode(authViewModel: AuthViewModel) {
                 selectedItem = selectedItem,
                 onItemSelected = {
                     selectedItem = it
-                    authViewModel.updateLearningMode(it)
+                    profileViewModel.updateLearningMode(it)
                 },
             )
         }
@@ -135,7 +135,7 @@ fun Mode(authViewModel: AuthViewModel) {
                 selectedItem = selectedItem,
                 onItemSelected = {
                     selectedItem = it
-                    authViewModel.updateLearningMode(it)
+                    profileViewModel.updateLearningMode(it)
                 })
         }
     }
@@ -149,11 +149,11 @@ fun Mode(authViewModel: AuthViewModel) {
 }
 
 @Composable
-fun Level(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
+fun Level(profileViewModel: ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
     var selectedItem by remember {
         mutableStateOf(
-            userData.selectedLevel ?: ""
+            userProfileData.selectedLevel ?: ""
         )
     }
     Row {
@@ -172,7 +172,7 @@ fun Level(authViewModel: AuthViewModel) {
                 selectedItem = selectedItem,
                 onItemSelected = {
                     selectedItem = it
-                    authViewModel.updateSelectedLevel(it)
+                    profileViewModel.updateSelectedLevel(it)
                 },
             )
         }
@@ -182,7 +182,7 @@ fun Level(authViewModel: AuthViewModel) {
                 selectedItem = selectedItem,
                 onItemSelected = {
                     selectedItem = it
-                    authViewModel.updateSelectedLevel(it)
+                    profileViewModel.updateSelectedLevel(it)
                 })
         }
         Box(modifier = Modifier.weight(5f)) {
@@ -191,7 +191,7 @@ fun Level(authViewModel: AuthViewModel) {
                 selectedItem = selectedItem,
                 onItemSelected = {
                     selectedItem = it
-                    authViewModel.updateSelectedLevel(it)
+                    profileViewModel.updateSelectedLevel(it)
                 })
         }
     }
@@ -199,11 +199,11 @@ fun Level(authViewModel: AuthViewModel) {
 
 @Composable
 fun PostTitle(
-    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
     showCard: Boolean,
     onShowCardChange: (Boolean) -> Unit
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,11 +294,11 @@ fun PostTitle(
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userData.postTitle,
+            value = userProfileData.postTitle,
             singleLine = true,
             onValueChange = {
                 if (it.length <= 20) {
-                    authViewModel.updatePostTitle(it)
+                    profileViewModel.updatePostTitle(it)
                 }
             },
             placeholder = {
@@ -324,7 +324,7 @@ fun PostTitle(
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-                userData.postTitle.length
+                userProfileData.postTitle.length
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)

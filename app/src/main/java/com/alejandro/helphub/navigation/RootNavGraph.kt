@@ -12,19 +12,23 @@ import com.alejandro.helphub.features.auth.presentation.MainScreen
 import com.alejandro.helphub.features.auth.presentation.PrivacyScreen
 import com.alejandro.helphub.features.auth.presentation.ResetPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
-import com.alejandro.helphub.features.auth.presentation.SignUpStep1
-import com.alejandro.helphub.features.auth.presentation.SignUpStep2
-import com.alejandro.helphub.features.auth.presentation.SignUpStep3
-import com.alejandro.helphub.features.auth.presentation.SignUpStep4Post
-import com.alejandro.helphub.features.auth.presentation.SignUpStep4Skill
-import com.alejandro.helphub.features.auth.presentation.SignUpStep5
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep2
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep3
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep4a
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep4b
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep5
 import com.alejandro.helphub.features.auth.presentation.TwofaLoginScreen
 import com.alejandro.helphub.features.home.presentation.Home
+import com.alejandro.helphub.features.profile.presentation.ProfileSetupStep1
+import com.alejandro.helphub.features.profile.presentation.ProfileViewModel
 import com.alejandro.helphub.features.splash.presentation.SplashScreen
 
 @Composable
-fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) {
-  // val authViewModel:AuthViewModel= hiltViewModel()
+fun RootNavGraph(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel
+) {
     NavHost(navController = navController, startDestination = "SplashScreen") {
 
         composable("SplashScreen") {
@@ -51,64 +55,71 @@ fun RootNavGraph(navController: NavHostController,authViewModel: AuthViewModel) 
                 navController = navController
             )
         }
-        composable("SignUpStep1") {
-            SignUpStep1(
+        composable("ProfileSetupStep1") {
+            ProfileSetupStep1(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("ProfileSetupStep2") {
+            ProfileSetupStep2(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("ProfileSetupStep3") {
+            ProfileSetupStep3(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("ProfileSetupStep4a") {
+            ProfileSetupStep4a(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("ProfileSetupStep4b") {
+            ProfileSetupStep4b(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("ProfileSetupStep5") {
+            ProfileSetupStep5(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable("MainScreen") {
+            MainScreen(navController = navController)
+        }
+        composable("Home") {
+            Home(navController = navController)
+        }
+        composable("ForgotPasswordScreen") {
+            ForgotPasswordScreen(
                 authViewModel = authViewModel,
                 navController = navController
             )
         }
-        composable("SignUpStep2") {
-            SignUpStep2(
-               authViewModel = authViewModel,
-               navController = navController
-            )
-        }
-        composable("SignUpStep3") {
-            SignUpStep3(
+        composable("ResetPasswordScreen") {
+            ResetPasswordScreen(
                 authViewModel = authViewModel,
                 navController = navController
             )
         }
-        composable("SignUpStep4Post") {
-            SignUpStep4Post(
+        composable("TwofaRegisterScreen") {
+            TwofaRegisterScreen(
                 authViewModel = authViewModel,
                 navController = navController
             )
         }
-        composable("SignUpStep4Skill") {
-            SignUpStep4Skill(
-                authViewModel =authViewModel,
+        composable("TwofaLoginScreen") {
+            TwofaLoginScreen(
+                authViewModel = authViewModel,
                 navController = navController
             )
-        }
-        composable("SignUpStep5"){
-            SignUpStep5(
-                authViewModel=authViewModel,
-                navController=navController
-            )
-        }
-        composable("MainScreen"){
-            MainScreen(navController = navController) }
-        
-        composable("Home"){
-            Home( )}
-
-        composable("ForgotPasswordScreen"){
-            ForgotPasswordScreen(authViewModel=authViewModel,
-                navController=navController)
-        }
-        composable("ResetPasswordScreen"){
-            ResetPasswordScreen(authViewModel=authViewModel,
-                navController=navController)
-        }
-        composable("TwofaRegisterScreen"){
-            TwofaRegisterScreen(authViewModel=authViewModel,
-                navController = navController)
-        }
-        composable("TwofaLoginScreen"){
-            TwofaLoginScreen(authViewModel=authViewModel,
-                navController = navController)
         }
     }
-
 }

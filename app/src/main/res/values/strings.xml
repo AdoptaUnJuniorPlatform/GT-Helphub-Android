@@ -67,7 +67,7 @@
     <string name="privacy_text_3">Tus datos personales y la información de tu dispositivo (como cookies y otros identificadores) podrán ser tratados con los fines mencionados y compartidos únicamente con proveedores autorizados y bajo estrictas medidas de seguridad. La información estará almacenada de manera segura.</string>
     <string name="accept_everything">Aceptar todo</string>
 
-    <!--SignUp Screen Step 1 -->
+    <!--Profile Setup Step 1 -->
     <string name="go_back">ATRÁS</string>
     <string name="next">SIGUIENTE</string>
     <string name="location">Ubicación</string>
@@ -79,7 +79,7 @@
     <string name="user_description_title">Breve descripción del usuario</string>
     <string name="step_1">Paso 1</string>
     <string name="step_1_title">Cuéntanos un poco más sobre ti"</string>
-    <!--SignUp Screen Step 2 -->
+    <!--Profile Setup Step 2 -->
     <string name="step_2_title">Una foto vale más que mil palabras</string>
     <string name="step_2">Paso 2</string>
     <string name="choose_photo">Escoger una foto</string>
@@ -97,7 +97,7 @@
     <string name="photo_fifth_indication_dialog">Asegúrate de que la foto sea reciente y refleje cómo te ves actualmente.</string>
     <string name="confirm_button">Entiendo</string>
     <string name="photo_advice">Consejos</string>
-    <!--SignUp Screen Step 3 -->
+    <!--Profile Setup Step 3 -->
     <string name="step_3">Paso 3</string>
     <string name="availability_hours">Disponibilidad horaria</string>
     <string name="step_3_title">Selecciona tus horarios</string>
@@ -118,7 +118,7 @@
     <string name="friday">Viernes</string>
     <string name="saturday">Sábado</string>
     <string name="sunday">Domingo</string>
-    <!--SignUp Screen Step 4 Post -->
+    <!--Profile Setup Step 4a -->
     <string name="step_4">Paso 4</string>
     <string name="step_4_title">¡Ya casi estamos!</string>
     <string name="level">Nivel</string>
@@ -140,7 +140,7 @@
     <string name="cv_dialog">Revisión de currículum vitae.</string>
     <string name="cooking_dialog">Clases de cocina italiana tradicional.</string>
     <string name="gym_dialog">Entrenamiento personal en gimnasio.</string>
-    <!--SignUp Screen Step 4 Skill -->
+    <!--Profile Setup Step 4b -->
     <string name="skill_offer">¿Qué ofreces?</string>
     <string name="skill_description">Ej: Clases de pintura al óleo desde cero, nivel inicial y avanzado.</string>
     <string name="how_to_text">Cómo generar un texto llamativo</string>
@@ -167,7 +167,7 @@
     <string name="not_available">No disponible</string>
     <string name="availability">Disponibilidad</string>
     <string name="continue_button">Continuar</string>
-    <!--SignUp Screen Step 5 -->
+    <!--Profile Setup Step 5 -->
     <string name="step_5">Último paso</string>
     <string name="step_5_title">Intercambiando habilidades</string>
     <string name="learning_question">¿Qué te gustaría aprender?</string>

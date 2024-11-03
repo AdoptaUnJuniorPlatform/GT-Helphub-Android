@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -35,11 +35,11 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep5(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep5(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
-    val isHomeEnabled by authViewModel.isNavigationToHomeEnabled.collectAsState(
+    val isHomeEnabled by profileViewModel.isNavigationToHomeEnabled.collectAsState(
         initial = false
     )
     Scaffold { innerPadding ->
@@ -64,11 +64,11 @@ fun SignUpStep5(
                 Spacer(modifier = Modifier.height(16.dp))
                 Learn()
                 Spacer(modifier = Modifier.height(16.dp))
-                PopularCategories(authViewModel)
+                PopularCategories(profileViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
                 Spacer(modifier = Modifier.height(124.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("SignUpStep4Skill") },
+                    onBackClick = { navController.navigate("ProfileSetupStep4b") },
                     onNextClick = { navController.navigate("Home") },
                     enabled = isHomeEnabled
                 )
@@ -108,7 +108,7 @@ fun CategoryBox(
 
 @Composable
 fun PopularCategories(
-    authViewModel: AuthViewModel
+    profileViewModel: ProfileViewModel
 ) {
     val categories = listOf(
         stringResource(id = R.string.animals),
@@ -127,8 +127,8 @@ fun PopularCategories(
         categories.subList(4, 7),
         categories.takeLast(3)
     )
-    val userData by authViewModel.userData.collectAsState()
-    val selectedCategories by authViewModel.selectedCategoriesOfInterest.collectAsState()
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val selectedCategories by profileViewModel.selectedCategoriesOfInterest.collectAsState()
     Column {
         Row(
             modifier = Modifier
@@ -161,7 +161,7 @@ fun PopularCategories(
                         selectedCategories.contains(category)
                     CategoryBox(category = category, isSelected = isSelected,
                         onItemSelected = {
-                            authViewModel.onCategoriesOfInterestChecked(
+                            profileViewModel.onCategoriesOfInterestChecked(
                                 category,
                                 it
                             )
@@ -171,7 +171,7 @@ fun PopularCategories(
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
-        Log.d("InterestInfo", "categories: ${userData.categoriesOfInterest}")
+        Log.d("InterestInfo", "categories: ${userProfileData.categoriesOfInterest}")
     }
 }
 

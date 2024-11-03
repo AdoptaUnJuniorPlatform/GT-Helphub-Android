@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,18 +48,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep2(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep2(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val isStep3Enabled by authViewModel.isNavigationToStep3Enabled.collectAsState(
+    val isStep3Enabled by profileViewModel.isNavigationToStep3Enabled.collectAsState(
         initial = false
     )
     Scaffold { innerPadding ->
@@ -86,15 +85,15 @@ fun SignUpStep2(
                 ChooseImage(showDialog = showDialog,
                     onShowDialogChange = { showDialog = it })
                 Spacer(modifier = Modifier.height(20.dp))
-                UploadPhoto(authViewModel)
+                UploadPhoto(profileViewModel)
                 Examples()
                 Spacer(modifier = Modifier.height(40.dp))
                 StepButtons(
                     onBackClick = {
-                        navController.navigate("SignUpStep1")
+                        navController.navigate("ProfileSetupStep1")
                     },
                     onNextClick = {
-                        navController.navigate("SignUpStep3")
+                        navController.navigate("ProfileSetupStep3")
                     },
                     enabled = isStep3Enabled
                 )
@@ -170,14 +169,14 @@ fun ShowDialog(showDialog: Boolean, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun UploadPhoto(authViewModel: AuthViewModel) {
+fun UploadPhoto(profileViewModel: ProfileViewModel) {
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             photoUri = it
-            authViewModel.updateUserPhotoUri(it)
+            profileViewModel.updateUserPhotoUri(it)
         }
     }
     Box(

@@ -1,4 +1,4 @@
-package com.alejandro.helphub.features.auth.presentation
+package com.alejandro.helphub.features.profile.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,11 +45,11 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun SignUpStep3(
-    authViewModel: AuthViewModel,
+fun ProfileSetupStep3(
+    profileViewModel: ProfileViewModel,
     navController: NavHostController
 ) {
-    val isStep4Enabled by authViewModel.isNavigationToStep4PostEnabled.collectAsState(
+    val isStep4Enabled by profileViewModel.isNavigationToStep4PostEnabled.collectAsState(
         initial = false
     )
     Scaffold { innerPadding ->
@@ -74,13 +74,13 @@ fun SignUpStep3(
                 Spacer(modifier = Modifier.height(16.dp))
                 Availability()
                 Spacer(modifier = Modifier.height(16.dp))
-                AvailabilityOptions(authViewModel)
+                AvailabilityOptions(profileViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                DaySelection(authViewModel)
+                DaySelection(profileViewModel)
                 Spacer(modifier = Modifier.height(14.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("SignUpStep2") },
-                    onNextClick = { navController.navigate("SignUpStep4Post") },
+                    onBackClick = { navController.navigate("ProfileSetupStep2") },
+                    onNextClick = { navController.navigate("ProfileSetupStep4a") },
                     enabled = isStep4Enabled
                 )
             }
@@ -89,10 +89,9 @@ fun SignUpStep3(
 }
 
 @Composable
-fun DaySelection(authViewModel: AuthViewModel) {
-    val expanded by authViewModel.expanded.collectAsState(initial = false)
-    val selectedDays by authViewModel.selectedDays.collectAsState(initial = emptyList())
-    val daysOfWeek = authViewModel.daysOfWeek
+fun DaySelection(profileViewModel: ProfileViewModel) {
+    val expanded by profileViewModel.expanded.collectAsState(initial = false)
+    val selectedDays by profileViewModel.selectedDays.collectAsState(initial = emptyList())
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,7 +116,7 @@ fun DaySelection(authViewModel: AuthViewModel) {
             .padding(16.dp)
             .background(Color.LightGray)
             .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-            .clickable { authViewModel.toggleDropdown() },
+            .clickable { profileViewModel.toggleDropdown() },
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -136,8 +135,17 @@ fun DaySelection(authViewModel: AuthViewModel) {
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { authViewModel.toggleDropdown() }
+            onDismissRequest = { profileViewModel.toggleDropdown() }
         ) {
+            val daysOfWeek = listOf(
+                stringResource(id = R.string.monday),
+                stringResource(id = R.string.tuesday),
+                stringResource(id = R.string.wednesday),
+                stringResource(id = R.string.thursday),
+                stringResource(id = R.string.friday),
+                stringResource(id = R.string.saturday),
+                stringResource(id = R.string.sunday),
+            )
             daysOfWeek.forEach { day ->
                 var isChecked = selectedDays.contains(day)
                 DropdownMenuItem(
@@ -146,7 +154,7 @@ fun DaySelection(authViewModel: AuthViewModel) {
                             Checkbox(
                                 checked = isChecked,
                                 onCheckedChange = {
-                                    authViewModel.onDayChecked(day, it)
+                                    profileViewModel.onDayChecked(day, it)
                                 }
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -193,9 +201,9 @@ fun RadioButton(
 }
 
 @Composable
-fun AvailabilityOptions(authViewModel: AuthViewModel) {
-    val userData by authViewModel.userData.collectAsState()
-    var selectedItem by remember { mutableStateOf(userData.availability ?: "") }
+fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    var selectedItem by remember { mutableStateOf(userProfileData.availability ?: "") }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
@@ -220,7 +228,7 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it
-                        authViewModel.updateAvailability(it)
+                        profileViewModel.updateAvailability(it)
                     }
                 )
             }
@@ -233,7 +241,7 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it
-                        authViewModel.updateAvailability(it)
+                        profileViewModel.updateAvailability(it)
                     }
                 )
             }
@@ -243,7 +251,7 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it
-                        authViewModel.updateAvailability(it)
+                        profileViewModel.updateAvailability(it)
                     }
                 )
             }
@@ -256,7 +264,7 @@ fun AvailabilityOptions(authViewModel: AuthViewModel) {
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it
-                        authViewModel.updateAvailability(it)
+                        profileViewModel.updateAvailability(it)
                     }
                 )
             }
