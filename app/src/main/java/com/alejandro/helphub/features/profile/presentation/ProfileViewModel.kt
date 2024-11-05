@@ -3,19 +3,26 @@ package com.alejandro.helphub.features.profile.presentation
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.features.profile.data.network.response.SearchResponse
 import com.alejandro.helphub.features.profile.domain.UserProfileData
+import com.alejandro.helphub.features.profile.domain.usecases.GetUserInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(): ViewModel(){
+class ProfileViewModel @Inject constructor(private val getUserInfoUseCase: GetUserInfoUseCase): ViewModel(){
     private val _userProfileData= MutableStateFlow(UserProfileData())
     val userProfileData: StateFlow<UserProfileData> = _userProfileData.asStateFlow()
 
-    //<!--------------------SignUpStep1 Screen ---------------->
+    private val _userInfo=MutableStateFlow<Result<SearchResponse>?>(null)
+    val userInfo:StateFlow<Result<SearchResponse>?> get()= _userInfo
+
+    //<!--------------------Profile Setup Step 1 ---------------->
 
     fun updateUserDescription(userDescription: String) {
         Log.d("AuthViewModel", "Updating postTitle to: $userDescription")
@@ -42,7 +49,7 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
                     userProfileData.value.postalCode.isNotBlank()
     }
 
-//<!--------------------SignUpStep2 Screen ---------------->
+//<!--------------------Profile Setup Step 2 ---------------->
 
     private val _isNavigationToStep3Enabled = MutableStateFlow(false)
     val isNavigationToStep3Enabled: StateFlow<Boolean> =
@@ -58,7 +65,7 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
         _isNavigationToStep3Enabled.value = userProfileData.value.userPhotoUri != null
     }
 
-    //<!--------------------SignUpStep3 Screen ---------------->
+    //<!--------------------Profile Setup Step 3 ---------------->
 
     private val _isNavigationToStep4PostEnabled = MutableStateFlow(false)
     val isNavigationToStep4PostEnabled: StateFlow<Boolean> =
@@ -102,7 +109,7 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
             userProfileData.value.selectedDays.isNotEmpty() &&
                     userProfileData.value.availability != null
     }
-    //<!--------------------SignUpStep4Post Screen ---------------->
+    //<!--------------------Profile Setup Step 4a ---------------->
 
     private val _isNavigationToStep4SkillEnabled = MutableStateFlow(false)
     val isNavigationToStep4SkillEnabled: StateFlow<Boolean> =
@@ -136,7 +143,7 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
                     userProfileData.value.mode != null
     }
 
-    //<!--------------------SignUpStep4Skill Screen ---------------->
+    //<!--------------------Profile Setup Step 4b ---------------->
     private val _isNavigationToStep5Enabled = MutableStateFlow(false)
     val isNavigationToStep5Enabled: StateFlow<Boolean> =
         _isNavigationToStep5Enabled.asStateFlow()
@@ -176,6 +183,12 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
         navigateToStep5()
     }
 
+    fun fetchUserInfo(email:String){
+        viewModelScope.launch{
+            _userInfo.value=getUserInfoUseCase(email)
+        }
+    }
+
     fun navigateToStep5() {
         Log.d(
             "AuthViewModel",
@@ -191,7 +204,7 @@ class ProfileViewModel @Inject constructor(): ViewModel(){
     }
 
 
-    //<!--------------------SignUpStep5 Screen ---------------->
+    //<!--------------------Profile Setup Step 5 ---------------->
 
     private val _isNavigationToHomeEnabled = MutableStateFlow(false)
     val isNavigationToHomeEnabled: StateFlow<Boolean> =
