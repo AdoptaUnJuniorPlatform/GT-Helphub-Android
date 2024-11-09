@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.alejandro.helphub.navigation.domain.ProfileUIState
 import com.alejandro.helphub.navigation.presentation.BottomBarScreen
 import com.alejandro.helphub.navigation.presentation.BottomNavGraph
 import com.alejandro.helphub.navigation.presentation.NavigationViewModel
@@ -68,10 +70,27 @@ fun BottomBar(
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val profileStatusCode =
-        navigationViewModel.profileStatusCode.collectAsState().value
+    val uiState by navigationViewModel.uiState.collectAsState()
     var showPopUp by remember { mutableStateOf(false) }
-
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is ProfileUIState.Success -> {
+                val statusCode = (uiState as ProfileUIState.Success).statusCode
+                if (statusCode == 200) {
+                    navController.navigate(BottomBarScreen.Profile.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                } else {
+                    showPopUp = true
+                }
+            }
+            is ProfileUIState.Error -> {
+                showPopUp = true
+            }
+            else -> {} // Handle other states if needed
+        }
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,12 +114,6 @@ fun BottomBar(
                     if (screen.route == BottomBarScreen.Profile.route) {
                         navigationViewModel.fetchUserProfile()
 
-
-                        if (profileStatusCode == 200) {
-                            navController.navigate(screen.route)
-                        } else {
-                            showPopUp = true
-                        }
                     } else {
                         navController.navigate(screen.route) {
                             popUpTo(navController.graph.startDestinationId)
@@ -125,8 +138,11 @@ fun BottomBar(
             )
         }
     }
+
+
     if (showPopUp) {
-        ShowPopUp(OnDismiss = { showPopUp = false })
+        ShowPopUp(OnDismiss = { showPopUp = false
+        navigationViewModel.resetState()})
     }
 }
 

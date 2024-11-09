@@ -14,7 +14,7 @@ class AuthInterceptor @Inject constructor(private val tokenRepository: TokenRepo
         val token = tokenRepository.getToken()
         Log.i("AuthInterceptor", "Using token: $token")
         val request = chain.request().newBuilder()
-            .addHeader("Authorization","$token")
+            .addHeader("Authorization","Bearer $token")
             .build()
         return chain.proceed(request)
     }
