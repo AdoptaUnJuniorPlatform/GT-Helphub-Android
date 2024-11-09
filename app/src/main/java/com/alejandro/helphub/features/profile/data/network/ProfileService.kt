@@ -9,4 +9,6 @@ class ProfileService @Inject constructor(private val profileClient: ProfileClien
     suspend fun getUserInfo(email: String): Response<SearchResponse> {
         return profileClient.getUserInfo(email)
     }
+
+
 }

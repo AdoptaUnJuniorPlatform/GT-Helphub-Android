@@ -86,7 +86,7 @@ fun TwofaLoginScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = { navController.navigate("Home") })
+        SuccessCard(onNavigate = { navController.navigate("MainScreen") })
     }
 }
 
@@ -109,6 +109,8 @@ fun LoginValidationButton(
                 Log.i("2FA", "Código 2FA correcto.")
                 authViewModel.loginUser()
                 authViewModel.clearTwofaField()
+                navController.navigate("MainScreen"){popUpTo(0)
+                launchSingleTop=true}
             } else {
                 Log.i("2FA", "Código 2FA incorrecto.")
             }

@@ -7,7 +7,8 @@ import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val authService: AuthService,
-    private val userDataMapper: UserDataMapper
+    private val userDataMapper: UserDataMapper,
+    private val tokenRepository: TokenRepository
 ) {
     suspend fun registerNewUser(userAuthData: UserAuthData): String {
         val userDTO = userDataMapper.toUserDTO(userAuthData)
@@ -16,7 +17,11 @@ class AuthRepository @Inject constructor(
 
     suspend fun doLogin(userAuthData: UserAuthData): Result<String> {
         val loginDTO = userDataMapper.toLoginDTO(userAuthData)
-        return authService.doLogin(loginDTO)
+        return authService.doLogin(loginDTO).map { loginResponse->
+            val token=loginResponse.accessToken
+            tokenRepository.saveToken(token)
+            token
+        }
     }
 
     suspend fun requestResetPassword(userAuthData: UserAuthData): Result<String> {

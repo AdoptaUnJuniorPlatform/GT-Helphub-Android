@@ -38,6 +38,9 @@ class AuthViewModel @Inject constructor(
     private val _userAuthData = MutableStateFlow(UserAuthData())
     val userAuthData: StateFlow<UserAuthData> = _userAuthData.asStateFlow()
 
+    private val _isAuthenticated = MutableStateFlow(false)
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+
     //<!--------------------Credentials Screen ---------------->
     private val _isCheckBoxChecked = MutableStateFlow(false)
     val isCheckBoxChecked: StateFlow<Boolean> = _isCheckBoxChecked.asStateFlow()
@@ -233,6 +236,9 @@ class AuthViewModel @Inject constructor(
     private val _isLoginLoading = MutableStateFlow(false)
     val isLoginLoading: StateFlow<Boolean> = _isLoginLoading
 
+    private val _authToken = MutableStateFlow<String?>(null)
+    val authToken: StateFlow<String?> get() = _authToken
+
     fun loginUser() {
         viewModelScope.launch {
             _isLoginLoading.value = true
@@ -240,7 +246,8 @@ class AuthViewModel @Inject constructor(
             try {
                 val result = loginUseCase(userAuthData.value)
                 _loginStatus.value = result.fold(
-                    onSuccess = { token -> ResultStatus.Success(token) },
+                    onSuccess = { token ->_authToken.value=token
+                                ResultStatus.Success(token)},
                     onFailure = { e ->
                         ResultStatus.Error(
                             e.message ?: "Error desconocido"
@@ -255,6 +262,7 @@ class AuthViewModel @Inject constructor(
                 _isLoginLoading.value = false
             }
         }
+        _isAuthenticated.value=true
     }
 
 //<!--------------------2fa Login Screen ---------------->

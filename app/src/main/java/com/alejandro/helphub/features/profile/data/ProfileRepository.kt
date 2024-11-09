@@ -19,4 +19,5 @@ class ProfileRepository @Inject constructor(private val profileService: ProfileS
             Result.failure(e)
         }
     }
+
 }

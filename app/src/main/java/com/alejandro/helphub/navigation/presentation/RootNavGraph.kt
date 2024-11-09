@@ -1,14 +1,15 @@
-package com.alejandro.helphub.navigation
+package com.alejandro.helphub.navigation.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.alejandro.helphub.MainScreen
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 import com.alejandro.helphub.features.auth.presentation.TwofaRegisterScreen
 import com.alejandro.helphub.features.auth.presentation.ForgotPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.LoginScreen
-import com.alejandro.helphub.features.auth.presentation.MainScreen
+import com.alejandro.helphub.features.auth.presentation.AuthScreen
 import com.alejandro.helphub.features.auth.presentation.PrivacyScreen
 import com.alejandro.helphub.features.auth.presentation.ResetPasswordScreen
 import com.alejandro.helphub.features.auth.presentation.SignUpCredsScreen
@@ -27,13 +28,14 @@ import com.alejandro.helphub.features.splash.presentation.SplashScreen
 fun RootNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    navigationViewModel: NavigationViewModel
 ) {
     NavHost(navController = navController, startDestination = "SplashScreen") {
 
         composable("SplashScreen") {
             SplashScreen(onNavigateToLogin = {
-                navController.navigate("MainScreen") {
+                navController.navigate("AuthScreen") {
                     popUpTo("SplashScreen") { inclusive = true }
                 }
             })
@@ -82,6 +84,7 @@ fun RootNavGraph(
         composable("ProfileSetupStep4b") {
             ProfileSetupStep4b(
                 profileViewModel = profileViewModel,
+                authViewModel = authViewModel,
                 navController = navController
             )
         }
@@ -91,8 +94,8 @@ fun RootNavGraph(
                 navController = navController
             )
         }
-        composable("MainScreen") {
-            MainScreen(navController = navController)
+        composable("AuthScreen") {
+            AuthScreen(navController = navController)
         }
         composable("Home") {
             Home(navController = navController)
@@ -119,6 +122,11 @@ fun RootNavGraph(
             TwofaLoginScreen(
                 authViewModel = authViewModel,
                 navController = navController
+            )
+        }
+        composable("MainScreen") {
+            MainScreen(
+                navigationViewModel=navigationViewModel
             )
         }
     }

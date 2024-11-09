@@ -47,7 +47,7 @@ import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 
 @Composable
-fun MainScreen(
+fun AuthScreen(
     navController: NavHostController
 ) {
     Scaffold { innerPadding ->

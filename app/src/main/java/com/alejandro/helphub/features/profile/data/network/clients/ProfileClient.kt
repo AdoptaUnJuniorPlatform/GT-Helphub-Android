@@ -8,4 +8,6 @@ import retrofit2.http.Path
 interface ProfileClient {
     @GET("/api/helphub/user/{email}")
     suspend fun getUserInfo(@Path("email")email:String):Response<SearchResponse>
+
+
 }

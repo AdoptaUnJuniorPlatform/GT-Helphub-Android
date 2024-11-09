@@ -15,12 +15,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val getUserInfoUseCase: GetUserInfoUseCase): ViewModel(){
-    private val _userProfileData= MutableStateFlow(UserProfileData())
-    val userProfileData: StateFlow<UserProfileData> = _userProfileData.asStateFlow()
+class ProfileViewModel @Inject constructor(
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+) : ViewModel() {
 
-    private val _userInfo=MutableStateFlow<Result<SearchResponse>?>(null)
-    val userInfo:StateFlow<Result<SearchResponse>?> get()= _userInfo
+    private val _userProfileData = MutableStateFlow(UserProfileData())
+    val userProfileData: StateFlow<UserProfileData> =
+        _userProfileData.asStateFlow()
+
+    private val _userInfo = MutableStateFlow<Result<SearchResponse>?>(null)
+    val userInfo: StateFlow<Result<SearchResponse>?> get() = _userInfo
+
+    sealed class UserProfileState {
+        object Loading : UserProfileState()
+        data class Success(val profile: SearchResponse) : UserProfileState()
+        data class Error(val message: String) : UserProfileState()
+    }
+
+    private val _userProfileState = MutableStateFlow<UserProfileState>(UserProfileState.Loading)
+    val userProfileState: StateFlow<UserProfileState> = _userProfileState
+
+
 
     //<!--------------------Profile Setup Step 1 ---------------->
 
@@ -62,7 +77,8 @@ class ProfileViewModel @Inject constructor(private val getUserInfoUseCase: GetUs
     }
 
     fun navigateToStep3() {
-        _isNavigationToStep3Enabled.value = userProfileData.value.userPhotoUri != null
+        _isNavigationToStep3Enabled.value =
+            userProfileData.value.userPhotoUri != null
     }
 
     //<!--------------------Profile Setup Step 3 ---------------->
@@ -93,13 +109,15 @@ class ProfileViewModel @Inject constructor(private val getUserInfoUseCase: GetUs
     }
 
     fun updateUserDays(days: List<String>) {
-        _userProfileData.value = _userProfileData.value.copy(selectedDays = days)
+        _userProfileData.value =
+            _userProfileData.value.copy(selectedDays = days)
         navigateToStep4Post()
     }
 
     fun updateAvailability(availability: String) {
         Log.d("AuthViewModel", "Updating selectedLevel to: $availability")
-        val updateUserData = _userProfileData.value.copy(availability = availability)
+        val updateUserData =
+            _userProfileData.value.copy(availability = availability)
         _userProfileData.value = updateUserData
         navigateToStep4Post()
     }
@@ -179,13 +197,14 @@ class ProfileViewModel @Inject constructor(private val getUserInfoUseCase: GetUs
 
     fun updateSelectedCategories(categories: List<String>) {
         Log.d("AuthViewModel", "Updating selectedCategories to: $categories")
-        _userProfileData.value = userProfileData.value.copy(selectedCategories = categories)
+        _userProfileData.value =
+            userProfileData.value.copy(selectedCategories = categories)
         navigateToStep5()
     }
 
-    fun fetchUserInfo(email:String){
-        viewModelScope.launch{
-            _userInfo.value=getUserInfoUseCase(email)
+    fun fetchUserInfo(email: String) {
+        viewModelScope.launch {
+            _userInfo.value = getUserInfoUseCase(email)
         }
     }
 

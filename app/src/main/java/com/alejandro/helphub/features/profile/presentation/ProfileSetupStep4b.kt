@@ -44,6 +44,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +71,7 @@ import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 @Composable
 fun ProfileSetupStep4b(
     profileViewModel: ProfileViewModel,
+    authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
@@ -77,6 +79,26 @@ fun ProfileSetupStep4b(
     val isStep5Enabled by profileViewModel.isNavigationToStep5Enabled.collectAsState(
         initial = false
     )
+    val userAuthData by authViewModel.userAuthData.collectAsState()
+
+
+    val userProfileState by profileViewModel.userProfileState.collectAsState()
+    when (userProfileState) {
+        is ProfileViewModel.UserProfileState.Loading -> {
+            // Mostrar una barra de carga o spinner
+        }
+        is ProfileViewModel.UserProfileState.Success -> {
+            // Mostrar el perfil de usuario
+            val profile = (userProfileState as ProfileViewModel.UserProfileState.Success).profile
+            Log.i("Success", "Bienvenido, ${profile.nameUser}")
+        }
+        is ProfileViewModel.UserProfileState.Error -> {
+            // Mostrar un mensaje de error
+            val error = (userProfileState as ProfileViewModel.UserProfileState.Error).message
+            Log.i("Error", "Error al cargar el perfil: $error")
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
             Box(
@@ -107,6 +129,7 @@ fun ProfileSetupStep4b(
                         onBackClick = { navController.navigate("ProfileSetupStep4a") },
                         onNextClick = {
                             showDataCard = true
+                            userAuthData.email?.let { email->profileViewModel.fetchUserInfo(email) }
                         },
                         enabled = isStep5Enabled && !showDataCard
                     )
@@ -144,8 +167,7 @@ fun DataCard(
     navController: NavHostController
 ) {
     val userProfileData by profileViewModel.userProfileData.collectAsState()
-    val authViewModel:AuthViewModel= hiltViewModel()
-    val userData by authViewModel.userAuthData.collectAsState()
+    val userInfo by profileViewModel.userInfo.collectAsState()
     Log.d(
         "CongratulationsBox",
         "userDescription: ${userProfileData.userDescription}" +
@@ -160,225 +182,234 @@ fun DataCard(
                 "selectedCategory: ${userProfileData.selectedCategories},"
     )
 
-    Card(
-        modifier = Modifier
-            .wrapContentHeight()
-            .padding(horizontal = 16.dp)
-            .offset(y = (-20).dp)
-            .border(
-                width = 2.dp,
-                color = Color.Gray,
-                shape = RoundedCornerShape(12.dp)
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(horizontal = 15.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row() {
-                Image(
-                    painter = painterResource(id = R.drawable.congrats),
-                    contentDescription = stringResource(id = R.string.congratulations),
-                    modifier = Modifier.size(50.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = stringResource(id = R.string.congratulations),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-            Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = stringResource(id = R.string.skill_success_message),
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 30.dp)
-            )
-        }
+    if (userInfo!=null){
         Card(
             modifier = Modifier
                 .wrapContentHeight()
-                .wrapContentWidth()
-                .padding(horizontal = 30.dp)
-                .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(6.dp)),
+                .padding(horizontal = 16.dp)
+                .offset(y = (-20).dp)
+                .border(
+                    width = 2.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(12.dp)
+                ),
             colors = CardDefaults.cardColors(
-                containerColor = Color(
-                    0xFFEEF1FF
-                )
+                containerColor = Color.White
             )
         ) {
-            Box(modifier = Modifier.width(300.dp)) {
-                Text(
-                    text = stringResource(id = R.string.skill_edit_message),
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .padding(
-                            vertical = 12.dp,
-                            horizontal = 28.dp
-                        )
-                )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(horizontal = 30.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Spacer(modifier = Modifier.height(18.dp))
-            Spacer(modifier = Modifier.height(12.dp))
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFBFBFF)
-                ),
-                elevation = CardDefaults.cardElevation(16.dp)
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(horizontal = 15.dp, vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
-                    Box(modifier = Modifier.size(50.dp)) {
-                        Image(
-                            painter = rememberAsyncImagePainter(userProfileData.userPhotoUri),
-                            contentDescription = stringResource(id = R.string.user_photo_content_description),
-                            modifier = Modifier
-                                .size(124.dp)
-                                .clip(CircleShape)
-                                .background(Color.Gray),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(20.dp))
+                Row() {
+                    Image(
+                        painter = painterResource(id = R.drawable.congrats),
+                        contentDescription = stringResource(id = R.string.congratulations),
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "${userData.nameUser} ${userData.surnameUser}",
-                        fontSize = 24.sp,
+                        text = stringResource(id = R.string.congratulations),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = userProfileData.postTitle, fontSize = 24.sp)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(text = userProfileData.postalCode, fontSize = 16.sp)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(
+                    text = stringResource(id = R.string.skill_success_message),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 30.dp)
+                )
+            }
+            Card(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .wrapContentWidth()
+                    .padding(horizontal = 30.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .clip(RoundedCornerShape(6.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(
+                        0xFFEEF1FF
+                    )
+                )
+            ) {
+                Box(modifier = Modifier.width(300.dp)) {
                     Text(
-                        text = userProfileData.mode
-                            ?: stringResource(id = R.string.not_available),
-                        fontSize = 16.sp
+                        text = stringResource(id = R.string.skill_edit_message),
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(
+                                vertical = 12.dp,
+                                horizontal = 28.dp
+                            )
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider()
+            }
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(horizontal = 30.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Spacer(modifier = Modifier.height(18.dp))
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    listOf(
-                        stringResource(id = R.string.basic), stringResource(
-                            id = R.string.amateur
-                        ), stringResource(id = R.string.advanced)
-                    ).forEach { level ->
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = if (level == userProfileData.selectedLevel) Color.Blue else Color.Transparent,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.Transparent,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = level,
-                                fontSize = 14.sp,
-                                color = if (level == userProfileData.selectedLevel) Color.White else Color.Black
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFFBFBFF)
+                    ),
+                    elevation = CardDefaults.cardElevation(16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 24.dp)) {
+                        Box(modifier = Modifier.size(50.dp)) {
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    userProfileData.userPhotoUri
+                                ),
+                                contentDescription = stringResource(id = R.string.user_photo_content_description),
+                                modifier = Modifier
+                                    .size(124.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Gray),
+                                contentScale = ContentScale.Crop
                             )
                         }
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(
-                        text = stringResource(id = R.string.availability),
-                        fontSize = 16.sp,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    Spacer(modifier = Modifier.width(50.dp))
-                    Box(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 2.dp)
-                    ) {
+                        Spacer(modifier = Modifier.width(20.dp))
                         Text(
-                            text = userProfileData.availability
-                                ?: stringResource(id = R.string.not_available),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            text = //"${userInfo?.nameUser}" +
+                                    //" ${profile.surnameUser}" +
+                                    "",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(
-                        text = userProfileData.skillDescription,
-                        fontSize = 16.sp
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    userProfileData.selectedCategories.forEach { category ->
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(text = userProfileData.postTitle, fontSize = 24.sp)
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = userProfileData.postalCode,
+                            fontSize = 16.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = userProfileData.mode
+                                ?: stringResource(id = R.string.not_available),
+                            fontSize = 16.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(modifier = Modifier.padding(horizontal = 26.dp)) {
+                        listOf(
+                            stringResource(id = R.string.basic), stringResource(
+                                id = R.string.amateur
+                            ), stringResource(id = R.string.advanced)
+                        ).forEach { level ->
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = if (level == userProfileData.selectedLevel) Color.Blue else Color.Transparent,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.Transparent,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = level,
+                                    fontSize = 14.sp,
+                                    color = if (level == userProfileData.selectedLevel) Color.White else Color.Black
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.availability),
+                            fontSize = 16.sp,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Spacer(modifier = Modifier.width(50.dp))
                         Box(
                             modifier = Modifier
                                 .border(
                                     width = 1.dp,
                                     color = Color.Gray,
-                                    shape = RoundedCornerShape(12.dp)
+                                    shape = RoundedCornerShape(6.dp)
                                 )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .padding(horizontal = 10.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = category,
-                                fontSize = 16.sp
+                                text = userProfileData.availability
+                                    ?: stringResource(id = R.string.not_available),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = userProfileData.skillDescription,
+                            fontSize = 16.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(horizontal = 26.dp)) {
+                        userProfileData.selectedCategories.forEach { category ->
+                            Box(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.Gray,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = category,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(26.dp))
                 }
-                Spacer(modifier = Modifier.height(26.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = { navController.navigate("ProfileSetupStep5") },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.align(Alignment.End),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue
+                    )
+                ) {
+                    Text(text = stringResource(id = R.string.continue_button).uppercase())
+                }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = { navController.navigate("ProfileSetupStep5") },
-                shape = RoundedCornerShape(6.dp),
-                modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue
-                )
-            ) {
-                Text(text = stringResource(id = R.string.continue_button).uppercase())
-            }
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

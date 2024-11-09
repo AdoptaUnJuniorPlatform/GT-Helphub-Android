@@ -1,7 +1,7 @@
 package com.alejandro.helphub.features.auth.data.network
 
 import com.alejandro.helphub.features.auth.data.network.clients.AuthClient
-import com.alejandro.helphub.features.auth.data.network.response.TwofaResponse
+import com.alejandro.helphub.features.auth.data.network.response.LoginResponse
 import com.alejandro.helphub.features.auth.domain.LoginDTO
 import com.alejandro.helphub.features.auth.domain.UserDTO
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +16,11 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
         }
     }
 
-    suspend fun doLogin(loginDTO: LoginDTO): Result<String> {
+    suspend fun doLogin(loginDTO: LoginDTO): Result<LoginResponse> {
         return withContext(Dispatchers.IO) {
             val response = authClient.doLogin(loginDTO)
             if (response.isSuccessful) {
-                response.body()?.access_token?.let { Result.success(it) }
+                response.body()?.let { Result.success(it) }
                     ?: Result.failure(Exception("Token no disponible"))
             } else {
                 Result.failure(
