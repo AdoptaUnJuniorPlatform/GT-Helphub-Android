@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.alejandro.helphub.features.profile.presentation.ProfileViewModel
 import com.alejandro.helphub.navigation.domain.ProfileUIState
 import com.alejandro.helphub.navigation.presentation.BottomBarScreen
 import com.alejandro.helphub.navigation.presentation.BottomNavGraph
@@ -57,26 +58,47 @@ import com.alejandro.helphub.navigation.presentation.NavigationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(navigationViewModel: NavigationViewModel,navController:NavHostController) {
+fun MainScreen(
+    navigationViewModel: NavigationViewModel,
+    navController: NavHostController,
+    profileViewModel: ProfileViewModel
+
+) {
     var showPopUp by remember { mutableStateOf(false) }
+    //val bottomNavController=rememberNavController()
+    val currentDestination=navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(bottomBar = {
-        BottomBar(
-            navController = navController,
-            navigationViewModel,
-            onShowPopUp = { showPopUp = true }
-        )
+
+        if(currentDestination != "ProfileSetupStep1" &&
+            currentDestination != "ProfileSetupStep2" &&
+            currentDestination != "ProfileSetupStep3" &&
+            currentDestination != "ProfileSetupStep4a" &&
+            currentDestination != "ProfileSetupStep4b" &&
+            currentDestination != "ProfileSetupStep5")
+        {
+            BottomBar(
+                navController =navController,
+                //bottomNavController,
+                navigationViewModel=navigationViewModel,
+                onShowPopUp = { showPopUp = true }
+            )
+        }
     }) { paddingValues ->
         Box(modifier = Modifier.padding(PaddingValues())) {
-            BottomNavGraph(
-                navController = navController
+           BottomNavGraph(
+                navController = navController, profileViewModel = profileViewModel
             )
 
             if (showPopUp) {
                 CardPopUp(onCompleteProfile = {
                     showPopUp = false
                     navigationViewModel.resetState()
-                    navController.navigate("ProfileSetupStep1")
+                    navController.navigate("ProfileSetupStep1"){
+                        popUpTo("MainScreen"){saveState=true}
+                        launchSingleTop=true
+                        restoreState=true
+                    }
                 })
             }
         }
@@ -172,7 +194,7 @@ fun BottomBar(
 }
 
 @Composable
-fun CardPopUp(onCompleteProfile:()->Unit) {
+fun CardPopUp(onCompleteProfile: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

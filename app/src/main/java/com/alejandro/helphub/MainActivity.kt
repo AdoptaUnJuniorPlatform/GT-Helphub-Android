@@ -29,7 +29,8 @@ class MainActivity : ComponentActivity() {
             val isAuthenticated =
                 authViewModel.isAuthenticated.collectAsState().value
             if (isAuthenticated) {
-                MainScreen(navigationViewModel = navigationViewModel,navController=navController)
+                BottomNavGraph(navController = navController, profileViewModel = profileViewModel)
+               MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel)
             }else{
                 RootNavGraph(
                     navController = navController,

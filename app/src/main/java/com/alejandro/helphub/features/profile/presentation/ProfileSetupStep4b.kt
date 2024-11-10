@@ -71,7 +71,7 @@ import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 @Composable
 fun ProfileSetupStep4b(
     profileViewModel: ProfileViewModel,
-    authViewModel: AuthViewModel,
+    //authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
@@ -79,7 +79,7 @@ fun ProfileSetupStep4b(
     val isStep5Enabled by profileViewModel.isNavigationToStep5Enabled.collectAsState(
         initial = false
     )
-    val userAuthData by authViewModel.userAuthData.collectAsState()
+   // val userAuthData by authViewModel.userAuthData.collectAsState()
 
 
     val userProfileState by profileViewModel.userProfileState.collectAsState()
@@ -129,7 +129,7 @@ fun ProfileSetupStep4b(
                         onBackClick = { navController.navigate("ProfileSetupStep4a") },
                         onNextClick = {
                             showDataCard = true
-                            userAuthData.email?.let { email->profileViewModel.fetchUserInfo(email) }
+                          //  userAuthData.email?.let { email->profileViewModel.fetchUserInfo(email) }
                         },
                         enabled = isStep5Enabled && !showDataCard
                     )
