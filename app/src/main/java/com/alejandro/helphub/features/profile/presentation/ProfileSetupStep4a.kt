@@ -107,8 +107,8 @@ fun ProfileSetupStep4a(
 
 @Composable
 fun Mode(profileViewModel: ProfileViewModel) {
-    val userProfileData by profileViewModel.userProfileData.collectAsState()
-    var selectedItem by remember { mutableStateOf(userProfileData.mode ?: "") }
+    val skillData by profileViewModel.skillData.collectAsState()
+    var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -150,10 +150,10 @@ fun Mode(profileViewModel: ProfileViewModel) {
 
 @Composable
 fun Level(profileViewModel: ProfileViewModel) {
-    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     var selectedItem by remember {
         mutableStateOf(
-            userProfileData.selectedLevel ?: ""
+            skillData.level ?: ""
         )
     }
     Row {
@@ -203,7 +203,7 @@ fun PostTitle(
     showCard: Boolean,
     onShowCardChange: (Boolean) -> Unit
 ) {
-    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,7 +294,7 @@ fun PostTitle(
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userProfileData.postTitle,
+            value = skillData.title,
             singleLine = true,
             onValueChange = {
                 if (it.length <= 20) {
@@ -324,7 +324,7 @@ fun PostTitle(
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-                userProfileData.postTitle.length
+                skillData.title.length
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)

@@ -10,10 +10,5 @@ data class UserProfileData (
     val photoBitmap: Bitmap? = null,
     val availability:String?=null,
     val selectedDays:List<String> = emptyList(),
-    val postTitle:String="",
-    val selectedLevel:String?=null,
-    val mode:String?=null,
-    val skillDescription:String="",
-    val selectedCategories:List<String> = emptyList(),
     val categoriesOfInterest:List<String> =emptyList()
 )

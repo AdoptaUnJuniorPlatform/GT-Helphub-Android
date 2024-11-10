@@ -9,5 +9,5 @@ interface ProfileClient {
     @GET("/api/helphub/user/{email}")
     suspend fun getUserInfo(@Path("email")email:String):Response<SearchResponse>
 
-
+//devuelve un array
 }

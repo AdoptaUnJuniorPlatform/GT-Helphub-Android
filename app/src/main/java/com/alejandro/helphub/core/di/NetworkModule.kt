@@ -8,6 +8,7 @@ import com.alejandro.helphub.features.auth.data.network.clients.AuthClient
 import com.alejandro.helphub.features.auth.data.network.clients.TwofaClient
 import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 import com.alejandro.helphub.features.profile.data.network.clients.ProfileClient
+import com.alejandro.helphub.features.profile.data.network.clients.SkillClient
 import com.alejandro.helphub.navigation.data.network.clients.FetchProfileClient
 import dagger.Module
 import dagger.Provides
@@ -78,6 +79,12 @@ class NetworkModule {
     @Provides
     fun provideFetchProfileClient(retrofit: Retrofit):FetchProfileClient{
         return retrofit.create(FetchProfileClient::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSkillClient(retrofit: Retrofit): SkillClient {
+        return retrofit.create(SkillClient::class.java)
     }
 
 

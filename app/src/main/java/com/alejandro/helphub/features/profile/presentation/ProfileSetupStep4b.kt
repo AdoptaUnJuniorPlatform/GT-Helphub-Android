@@ -71,7 +71,6 @@ import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 @Composable
 fun ProfileSetupStep4b(
     profileViewModel: ProfileViewModel,
-    //authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
@@ -79,25 +78,6 @@ fun ProfileSetupStep4b(
     val isStep5Enabled by profileViewModel.isNavigationToStep5Enabled.collectAsState(
         initial = false
     )
-   // val userAuthData by authViewModel.userAuthData.collectAsState()
-
-
-    val userProfileState by profileViewModel.userProfileState.collectAsState()
-    when (userProfileState) {
-        is ProfileViewModel.UserProfileState.Loading -> {
-            // Mostrar una barra de carga o spinner
-        }
-        is ProfileViewModel.UserProfileState.Success -> {
-            // Mostrar el perfil de usuario
-            val profile = (userProfileState as ProfileViewModel.UserProfileState.Success).profile
-            Log.i("Success", "Bienvenido, ${profile.nameUser}")
-        }
-        is ProfileViewModel.UserProfileState.Error -> {
-            // Mostrar un mensaje de error
-            val error = (userProfileState as ProfileViewModel.UserProfileState.Error).message
-            Log.i("Error", "Error al cargar el perfil: $error")
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
@@ -128,8 +108,9 @@ fun ProfileSetupStep4b(
                     StepButtons(
                         onBackClick = { navController.navigate("ProfileSetupStep4a") },
                         onNextClick = {
+                            profileViewModel.createSkill()
+
                             showDataCard = true
-                          //  userAuthData.email?.let { email->profileViewModel.fetchUserInfo(email) }
                         },
                         enabled = isStep5Enabled && !showDataCard
                     )
@@ -167,7 +148,7 @@ fun DataCard(
     navController: NavHostController
 ) {
     val userProfileData by profileViewModel.userProfileData.collectAsState()
-    val userInfo by profileViewModel.userInfo.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     Log.d(
         "CongratulationsBox",
         "userDescription: ${userProfileData.userDescription}" +
@@ -175,14 +156,13 @@ fun DataCard(
                 "userPhotoUri: ${userProfileData.userPhotoUri}, " +
                 "availability: ${userProfileData.availability}, " +
                 "days: ${userProfileData.selectedDays}, " +
-                "postTitle: ${userProfileData.postTitle}, " +
-                "selectedLevel: ${userProfileData.selectedLevel}, " +
-                "mode: ${userProfileData.mode}, " +
-                "skilLDescription: ${userProfileData.skillDescription}, " +
-                "selectedCategory: ${userProfileData.selectedCategories},"
+                "postTitle: ${skillData.title}, " +
+                "selectedLevel: ${skillData.level}, " +
+                "mode: ${skillData.mode}, " +
+                "skilLDescription: ${skillData.description}, " +
+                "selectedCategory: ${skillData.category},"
     )
 
-    if (userInfo!=null){
         Card(
             modifier = Modifier
                 .wrapContentHeight()
@@ -285,7 +265,7 @@ fun DataCard(
                         Text(
                             text = //"${userInfo?.nameUser}" +
                                     //" ${profile.surnameUser}" +
-                                    "",
+                                    "Manolito",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -293,7 +273,7 @@ fun DataCard(
                     }
                     Spacer(modifier = Modifier.height(24.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(text = userProfileData.postTitle, fontSize = 24.sp)
+                        Text(text = skillData.title, fontSize = 24.sp)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -305,7 +285,7 @@ fun DataCard(
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = userProfileData.mode
+                            text = skillData.mode
                                 ?: stringResource(id = R.string.not_available),
                             fontSize = 16.sp
                         )
@@ -322,7 +302,7 @@ fun DataCard(
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        color = if (level == userProfileData.selectedLevel) Color.Blue else Color.Transparent,
+                                        color = if (level == skillData.level) Color.Blue else Color.Transparent,
                                         shape = RoundedCornerShape(12.dp)
                                     )
                                     .border(
@@ -335,7 +315,7 @@ fun DataCard(
                                 Text(
                                     text = level,
                                     fontSize = 14.sp,
-                                    color = if (level == userProfileData.selectedLevel) Color.White else Color.Black
+                                    color = if (level == skillData.level) Color.White else Color.Black
                                 )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
@@ -369,7 +349,7 @@ fun DataCard(
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = userProfileData.skillDescription,
+                            text = skillData.description,
                             fontSize = 16.sp
                         )
                     }
@@ -377,7 +357,7 @@ fun DataCard(
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                        userProfileData.selectedCategories.forEach { category ->
+                        skillData.category.forEach { category ->
                             Box(
                                 modifier = Modifier
                                     .border(
@@ -411,12 +391,12 @@ fun DataCard(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-    }
+
 }
 
 @Composable
 fun CategorySelection(profileViewModel: ProfileViewModel) {
-    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     val expanded by profileViewModel.expanded.collectAsState()
     val selectedCategories by profileViewModel.selectedCategories.collectAsState()
 
@@ -456,12 +436,12 @@ fun CategorySelection(profileViewModel: ProfileViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (userProfileData.selectedCategories.isEmpty()) {
+                    text = if (skillData.category.isEmpty()) {
                         stringResource(
                             id = R.string.categories
                         )
                     } else {
-                        userProfileData.selectedCategories.joinToString(", ")
+                        skillData.category.joinToString(", ")
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -505,7 +485,7 @@ fun SkillTextBox(
     showCard: Boolean,
     onShowCardChange: (Boolean) -> Unit
 ) {
-    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -593,7 +573,7 @@ fun SkillTextBox(
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userProfileData.skillDescription,
+            value = skillData.description,
             onValueChange = {
                 if (it.length <= 90) {
                     profileViewModel.updateSkillDescription(it)
@@ -623,7 +603,7 @@ fun SkillTextBox(
         Text(
             text = stringResource(
                 id = R.string.character_limit_ninety,
-                userProfileData.skillDescription.length
+                skillData.description.length
             ),
             fontSize = 18.sp,
             modifier = Modifier
