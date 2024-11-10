@@ -126,7 +126,8 @@ fun RootNavGraph(
         }
         composable("MainScreen") {
             MainScreen(
-                navigationViewModel=navigationViewModel
+                navigationViewModel=navigationViewModel,
+                navController=navController
             )
         }
     }

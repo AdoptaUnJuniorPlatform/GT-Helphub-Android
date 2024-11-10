@@ -4,14 +4,25 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
@@ -27,11 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.alejandro.helphub.navigation.domain.ProfileUIState
@@ -42,17 +57,28 @@ import com.alejandro.helphub.navigation.presentation.NavigationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen (navigationViewModel: NavigationViewModel) {
-    val navController = rememberNavController()
+fun MainScreen(navigationViewModel: NavigationViewModel,navController:NavHostController) {
+    var showPopUp by remember { mutableStateOf(false) }
+
     Scaffold(bottomBar = {
         BottomBar(
-            navController = navController, navigationViewModel
+            navController = navController,
+            navigationViewModel,
+            onShowPopUp = { showPopUp = true }
         )
     }) { paddingValues ->
         Box(modifier = Modifier.padding(PaddingValues())) {
             BottomNavGraph(
                 navController = navController
             )
+
+            if (showPopUp) {
+                CardPopUp(onCompleteProfile = {
+                    showPopUp = false
+                    navigationViewModel.resetState()
+                    navController.navigate("ProfileSetupStep1")
+                })
+            }
         }
     }
 }
@@ -60,7 +86,9 @@ fun MainScreen (navigationViewModel: NavigationViewModel) {
 
 @Composable
 fun BottomBar(
-    navController: NavController, navigationViewModel: NavigationViewModel
+    navController: NavController,
+    navigationViewModel: NavigationViewModel,
+    onShowPopUp: () -> Unit
 ) {
     val screens = listOf(
         BottomBarScreen.Home,
@@ -71,7 +99,7 @@ fun BottomBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val uiState by navigationViewModel.uiState.collectAsState()
-    var showPopUp by remember { mutableStateOf(false) }
+
     LaunchedEffect(uiState) {
         when (uiState) {
             is ProfileUIState.Success -> {
@@ -82,12 +110,14 @@ fun BottomBar(
                         launchSingleTop = true
                     }
                 } else {
-                    showPopUp = true
+                    onShowPopUp()
                 }
             }
+
             is ProfileUIState.Error -> {
-                showPopUp = true
+                onShowPopUp()
             }
+
             else -> {} // Handle other states if needed
         }
     }
@@ -104,11 +134,12 @@ fun BottomBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         screens.forEach { screen ->
-            NavigationBarItem(label = {
-                if (currentDestination?.route == screen.route) Text(
-                    text = screen.title, fontSize = 12.sp
-                )
-            },
+            NavigationBarItem(
+                label = {
+                    if (currentDestination?.route == screen.route) Text(
+                        text = screen.title, fontSize = 12.sp
+                    )
+                },
                 selected = currentDestination?.route == screen.route,
                 onClick = {
                     if (screen.route == BottomBarScreen.Profile.route) {
@@ -138,15 +169,88 @@ fun BottomBar(
             )
         }
     }
-
-
-    if (showPopUp) {
-        ShowPopUp(OnDismiss = { showPopUp = false
-        navigationViewModel.resetState()})
-    }
 }
 
 @Composable
-fun ShowPopUp(OnDismiss: () -> Unit) {
-    AlertDialog(onDismissRequest = { OnDismiss() }, confirmButton = { })
+fun CardPopUp(onCompleteProfile:()->Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(24.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.WarningAmber,
+                    contentDescription = "Warning Icon",
+                    tint = Color.Red,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Personaliza tu Experiencia", fontSize = 32.sp,
+                    textAlign = TextAlign.Center, fontWeight = FontWeight.Bold,
+
+                    color = Color(0xFF6A4CCD)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Cuéntanos de ti y activa tu primera habilidad.",
+
+                    color = MaterialTheme.colorScheme.primary,
+
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Completa los detalles y recibe recomendaciones personalizadas.",
+
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(
+                            Color(0xFFF5F5F5),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 18.dp, vertical = 8.dp)
+                )
+                Text(
+                    text = "Añade al menos una habilidad para iniciar tu experiencia de intercambio.",
+
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(
+                            Color(0xFFF5F5F5),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 18.dp, vertical = 8.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = 6.dp),
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                    onClick = { onCompleteProfile() }) {
+                    Text(text = "COMPLETAR PERFIL")
+                }
+            }
+        }
+    }
 }
+
+

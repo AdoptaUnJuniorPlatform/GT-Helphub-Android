@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             val isAuthenticated =
                 authViewModel.isAuthenticated.collectAsState().value
             if (isAuthenticated) {
-                MainScreen(navigationViewModel = navigationViewModel)
+                MainScreen(navigationViewModel = navigationViewModel,navController=navController)
             }else{
                 RootNavGraph(
                     navController = navController,
