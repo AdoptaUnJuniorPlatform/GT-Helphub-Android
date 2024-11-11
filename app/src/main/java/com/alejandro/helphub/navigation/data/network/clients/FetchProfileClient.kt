@@ -5,6 +5,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface FetchProfileClient {
-    @GET("/api/helphub/user/profile")
-    suspend fun fetchProfile(): Response<List<ProfileResponse>>
+    @GET("/api/helphub/profile")
+    suspend fun fetchProfile(): Response<ProfileResponse>
 }

@@ -4,11 +4,11 @@ import android.graphics.Bitmap
 import android.net.Uri
 
 data class UserProfileData (
-    val postalCode:String="",
-    val userDescription:String="",
-    val userPhotoUri: Uri? =null,
+    val location:String="",
+    val description:String="",
+    val profilePicture: String="",
     val photoBitmap: Bitmap? = null,
-    val availability:String?=null,
+    val preferredTimeRange:String="",
     val selectedDays:List<String> = emptyList(),
-    val categoriesOfInterest:List<String> =emptyList()
+    val interestedSkills:List<String> =emptyList()
 )

@@ -4,7 +4,7 @@ import android.util.Log
 import com.alejandro.helphub.navigation.data.network.clients.FetchProfileClient
 import com.alejandro.helphub.navigation.data.network.response.ApiResponse
 import com.alejandro.helphub.navigation.data.network.response.ProfileResponse
-import retrofit2.Response
+import com.alejandro.helphub.navigation.data.network.response.UserId
 import javax.inject.Inject
 
 class FetchProfileService @Inject constructor(private val fetchProfileClient: FetchProfileClient) {
@@ -13,28 +13,30 @@ class FetchProfileService @Inject constructor(private val fetchProfileClient: Fe
             val response = fetchProfileClient.fetchProfile()
             when {
                 response.isSuccessful -> {
-                    val profileList = response.body()
-                    when {
-                        profileList.isNullOrEmpty() -> {
-                            // Handle empty response as "Profile not found"
-                            Log.i("FetchProfileService", "No profile found")
-                            ApiResponse.Success(
-                                ProfileResponse(
-                                    message = "Profile not found",
-                                    statusCode = 404
-                                )
+                    val profile = response.body()
+                    if (profile==null) {
+                        Log.i("FetchProfileService", "(null response)")
+                        ApiResponse.Success(
+                            ProfileResponse(
+                                message = "Profile not found",
+                                statusCode = 406,
+                                id="",
+                                userId = UserId(id = ""),
+                                description = "",
+                                interestedSkills = emptyList(),
+                                location = "",
+                                profilePicture = "",
+                                preferredTimeRange = "",
+                                selectedDays = emptyList()
                             )
-                        }
-
-                        else -> {
-                            val profile = profileList[0]
-                            Log.i("FetchProfileService", "Profile found: ${profile.message}")
-                            ApiResponse.Success(profile)
-                        }
+                        )
+                    } else {
+                        Log.i("FetchProfileService", "${response.code()}+${response.message()}") //200+OK
+                        ApiResponse.Success(profile)
                     }
                 }
                 else -> {
-                    Log.e("FetchProfileService", "Error response: ${response.code()}")
+                    Log.e("FetchProfileService", "Error response: ${response.code()}+${response.message()}")
                     ApiResponse.Error(
                         code = response.code(),
                         message = response.message()

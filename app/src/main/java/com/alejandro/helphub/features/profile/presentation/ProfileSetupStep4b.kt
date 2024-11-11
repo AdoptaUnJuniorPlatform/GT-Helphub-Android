@@ -44,7 +44,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,11 +61,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
-import com.alejandro.helphub.features.auth.presentation.AuthViewModel
 
 @Composable
 fun ProfileSetupStep4b(
@@ -151,10 +148,10 @@ fun DataCard(
     val skillData by profileViewModel.skillData.collectAsState()
     Log.d(
         "CongratulationsBox",
-        "userDescription: ${userProfileData.userDescription}" +
-                "postalCode: ${userProfileData.postalCode}, " +
-                "userPhotoUri: ${userProfileData.userPhotoUri}, " +
-                "availability: ${userProfileData.availability}, " +
+        "userDescription: ${userProfileData.description}," +
+                "postalCode: ${userProfileData.location}, " +
+                "userPhotoUri: ${userProfileData.profilePicture}, " +
+                "availability: ${userProfileData.preferredTimeRange}, " +
                 "days: ${userProfileData.selectedDays}, " +
                 "postTitle: ${skillData.title}, " +
                 "selectedLevel: ${skillData.level}, " +
@@ -251,7 +248,7 @@ fun DataCard(
                         Box(modifier = Modifier.size(50.dp)) {
                             Image(
                                 painter = rememberAsyncImagePainter(
-                                    userProfileData.userPhotoUri
+                                    userProfileData.profilePicture
                                 ),
                                 contentDescription = stringResource(id = R.string.user_photo_content_description),
                                 modifier = Modifier
@@ -278,7 +275,7 @@ fun DataCard(
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = userProfileData.postalCode,
+                            text = userProfileData.location,
                             fontSize = 16.sp
                         )
                     }
@@ -339,7 +336,7 @@ fun DataCard(
                                 .padding(horizontal = 10.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = userProfileData.availability
+                                text = userProfileData.preferredTimeRange
                                     ?: stringResource(id = R.string.not_available),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold

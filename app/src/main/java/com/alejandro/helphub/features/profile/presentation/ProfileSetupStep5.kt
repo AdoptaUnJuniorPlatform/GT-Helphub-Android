@@ -66,10 +66,12 @@ fun ProfileSetupStep5(
                 Spacer(modifier = Modifier.height(16.dp))
                 PopularCategories(profileViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
-                Spacer(modifier = Modifier.height(124.dp))
+                Spacer(modifier = Modifier.height(134.dp))
                 StepButtons(
                     onBackClick = { navController.navigate("ProfileSetupStep4b") },
-                    onNextClick = { navController.navigate("Home") },
+                    onNextClick = {
+                        profileViewModel.createProfile()
+                        navController.navigate("Home") },
                     enabled = isHomeEnabled
                 )
             }
@@ -171,7 +173,7 @@ fun PopularCategories(
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
-        Log.d("InterestInfo", "categories: ${userProfileData.categoriesOfInterest}")
+        Log.d("InterestInfo", "categories: ${userProfileData.interestedSkills}")
     }
 }
 

@@ -29,7 +29,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -159,7 +158,7 @@ fun Location(profileViewModel:ProfileViewModel) {
     )
     Spacer(modifier = Modifier.height(10.dp))
     OutlinedTextField(
-        value = userProfileData.postalCode,
+        value = userProfileData.location,
         onValueChange = {
             if (it.length <= 5 && it.all { char -> char.isDigit() }) {
                 profileViewModel.updatePostalCode(it)
@@ -207,7 +206,7 @@ fun TextBox(profileViewModel: ProfileViewModel) {
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = userProfileData.userDescription,
+            value = userProfileData.description,
             onValueChange = {
                 if (it.length <= 160) {
                     profileViewModel.updateUserDescription(it)
@@ -232,7 +231,7 @@ fun TextBox(profileViewModel: ProfileViewModel) {
         Text(
             text = stringResource(
                 id = R.string.character_limit,
-                userProfileData.userDescription.length
+                userProfileData.description.length
             ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)

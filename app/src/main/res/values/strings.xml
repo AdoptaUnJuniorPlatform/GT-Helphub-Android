@@ -103,11 +103,11 @@
     <string name="step_3_title">Selecciona tus horarios</string>
     <string name="availability_question">¿Qué día estás disponible?</string>
     <string name="step_three_description">En Helphub queremos facilitar a los usuarios la coordinación de horarios.</string>
-    <string name="availability_title">Horario flexible</string>
-    <string name="eight_to_five">8:00 a 17:00</string>
-    <string name="five_to_nine">17:00 a 21:00</string>
-    <string name="three_to_five">15:00 a 17:00</string>
-    <string name="eight_to_two">8:00 a 14:00</string>
+    <string name="availability_title">Flexible schedule</string>
+    <string name="eight_to_nine">08:00hs a 21:00hs</string>
+    <string name="five_to_nine">17:00hs a 21:00hs</string>
+    <string name="three_to_five">15:00hs a 17:00hs</string>
+    <string name="eight_to_two">08:00hs a 14:00hs</string>
     <string name="select_day">Seleccionar día</string>
     <string name="select_more_days">Puedes seleccionar más de un día</string>
     <string name="days">Días</string>

@@ -4,10 +4,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alejandro.helphub.features.auth.domain.UserAuthData
-import com.alejandro.helphub.features.profile.data.network.response.SearchResponse
 import com.alejandro.helphub.features.profile.domain.SkillData
 import com.alejandro.helphub.features.profile.domain.UserProfileData
+import com.alejandro.helphub.features.profile.domain.usecases.CreateProfileUseCase
 import com.alejandro.helphub.features.profile.domain.usecases.CreateSkillUseCase
 import com.alejandro.helphub.features.profile.domain.usecases.GetUserInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val createProfileUseCase: CreateProfileUseCase,
     private val createSkillUseCase: CreateSkillUseCase
 ) : ViewModel() {
 
@@ -49,14 +49,14 @@ class ProfileViewModel @Inject constructor(
     fun updateUserDescription(userDescription: String) {
         Log.d("ProfileViewModel", "Updating postTitle to: $userDescription")
         val updateUserData =
-            userProfileData.value.copy(userDescription = userDescription)
+            userProfileData.value.copy(description = userDescription)
         _userProfileData.value = updateUserData
         navigateToStep2()
     }
 
     fun updatePostalCode(postalCode: String) {
         Log.d("ProfileViewModel", "Updating postalCode to: $postalCode")
-        val updateUserData = userProfileData.value.copy(postalCode = postalCode)
+        val updateUserData = userProfileData.value.copy(location = postalCode)
         _userProfileData.value = updateUserData
         navigateToStep2()
     }
@@ -67,8 +67,8 @@ class ProfileViewModel @Inject constructor(
 
     fun navigateToStep2() {
         _isNavigationToStep2Enabled.value =
-            userProfileData.value.userDescription.isNotBlank() &&
-                    userProfileData.value.postalCode.isNotBlank()
+            userProfileData.value.description.isNotBlank() &&
+                    userProfileData.value.location.isNotBlank()
     }
 
 //<!--------------------Profile Setup Step 2 ---------------->
@@ -78,14 +78,14 @@ class ProfileViewModel @Inject constructor(
         _isNavigationToStep3Enabled.asStateFlow()
 
     fun updateUserPhotoUri(photoUri: Uri) {
-        val updateUserData = userProfileData.value.copy(userPhotoUri = photoUri)
+        val updateUserData = userProfileData.value.copy(profilePicture = photoUri.toString())
         _userProfileData.value = updateUserData
         navigateToStep3()
     }
 
     fun navigateToStep3() {
         _isNavigationToStep3Enabled.value =
-            userProfileData.value.userPhotoUri != null
+            userProfileData.value.profilePicture != null
     }
 
     //<!--------------------Profile Setup Step 3 ---------------->
@@ -124,7 +124,7 @@ class ProfileViewModel @Inject constructor(
     fun updateAvailability(availability: String) {
         Log.d("ProfileViewModel", "Updating selectedLevel to: $availability")
         val updateUserData =
-            _userProfileData.value.copy(availability = availability)
+            _userProfileData.value.copy(preferredTimeRange = availability)
         _userProfileData.value = updateUserData
         navigateToStep4Post()
     }
@@ -132,7 +132,7 @@ class ProfileViewModel @Inject constructor(
     fun navigateToStep4Post() {
         _isNavigationToStep4PostEnabled.value =
             userProfileData.value.selectedDays.isNotEmpty() &&
-                    userProfileData.value.availability != null
+                    userProfileData.value.preferredTimeRange != null
     }
     //<!--------------------Profile Setup Step 4a ---------------->
 
@@ -270,16 +270,35 @@ class ProfileViewModel @Inject constructor(
 
     fun updateCategoriesOfInterest(categories: List<String>) {
         _userProfileData.value =
-            userProfileData.value.copy(categoriesOfInterest = categories)
+            userProfileData.value.copy(interestedSkills = categories)
         navigateToHome()
+    }
+
+    private val _createProfileResult = MutableStateFlow<String?>(null)
+    val createProfileResult: StateFlow<String?> get() = _createProfileResult
+
+    fun createProfile() {
+        viewModelScope.launch {
+            try {
+                val result = createProfileUseCase(userProfileData.value)
+                _createProfileResult.value = result
+                Log.i("CreateProfile","Profile Created successfully")
+
+            } catch (e: Exception) {
+                Log.e("CreateProfile", "Error creating profile: ${e.message}")
+                _createProfileResult.value = null
+
+            }
+        }
+
     }
 
     fun navigateToHome() {
         Log.d(
             "ProfileViewModel",
-            "Categories Of Interest: ${userProfileData.value.categoriesOfInterest}"
+            "Categories Of Interest: ${userProfileData.value.interestedSkills}"
         )
         _isNavigationToHomeEnabled.value =
-            userProfileData.value.categoriesOfInterest.isNotEmpty()
+            userProfileData.value.interestedSkills.isNotEmpty()
     }
 }

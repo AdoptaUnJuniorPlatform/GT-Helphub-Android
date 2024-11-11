@@ -28,9 +28,17 @@ class NavigationViewModel @Inject constructor(
                 _uiState.value = ProfileUIState.Loading
                 when (val response = fetchProfileUseCase()) {
                     is ApiResponse.Success -> {
-                        val statusCode = response.data.statusCode
-                        Log.i("ProfileResponse", "Success: ${response.data.message}, Status: $statusCode")
-                        _uiState.value = ProfileUIState.Success(statusCode)
+                        response.data?.let { profileData ->
+                            Log.i("ProfileResponse", "Profile found: $profileData")
+                            if (profileData.statusCode == 404) {
+                                _uiState.value = ProfileUIState.ProfileNotFound
+                            } else {
+                                _uiState.value = ProfileUIState.Success(profileData)
+                            }
+                        } ?: run {
+                            Log.e("ProfileResponse", "Profile response was null")
+                            _uiState.value = ProfileUIState.Error(500)
+                        }
                     }
                     is ApiResponse.Error -> {
                         Log.e("ProfileResponse", "Error: ${response.message}, Code: ${response.code}")
@@ -46,6 +54,7 @@ class NavigationViewModel @Inject constructor(
             }
         }
     }
+
 
     fun resetState() {
         _uiState.value = ProfileUIState.Idle

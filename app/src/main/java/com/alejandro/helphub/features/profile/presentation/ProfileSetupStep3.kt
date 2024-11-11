@@ -203,7 +203,7 @@ fun RadioButton(
 @Composable
 fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
     val userProfileData by profileViewModel.userProfileData.collectAsState()
-    var selectedItem by remember { mutableStateOf(userProfileData.availability ?: "") }
+    var selectedItem by remember { mutableStateOf(userProfileData.preferredTimeRange ?: "") }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(
@@ -219,7 +219,8 @@ fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
                 RadioButton(
                     text = stringResource(id = R.string.eight_to_two),
                     selectedItem = selectedItem,
-                    onItemSelected = { selectedItem = it }
+                    onItemSelected = { selectedItem = it
+                    profileViewModel.updateAvailability(it)}
                 )
             }
             Box {
@@ -247,7 +248,7 @@ fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
             }
             Box {
                 RadioButton(
-                    text = stringResource(id = R.string.eight_to_five),
+                    text = stringResource(id = R.string.eight_to_nine),
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it
