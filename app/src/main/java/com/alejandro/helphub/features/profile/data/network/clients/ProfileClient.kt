@@ -15,5 +15,4 @@ interface ProfileClient {
 
     @POST("/api/helphub/profile")
     suspend fun createProfile(@Body createProfileDTO: CreateProfileDTO):Response<CreateSkillResponse>
-//devuelve un array
 }

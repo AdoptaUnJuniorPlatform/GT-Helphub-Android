@@ -37,7 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,19 +57,14 @@ fun ProfileScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ), contentAlignment = Alignment.TopCenter
+                .padding(16.dp), contentAlignment = Alignment.TopCenter
         ) {
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
                 UserCard()
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons()
-                Spacer(modifier = Modifier.height(12.dp))
+               // Spacer(modifier = Modifier.height(12.dp))
 
             }
         }
@@ -79,24 +74,21 @@ fun ProfileScreen() {
 
 @Composable
 fun ToggleButtons() {
-    val selectedOption = remember { mutableStateOf("HABILIDADES") }
+    val selectedOption = rememberSaveable { mutableStateOf("HABILIDADES") }
 
     Box(
         modifier = Modifier
             .fillMaxWidth(0.6f)
-            //.padding(16.dp)
             .border(2.dp, Color.LightGray, RoundedCornerShape(6.dp))
             .clip(RoundedCornerShape(6.dp))
             .background(Color.White)
     ) {
-        Row(modifier = Modifier) {
+        Row{
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { selectedOption.value = "HABILIDADES" }
-                    .background(
-                        if (selectedOption.value == "HABILIDADES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                    )
+                    .clickable { selectedOption.value="HABILIDADES" }
+                    .background(if (selectedOption.value=="HABILIDADES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                     .padding(vertical = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -107,12 +99,14 @@ fun ToggleButtons() {
                     fontSize = 12.sp
                 )
             }
+
             VerticalDivider(
                 color = Color.LightGray,
                 modifier = Modifier
                     .width(1.dp)
                     .height(40.dp)
             )
+
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -140,6 +134,7 @@ fun ToggleButtons() {
         UserReviews()
     }
 }
+
 
 @Composable
 fun UserSkills() {
@@ -173,6 +168,7 @@ fun SkillsRow() {
         LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
             item { SkillCard() }
             item { SkillCard() }
+
         }
     }
 }

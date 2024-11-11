@@ -21,6 +21,10 @@ class NavigationViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProfileUIState>(ProfileUIState.Idle)
     val uiState: StateFlow<ProfileUIState> = _uiState.asStateFlow()
 
+    private val _userId=MutableStateFlow<String?>(null)
+    val userId:StateFlow<String?> get()= _userId
+
+
     fun fetchUserProfile() {
         Log.i("NavigationViewModel", "fetchUserProfile() called")
         viewModelScope.launch {
@@ -34,6 +38,7 @@ class NavigationViewModel @Inject constructor(
                                 _uiState.value = ProfileUIState.ProfileNotFound
                             } else {
                                 _uiState.value = ProfileUIState.Success(profileData)
+                                _userId.value= profileData.userId.id
                             }
                         } ?: run {
                             Log.e("ProfileResponse", "Profile response was null")
