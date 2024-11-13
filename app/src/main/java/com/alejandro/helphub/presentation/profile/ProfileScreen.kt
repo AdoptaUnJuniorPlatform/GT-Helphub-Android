@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alejandro.helphub.R
 import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.domain.models.UserProfileData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
@@ -61,8 +63,7 @@ LaunchedEffect(userId) {
         profileViewModel.getProfileById(it)
     }
 }
-
-
+    val userProfile = profileViewModel.userProfileData.collectAsState().value
 
     Scaffold {
         Box(
@@ -72,7 +73,7 @@ LaunchedEffect(userId) {
         ) {
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
-                UserCard()
+                UserCard(userProfile=userProfile)
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons()
                // Spacer(modifier = Modifier.height(12.dp))
@@ -369,7 +370,7 @@ fun UserRating() {
 }
 
 @Composable
-fun UserCard() {
+fun UserCard(userProfile:UserProfileData) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(
@@ -419,7 +420,7 @@ fun UserCard() {
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
                     Text(text = "Descripcion", fontSize = 16.sp)
-                    Text(text = "Soy una artista que ama pintar, tengo 8 años de experiencia enseñando y pintando. Además me encantan lso animales como las artes en general.")
+                    Text(text = userProfile.description)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
