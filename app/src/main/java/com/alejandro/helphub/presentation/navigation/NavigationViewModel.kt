@@ -1,12 +1,11 @@
-package com.alejandro.helphub.presentation.navigation.presentation
+package com.alejandro.helphub.presentation.navigation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alejandro.helphub.presentation.navigation.data.network.response.ApiResponse
-import com.alejandro.helphub.presentation.navigation.data.network.response.ProfileResponse
-import com.alejandro.helphub.presentation.navigation.domain.ProfileUIState
-import com.alejandro.helphub.presentation.navigation.domain.usecases.FetchProfileUseCase
+import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
+import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.domain.usecase.profile.FetchProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

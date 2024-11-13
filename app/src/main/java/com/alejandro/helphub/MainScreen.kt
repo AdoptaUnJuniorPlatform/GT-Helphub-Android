@@ -45,10 +45,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.alejandro.helphub.presentation.profile.ProfileViewModel
-import com.alejandro.helphub.presentation.navigation.domain.ProfileUIState
-import com.alejandro.helphub.presentation.navigation.presentation.BottomBarScreen
-import com.alejandro.helphub.presentation.navigation.presentation.BottomNavGraph
-import com.alejandro.helphub.presentation.navigation.presentation.NavigationViewModel
+import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
+import com.alejandro.helphub.presentation.navigation.BottomNavGraph
+import com.alejandro.helphub.presentation.navigation.NavigationViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

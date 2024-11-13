@@ -1,6 +1,6 @@
-package com.alejandro.helphub.presentation.navigation.domain
+package com.alejandro.helphub.domain.models
 
-import com.alejandro.helphub.presentation.navigation.data.network.response.ProfileResponse
+import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 
 sealed class ProfileUIState {
     object Idle : ProfileUIState()

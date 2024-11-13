@@ -1,4 +1,4 @@
-package com.alejandro.helphub.presentation.navigation.data.network.response
+package com.alejandro.helphub.data.source.remote.server.response
 
 sealed class ApiResponse<out T> {
     data class Success<T>(val data: T) : ApiResponse<T>()

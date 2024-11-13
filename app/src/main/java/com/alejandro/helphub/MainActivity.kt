@@ -9,9 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import com.alejandro.helphub.presentation.auth.AuthViewModel
 import com.alejandro.helphub.presentation.profile.ProfileViewModel
-import com.alejandro.helphub.presentation.navigation.presentation.BottomNavGraph
-import com.alejandro.helphub.presentation.navigation.presentation.NavigationViewModel
-import com.alejandro.helphub.presentation.navigation.presentation.RootNavGraph
+import com.alejandro.helphub.presentation.navigation.BottomNavGraph
+import com.alejandro.helphub.presentation.navigation.NavigationViewModel
+import com.alejandro.helphub.presentation.navigation.RootNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

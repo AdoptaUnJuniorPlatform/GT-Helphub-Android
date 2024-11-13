@@ -8,7 +8,7 @@ import com.alejandro.helphub.data.source.remote.server.ProfileClient
 import com.alejandro.helphub.data.source.remote.server.SkillClient
 import com.alejandro.helphub.data.source.remote.server.TwofaClient
 
-import com.alejandro.helphub.presentation.navigation.data.network.clients.FetchProfileClient
+import com.alejandro.helphub.data.source.remote.server.FetchProfileClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,13 +73,7 @@ class NetworkModule {
         return retrofit.create(ProfileClient::class.java)
     }
 
-    @Singleton
-    @Provides
-    fun provideFetchProfileClient(retrofit: Retrofit): FetchProfileClient {
-        return retrofit.create(FetchProfileClient::class.java)
-    }
-
-    @Singleton
+       @Singleton
     @Provides
     fun provideSkillClient(retrofit: Retrofit): SkillClient {
         return retrofit.create(SkillClient::class.java)

@@ -2,6 +2,8 @@ package com.alejandro.helphub.data.source.remote.repository
 
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
+import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
+import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
 import javax.inject.Inject
@@ -9,7 +11,7 @@ import javax.inject.Inject
 class ProfileRepository @Inject constructor(
 
     private val profileService: ProfileService,
-    private val profileDataMapper: com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
+    private val profileDataMapper: ProfileDataMapper
 ) {
     suspend fun createProfile(userProfileData: UserProfileData): String {
         val createProfileDTO =
@@ -31,6 +33,9 @@ class ProfileRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+    suspend fun fetchProfile(): ApiResponse<ProfileResponse> {
+        return profileService.fetchProfile()
     }
 
 }
