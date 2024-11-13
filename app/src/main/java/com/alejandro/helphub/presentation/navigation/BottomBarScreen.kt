@@ -31,10 +31,10 @@ sealed class BottomBarScreen (
     )
     @Serializable
     object Profile: BottomBarScreen(
-        route="Profile/{userId}",
+        route="Profile/{id}",
         title = "Profile",
        // icon = Icons.Default.Person
-    ){fun createRoute(userId:String)="Profile/$userId"}
+    ){fun createRoute(id:String)="Profile/$id"}
 }
 val bottomBarIcons = mapOf(
     BottomBarScreen.Home.route to Icons.Default.Home,

@@ -56,10 +56,10 @@ import com.alejandro.helphub.domain.models.UserProfileData
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
 @Composable
-fun ProfileScreen(userId:String?, profileViewModel: ProfileViewModel) {
+fun ProfileScreen(id:String?, profileViewModel: ProfileViewModel) {
 
-LaunchedEffect(userId) {
-    userId?.let {
+LaunchedEffect(id) {
+    id?.let {
         profileViewModel.getProfileById(it)
     }
 }
