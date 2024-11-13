@@ -41,4 +41,5 @@ jobs:
           #${{ secrets.SONAR_TOKEN }}
         
         run: ./gradlew build sonar --info
+
 #push to analyze
