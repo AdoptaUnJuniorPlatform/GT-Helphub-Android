@@ -39,10 +39,13 @@ fun BottomNavGraph(
         }
         composable(
             route = BottomBarScreen.Profile.route,
-            arguments = listOf(navArgument("id") { type = NavType.StringType })
-        ){navBackStackEntry->
-            val id=navBackStackEntry.arguments?.getString("id")
-            ProfileScreen(id=id,profileViewModel)
+            arguments = listOf(
+                navArgument("id") { type = NavType.StringType },
+                navArgument("userId"){type=NavType.StringType})
+        ) { navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getString("id")
+            val userId = navBackStackEntry.arguments?.getString("userId")
+            ProfileScreen(id = id, userId =userId, profileViewModel)
         }
         composable("ProfileSetupStep1") {
             ProfileSetupStep1(

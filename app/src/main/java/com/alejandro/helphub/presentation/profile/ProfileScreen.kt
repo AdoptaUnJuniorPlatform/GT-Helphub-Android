@@ -46,25 +46,31 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alejandro.helphub.R
-import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
 @Composable
-fun ProfileScreen(id:String?, profileViewModel: ProfileViewModel) {
+fun ProfileScreen(
+    id: String?,
+    userId: String?,
+    profileViewModel: ProfileViewModel
+) {
 
-LaunchedEffect(id) {
-    id?.let {
-        profileViewModel.getProfileById(it)
+    LaunchedEffect(id, userId) {
+        id?.let {
+            profileViewModel.getProfileById(it)
+        }
+        userId?.let {
+            profileViewModel.getUserById(userId)
+        }
     }
-}
     val userProfile = profileViewModel.userProfileData.collectAsState().value
-
+    val user = profileViewModel.userAuthData.collectAsState().value
     Scaffold {
         Box(
             modifier = Modifier
@@ -73,10 +79,10 @@ LaunchedEffect(id) {
         ) {
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
-                UserCard(userProfile=userProfile)
+                UserCard(userProfile = userProfile,user=user)
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons()
-               // Spacer(modifier = Modifier.height(12.dp))
+                // Spacer(modifier = Modifier.height(12.dp))
 
             }
         }
@@ -95,7 +101,7 @@ fun ToggleButtons() {
             .clip(RoundedCornerShape(6.dp))
             .background(Color.White)
     ) {
-        Row{
+        Row {
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -299,12 +305,19 @@ fun ReviewCard() {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
-                Image(painter = painterResource(id = R.drawable.pfp_laura), contentDescription = "")
+                Image(
+                    painter = painterResource(id = R.drawable.pfp_laura),
+                    contentDescription = ""
+                )
                 Spacer(modifier = Modifier.width(12.dp))
-                Text(text = "Laura García", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Laura García",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
-        }
+    }
 }
 
 @Composable
@@ -370,7 +383,7 @@ fun UserRating() {
 }
 
 @Composable
-fun UserCard(userProfile:UserProfileData) {
+fun UserCard(userProfile: UserProfileData,user:UserAuthData) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(
@@ -398,7 +411,7 @@ fun UserCard(userProfile:UserProfileData) {
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = "Juanita Perez",
+                        text = "${user.nameUser} ${user.surnameUser}",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )

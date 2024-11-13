@@ -22,6 +22,6 @@ interface ProfileClient {
     suspend fun fetchProfile(): Response<ProfileResponse>
 
     @GET("/api/helphub/profile/{id}")
-    suspend fun getProfileById(@Path("id")userId:String): Response<ProfileResponse>
+    suspend fun getProfileById(@Path("id")id:String): Response<ProfileResponse>
 
 }

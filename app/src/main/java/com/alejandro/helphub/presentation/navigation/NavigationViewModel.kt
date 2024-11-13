@@ -23,6 +23,9 @@ class NavigationViewModel @Inject constructor(
     private val _id=MutableStateFlow<String?>(null)
     val id:StateFlow<String?> get()= _id
 
+    private val _userId=MutableStateFlow<String?>(null)  //ver si en vez de String es de tipo UserId
+    val userId:StateFlow<String?> get()= _userId
+
 
     fun fetchUserProfile() {
         Log.i("NavigationViewModel", "fetchUserProfile() called")
@@ -38,7 +41,9 @@ class NavigationViewModel @Inject constructor(
                             } else {
                                 _uiState.value = ProfileUIState.Success(profileData)
                                 _id.value= profileData.id
-                                Log.i("NavigationViewModel", "Updated userId: ${_id.value}")
+                                _userId.value=profileData.userId.id
+                                Log.i("NavigationViewModel", "Updated id: ${_id.value}")
+                                Log.i("NavigationViewModel", "Updated userId: ${_userId.value}")
                             }
                         } ?: run {
                             Log.e("ProfileResponse", "Profile response was null")

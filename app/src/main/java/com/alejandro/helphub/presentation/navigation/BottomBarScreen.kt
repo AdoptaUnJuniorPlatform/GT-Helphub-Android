@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.serialization.Serializable
 @Serializable
 sealed class BottomBarScreen (
@@ -31,10 +32,10 @@ sealed class BottomBarScreen (
     )
     @Serializable
     object Profile: BottomBarScreen(
-        route="Profile/{id}",
+        route="Profile/{id}/{userId}",
         title = "Profile",
        // icon = Icons.Default.Person
-    ){fun createRoute(id:String)="Profile/$id"}
+    ){fun createRoute(id:String,userId: String)="Profile/$id/$userId"}
 }
 val bottomBarIcons = mapOf(
     BottomBarScreen.Home.route to Icons.Default.Home,

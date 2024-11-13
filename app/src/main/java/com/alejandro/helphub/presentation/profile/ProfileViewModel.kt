@@ -4,9 +4,12 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.data.source.remote.server.response.UserId
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
+import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
+import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetUserInfoUseCase
@@ -22,6 +25,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val getProfileByIdUseCase: GetProfileByIdUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase,
     private val createProfileUseCase: CreateProfileUseCase,
     private val createSkillUseCase: CreateSkillUseCase
 ) : ViewModel() {
@@ -32,31 +36,61 @@ class ProfileViewModel @Inject constructor(
 
     private val _skillData = MutableStateFlow(SkillData())
     val skillData: StateFlow<SkillData> = _skillData.asStateFlow()
-    /*
-        private val _userInfo = MutableStateFlow<Result<SearchResponse>?>(null)
-        val userInfo: StateFlow<Result<SearchResponse>?> get() = _userInfo
 
-        sealed class UserProfileState {
-            object Loading : UserProfileState()
-            data class Success(val profile: SearchResponse) : UserProfileState()
-            data class Error(val message: String) : UserProfileState()
-        }
+    //<!--------------------Profile ---------------->
 
-        private val _userProfileState = MutableStateFlow<UserProfileState>(UserProfileState.Loading)
-        val userProfileState: StateFlow<UserProfileState> = _userProfileState
-    */
+    private val _userAuthData = MutableStateFlow(UserAuthData())
+    val userAuthData: StateFlow<UserAuthData> =
+        _userAuthData.asStateFlow()
 
     private val _profileUIState = MutableStateFlow<ProfileUIState>(
         ProfileUIState.Idle)
     val profileUIState: StateFlow<ProfileUIState> = _profileUIState.asStateFlow()
 
-    fun getProfileById(userId: String) {
+    fun getUserById(userId: String) {
         viewModelScope.launch {
             _profileUIState.value = ProfileUIState.Loading
-            Log.d("ProfileViewModel", "Fetching profile for userId: $userId")
+            Log.d("ProfileViewModel", "Fetching user for userId: $userId")
 
             try {
-                val response = getProfileByIdUseCase(userId)
+                val response = getUserByIdUseCase(userId)
+                // Verifica si la respuesta fue exitosa
+                if (response.isSuccessful) {
+                    response.body()?.let { userResponse ->
+
+                        _userAuthData.value = UserAuthData(
+                            nameUser = userResponse.nameUser,
+                            surnameUser = userResponse.surnameUser,
+                        )
+
+                        _profileUIState.value = ProfileUIState.Success(userResponse)
+                        Log.i("ProfileViewModel", "Profile loaded successfully $userResponse")
+                    } ?: run {
+                        _profileUIState.value = ProfileUIState.ProfileNotFound
+                        Log.w("ProfileViewModel", "Profile not found")
+                    }
+                } else {
+                    _profileUIState.value = ProfileUIState.Error(500) // Or another error code
+                    Log.e("ProfileViewModel", "Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _profileUIState.value = ProfileUIState.Error(500) // Or another error code
+                Log.e("ProfileViewModel", "Error loading profile: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+
+    fun getProfileById(id: String) {
+        viewModelScope.launch {
+            _profileUIState.value = ProfileUIState.Loading
+            Log.d("ProfileViewModel", "Fetching profile for userId: $id")
+
+            try {
+                val response = getProfileByIdUseCase(id)
 
                 // Verifica si la respuesta fue exitosa
                 if (response.isSuccessful) {

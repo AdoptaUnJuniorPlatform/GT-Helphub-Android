@@ -18,9 +18,9 @@ class ProfileRepository @Inject constructor(
     private val profileDataMapper: ProfileDataMapper
 ) {
 
-    suspend fun getProfileById(userId: String): Response<ProfileResponse> {
+    suspend fun getProfileById(id: String): Response<ProfileResponse> {
         return try {
-            val response = profileService.getProfileById(userId)
+            val response = profileService.getProfileById(id)
 
             // Retornamos directamente el Response de Retrofit
             if (response.isSuccessful) {
@@ -36,7 +36,9 @@ class ProfileRepository @Inject constructor(
         } catch (e: Exception) {
             Log.e("ProfileRepository", "Error fetching profile: ${e.message}")
             // Retornamos un Response con error si ocurre una excepción
-            Response.error(500, ResponseBody.create(null, e.message ?: "Unknown error"))
+            Response.error(500,
+                (e.message ?: "Unknown error").toResponseBody(null)
+            )
         }
     }
 

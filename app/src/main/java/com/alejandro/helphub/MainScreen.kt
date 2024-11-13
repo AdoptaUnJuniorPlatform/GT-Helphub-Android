@@ -123,9 +123,10 @@ fun BottomBar(
         when (val state=uiState) {
             is ProfileUIState.Success -> {
                 val statusCode = state.profile.statusCode
-                val userId=state.profile.id
+                val id=state.profile.id
+                val userId=state.profile.userId.id
                 if (statusCode == null) {
-                    navController.navigate(BottomBarScreen.Profile.createRoute(userId)) {
+                    navController.navigate(BottomBarScreen.Profile.createRoute(id,userId)) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }

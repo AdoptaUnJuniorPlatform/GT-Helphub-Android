@@ -6,7 +6,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class GetProfileByIdUseCase @Inject constructor(private val profileRepository: ProfileRepository){
-    suspend operator fun invoke(userId:String): Response<ProfileResponse> {
-        return profileRepository.getProfileById(userId)
+    suspend operator fun invoke(id:String): Response<ProfileResponse> {
+        return profileRepository.getProfileById(id)
     }
 }

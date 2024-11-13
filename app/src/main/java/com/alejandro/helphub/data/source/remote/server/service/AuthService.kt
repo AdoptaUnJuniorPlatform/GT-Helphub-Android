@@ -1,14 +1,20 @@
 package com.alejandro.helphub.data.source.remote.server.service
 
-import com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO
-import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import com.alejandro.helphub.data.source.remote.server.AuthClient
 import com.alejandro.helphub.data.source.remote.server.response.LoginResponse
+import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
+import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import javax.inject.Inject
 
 class AuthService @Inject constructor(private val authClient: AuthClient) {
+
+    suspend fun getUserById(userId: String): Response<ProfileResponse> {
+        return authClient.getUserById(userId)
+    }
+
     suspend fun registerNewUser(userDTO: com.alejandro.helphub.data.source.remote.dto.auth.UserDTO): String {
         return withContext(Dispatchers.IO) {
             val response = authClient.registerNewUser(userDTO)

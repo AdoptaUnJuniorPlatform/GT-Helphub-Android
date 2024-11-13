@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
 
-    suspend fun getProfileById(userId: String):Response<ProfileResponse>{
-        return profileClient.getProfileById(userId)
+    suspend fun getProfileById(id: String):Response<ProfileResponse>{
+        return profileClient.getProfileById(id)
     }
 
     suspend fun getUserInfo(email: String): Response<SearchResponse> {
@@ -43,6 +43,9 @@ class ProfileService @Inject constructor(private val profileClient: ProfileClien
                                 statusCode = 406,
                                 id="",
                                 userId = UserId(id = ""),
+                                email= "",
+                                nameUser = "",
+                                surnameUser = "",
                                 description = "",
                                 interestedSkills = emptyList(),
                                 location = "",
