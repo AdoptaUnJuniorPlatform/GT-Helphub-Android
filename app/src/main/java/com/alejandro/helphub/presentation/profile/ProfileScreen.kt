@@ -36,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -48,11 +49,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alejandro.helphub.R
+import com.alejandro.helphub.domain.models.ProfileUIState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview
+
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(userId:String?, profileViewModel: ProfileViewModel) {
+
+LaunchedEffect(userId) {
+    userId?.let {
+        profileViewModel.getProfileById(it)
+    }
+}
+
+
+
     Scaffold {
         Box(
             modifier = Modifier
@@ -87,8 +98,8 @@ fun ToggleButtons() {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { selectedOption.value="HABILIDADES" }
-                    .background(if (selectedOption.value=="HABILIDADES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                    .clickable { selectedOption.value = "HABILIDADES" }
+                    .background(if (selectedOption.value == "HABILIDADES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                     .padding(vertical = 12.dp),
                 contentAlignment = Alignment.Center
             ) {

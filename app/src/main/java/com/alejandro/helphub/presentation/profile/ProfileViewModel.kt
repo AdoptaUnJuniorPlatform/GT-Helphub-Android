@@ -4,9 +4,11 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
+import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetUserInfoUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getProfileByIdUseCase: GetProfileByIdUseCase,
     private val createProfileUseCase: CreateProfileUseCase,
     private val createSkillUseCase: CreateSkillUseCase
 ) : ViewModel() {
@@ -42,6 +45,45 @@ class ProfileViewModel @Inject constructor(
         private val _userProfileState = MutableStateFlow<UserProfileState>(UserProfileState.Loading)
         val userProfileState: StateFlow<UserProfileState> = _userProfileState
     */
+
+    private val _profileUIState = MutableStateFlow<ProfileUIState>(
+        ProfileUIState.Idle)
+    val profileUIState: StateFlow<ProfileUIState> = _profileUIState.asStateFlow()
+
+    fun getProfileById(userId: String) {
+        viewModelScope.launch {
+            _profileUIState.value = ProfileUIState.Loading
+            Log.d("ProfileViewModel", "Fetching profile for userId: $userId")
+
+            try {
+                val response = getProfileByIdUseCase(userId)
+
+                // Verifica si la respuesta fue exitosa
+                if (response.isSuccessful) {
+                    response.body()?.let { profileResponse ->
+
+                        _userProfileData.value = UserProfileData(
+                            profilePicture = profileResponse.profilePicture,
+                            description = profileResponse.description,
+                            location = profileResponse.location
+                        )
+
+                        _profileUIState.value = ProfileUIState.Success(profileResponse)
+                        Log.i("ProfileViewModel", "Profile loaded successfully $profileResponse")
+                    } ?: run {
+                        _profileUIState.value = ProfileUIState.ProfileNotFound
+                        Log.w("ProfileViewModel", "Profile not found")
+                    }
+                } else {
+                    _profileUIState.value = ProfileUIState.Error(500) // Or another error code
+                    Log.e("ProfileViewModel", "Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _profileUIState.value = ProfileUIState.Error(500) // Or another error code
+                Log.e("ProfileViewModel", "Error loading profile: ${e.message}")
+            }
+        }
+    }
 
 
     //<!--------------------Profile Setup Step 1 ---------------->

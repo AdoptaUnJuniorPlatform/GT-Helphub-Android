@@ -14,6 +14,11 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
+
+    suspend fun getProfileById(userId: String):Response<ProfileResponse>{
+        return profileClient.getProfileById(userId)
+    }
+
     suspend fun getUserInfo(email: String): Response<SearchResponse> {
         return profileClient.getUserInfo(email)
     }

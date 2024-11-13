@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
     alias(libs.plugins.hilt)
+    alias(libs.plugins.jetbrainsKotlinSerialization)
 
 }
 
@@ -54,7 +55,8 @@ android {
 
 dependencies {
 
-
+implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
 //Okhttp3
     implementation(libs.logging.interceptor)

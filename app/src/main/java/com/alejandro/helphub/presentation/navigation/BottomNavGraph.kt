@@ -2,8 +2,10 @@ package com.alejandro.helphub.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.alejandro.helphub.presentation.chat.ChatScreen
 import com.alejandro.helphub.presentation.home.Home
 import com.alejandro.helphub.presentation.notifications.NotificationsScreen
@@ -35,8 +37,12 @@ fun BottomNavGraph(
         composable(BottomBarScreen.Notifications.route) {
             NotificationsScreen()
         }
-        composable(BottomBarScreen.Profile.route) {
-            ProfileScreen()
+        composable(
+            route = BottomBarScreen.Profile.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ){navBackStackEntry->
+            val userId=navBackStackEntry.arguments?.getString("userId")
+            ProfileScreen(userId=userId,profileViewModel)
         }
         composable("ProfileSetupStep1") {
             ProfileSetupStep1(

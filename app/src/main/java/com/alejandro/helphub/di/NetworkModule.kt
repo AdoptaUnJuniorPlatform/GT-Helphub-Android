@@ -8,7 +8,6 @@ import com.alejandro.helphub.data.source.remote.server.ProfileClient
 import com.alejandro.helphub.data.source.remote.server.SkillClient
 import com.alejandro.helphub.data.source.remote.server.TwofaClient
 
-import com.alejandro.helphub.data.source.remote.server.FetchProfileClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

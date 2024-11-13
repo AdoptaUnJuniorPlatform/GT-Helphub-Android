@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -49,6 +50,7 @@ import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 import com.alejandro.helphub.presentation.navigation.BottomNavGraph
 import com.alejandro.helphub.presentation.navigation.NavigationViewModel
+import com.alejandro.helphub.presentation.navigation.bottomBarIcons
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -121,8 +123,9 @@ fun BottomBar(
         when (val state=uiState) {
             is ProfileUIState.Success -> {
                 val statusCode = state.profile.statusCode
+                val userId=state.profile.id
                 if (statusCode == null) {
-                    navController.navigate(BottomBarScreen.Profile.route) {
+                    navController.navigate(BottomBarScreen.Profile.createRoute(userId)) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
@@ -171,7 +174,8 @@ fun BottomBar(
                 },
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector =bottomBarIcons[screen.route] ?: Icons.Default.Home,
+                       // imageVector = screen.icon,
                         contentDescription = screen.title,
                         modifier = Modifier.offset(y = 8.dp)
                     )
