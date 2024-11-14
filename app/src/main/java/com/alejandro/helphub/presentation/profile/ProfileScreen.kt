@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,6 +41,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -45,32 +49,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alejandro.helphub.R
+import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-
+@Preview
 @Composable
 fun ProfileScreen(
-    id: String?,
-    userId: String?,
-    profileViewModel: ProfileViewModel
+    //id: String?,
+    //userId: String?,
+    //profileViewModel: ProfileViewModel
 ) {
+    /*
+        LaunchedEffect(id, userId) {
+            id?.let {
+                profileViewModel.getProfileById(it)
+            }
+            userId?.let {
+                profileViewModel.getUserById(userId)
+                profileViewModel.getSkillsByUserId(userId)
+            }
+        }
+        val userProfile = profileViewModel.userProfileData.collectAsState().value
+        val user = profileViewModel.userAuthData.collectAsState().value
 
-    LaunchedEffect(id, userId) {
-        id?.let {
-            profileViewModel.getProfileById(it)
-        }
-        userId?.let {
-            profileViewModel.getUserById(userId)
-        }
-    }
-    val userProfile = profileViewModel.userProfileData.collectAsState().value
-    val user = profileViewModel.userAuthData.collectAsState().value
+    */
     Scaffold {
         Box(
             modifier = Modifier
@@ -79,9 +89,13 @@ fun ProfileScreen(
         ) {
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
-                UserCard(userProfile = userProfile,user=user)
+                UserCard(
+                    // userProfile = userProfile,user=user
+                )
                 Spacer(modifier = Modifier.height(12.dp))
-                ToggleButtons()
+                ToggleButtons(
+                    //  profileViewModel
+                )
                 // Spacer(modifier = Modifier.height(12.dp))
 
             }
@@ -91,7 +105,9 @@ fun ProfileScreen(
 
 
 @Composable
-fun ToggleButtons() {
+fun ToggleButtons(
+    //profileViewModel: ProfileViewModel
+) {
     val selectedOption = rememberSaveable { mutableStateOf("HABILIDADES") }
 
     Box(
@@ -147,7 +163,9 @@ fun ToggleButtons() {
     Spacer(modifier = Modifier.height(16.dp))
 
     if (selectedOption.value == "HABILIDADES") {
-        UserSkills()
+        UserSkills(
+            //profileViewModel
+        )
     } else {
         UserReviews()
     }
@@ -155,11 +173,14 @@ fun ToggleButtons() {
 
 
 @Composable
-fun UserSkills() {
+fun UserSkills(
+    // profileViewModel: ProfileViewModel
+) {
+    // val skillDataList by profileViewModel.skillDataList.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "Mis habilidades",
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.width(24.dp))
@@ -171,65 +192,105 @@ fun UserSkills() {
         ) {
             Icon(imageVector = Icons.Default.AddCircle, contentDescription = "")
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "NUEVA HABILIDAD")
+            Text(text = "NUEVA HABILIDAD", fontSize = 12.sp)
         }
     }
     Spacer(modifier = Modifier.height(12.dp))
-    SkillsRow()
+    SkillsRow(
+        //  userSkillsList=skillDataList
+    )
 
 }
 
 @Composable
-fun SkillsRow() {
+fun SkillsRow(
+    //  userSkillsList: List<SkillData>
+) {
     val listState = rememberLazyListState()
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .offset((-12).dp)
+    ) {
         LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
-            item { SkillCard() }
-            item { SkillCard() }
+            // items(userSkillsList) { userSkills ->
+            //SkillCard(userSkills = userSkills)
+            items(2) { userSkills ->
+                SkillCard()
+            }
 
         }
     }
 }
 
+
 @Composable
-fun SkillCard() {
+fun SkillCard(
+    //userSkills: SkillData
+) {
     Card(
         modifier = Modifier
-            .widthIn(max = 300.dp)
+            .width(270.dp)
             .padding(start = 16.dp),
-        elevation = CardDefaults.cardElevation(10.dp),
-        shape = RoundedCornerShape(12.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Pintura al óleo")
-            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Pintura al óleo",
+                fontWeight = FontWeight.Bold,
+                // userSkills.title,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(5.dp))
             Row {
-                //userProfileData.selectedCategories.forEach { category ->
-                listOf("Básico", "Medio", "Avanzado").forEach { category ->
+
+                listOf(
+                    stringResource(id = R.string.basic), stringResource(
+                        id = R.string.amateur
+                    ), stringResource(id = R.string.advanced)
+                ).forEach { level ->
                     Box(
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
+                            .background
+                            //(if(level== userSkills.level
+                            // )Color.Blue else
+                                (
+                                Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            .background(Color.LightGray)
+                            .border(
+                                width = 1.dp,
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(12.dp)
+                            )
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = category,
-                            fontSize = 12.sp
+                            text = level,
+                            fontSize = 14.sp,
+                            color =
+                            // if(level==userSkills.level) Color.White else
+                            Color.Black
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Aprende a preparar un plato vegano delicioso y nutritivo (desde entrantes hasta postres)",
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.height(60.dp)) {
+                Text(
+                    text = "Aprende a preprarar un plato vegano delicioso y nutritivo (desde entrantes hasta postres)"
+                    // userSkills.description
+                    ,
+                    fontSize = 15.sp
+
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
             Row {
                 Button(
                     onClick = {},
@@ -383,8 +444,13 @@ fun UserRating() {
 }
 
 @Composable
-fun UserCard(userProfile: UserProfileData,user:UserAuthData) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+fun UserCard(
+    //userProfile: UserProfileData,user:UserAuthData
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0x0FA58E8E))
+    ) {
         Column(
             modifier = Modifier.padding(
                 start = 12.dp,
@@ -392,35 +458,57 @@ fun UserCard(userProfile: UserProfileData,user:UserAuthData) {
                 bottom = 12.dp
             )
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Row {
                 Text(
                     text = "Mi Perfil",
-                    fontSize = 24.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 //Icon
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             Row {
-                Image(
-                    painter = painterResource(id = R.drawable.pfp_pedro),
-                    contentDescription = "",
-                    modifier = Modifier.size(140.dp)
-                )
+                Box(modifier = Modifier.size(120.dp)) {
+                    Image(
+                        painter = painterResource(id = R.drawable.default_profile_icon),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.Red)
+                    )
+                }
+                /*
+                                Image(
+                                    painter = painterResource(id = R.drawable.pfp_pedro),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(140.dp)
+                                )
+                                */
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = "${user.nameUser} ${user.surnameUser}",
-                        fontSize = 24.sp,
+                        text = "Juanita Pérez",
+                        // "${user.nameUser} ${user.surnameUser}",
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Disponibilidad horaria")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Disponibilidad horaria",
+                        fontWeight = FontWeight.Bold
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "de 8 a 17")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    DayBox()
+                    Box(modifier = Modifier
+                        .border(
+                        width = 1.dp,
+                            color = Color.Gray,
+                        shape = RoundedCornerShape(6.dp))
+                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                    ) { Text(text = "8:00 a 17:00") }
+                            Spacer (modifier = Modifier.height(16.dp))
+                            DayBox ()
 
                 }
             }
@@ -429,15 +517,34 @@ fun UserCard(userProfile: UserProfileData,user:UserAuthData) {
                 modifier = Modifier
                     //.padding(12.dp)
                     .width(340.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(
+                        0x39D5D3DA
+                    )
+                )
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Text(text = "Descripcion", fontSize = 16.sp)
-                    Text(text = userProfile.description)
+                    Text(
+                        text = "Descripcion",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(modifier = Modifier.height(50.dp)) {
+                        Text(
+                            text = "Soy una artista que ama pintar, tengo 8 años de experiencia enseñando y pintando. Además me encantan los animales como las artes en general.",
+                            fontSize = 13.sp
+                            // userProfile.description
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Habilidades que me interesan", fontSize = 16.sp)
+            Text(
+                text = "Habilidades que me interesan",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
             Spacer(modifier = Modifier.height(8.dp))
             CategoriesOfInterest()
         }
@@ -450,14 +557,14 @@ fun CategoriesOfInterest() {
     Row {
         //userProfileData.selectedCategories.forEach { category ->
         listOf("Informática", "Idiomas", "Tutorias").forEach { category ->
+
             Box(
                 modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = Color.Gray,
+
+                    .background(
+                        Color(0x39D5D3DA),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .background(Color.LightGray)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
@@ -485,7 +592,7 @@ fun DayBox() {
             Box(
                 modifier = Modifier
                     .background(
-                        color = //if (level == userProfileData.selectedLevel)
+                        color = //if (day == userProfileData.selectedLevel)
                         MaterialTheme.colorScheme.primary
                         //else Color.Transparent,
                         , shape = RoundedCornerShape(20.dp)
