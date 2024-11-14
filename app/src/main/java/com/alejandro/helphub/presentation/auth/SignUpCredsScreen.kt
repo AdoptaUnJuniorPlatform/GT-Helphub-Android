@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.utils.ResultStatus
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -192,7 +193,7 @@ fun ToLogin(navController: NavHostController) {
             text = stringResource(id = R.string.login),
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .clickable { navController.navigate("LoginScreen") },
+                .clickable { navController.navigate(RootNavGraphObjects.LoginScreen.route) },
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             color = Color.Blue
@@ -259,7 +260,7 @@ fun PrivacyCheck(isChecked: Boolean, authViewModel: AuthViewModel, navController
                 enabled = true
             )
         }
-        Column(modifier = Modifier.align(Alignment.Bottom).clickable { navController.navigate("PrivacyScreen") }) {
+        Column(modifier = Modifier.align(Alignment.Bottom).clickable { navController.navigate(RootNavGraphObjects.PrivacyScreen.route) }) {
             Text(text = buildAnnotatedString {
                 append(stringResource(id = R.string.i_agree_to_the))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {

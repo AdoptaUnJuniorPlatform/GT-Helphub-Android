@@ -47,10 +47,12 @@ fun BottomNavGraph(
             val userId = navBackStackEntry.arguments?.getString("userId")
             ProfileScreen(id = id, userId =userId, profileViewModel)
         }
-        composable("ProfileSetupStep1") {
+        composable("ProfileSetupStep1/{userAuthDataJson") { backStackEntry->
+            val userAuthDataJson = backStackEntry.arguments?.getString("userAuthDataJson")
             ProfileSetupStep1(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController,
+                userAuthDataJson=userAuthDataJson
             )
         }
         composable("ProfileSetupStep2") {

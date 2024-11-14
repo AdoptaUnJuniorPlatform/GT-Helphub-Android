@@ -1,6 +1,7 @@
 package com.alejandro.helphub
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,11 +59,10 @@ import com.alejandro.helphub.presentation.navigation.bottomBarIcons
 fun MainScreen(
     navigationViewModel: NavigationViewModel,
     navController: NavHostController,
-    profileViewModel: ProfileViewModel
-
+    profileViewModel: ProfileViewModel,
 ) {
+
     var showPopUp by remember { mutableStateOf(false) }
-    //val bottomNavController=rememberNavController()
     val currentDestination=navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(bottomBar = {

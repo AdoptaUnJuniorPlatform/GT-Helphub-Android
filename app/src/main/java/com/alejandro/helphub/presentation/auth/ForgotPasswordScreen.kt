@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.utils.ResultStatus
 
 @Composable
@@ -74,7 +75,7 @@ fun ResetButton(
     Button(
         onClick = {
             authViewModel.generateAndSendTwoFaCodeResetPassword()
-            navController.navigate("ResetPasswordScreen")
+            navController.navigate(RootNavGraphObjects.ResetPasswordScreen.route)
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -92,7 +93,7 @@ fun ResetButton(
     when (twoFaStatus) {
         is ResultStatus.Success -> {
             authViewModel.resetTwoFaStatus()
-            navController.navigate("ResetPasswordScreen")
+            navController.navigate(RootNavGraphObjects.ResetPasswordScreen.route)
         }
 
         is ResultStatus.Error -> {
@@ -102,7 +103,7 @@ fun ResetButton(
                 (twoFaStatus as ResultStatus.Error).message,
                 Toast.LENGTH_SHORT
             ).show()
-            navController.navigate("LoginScreen")
+            navController.navigate(RootNavGraphObjects.LoginScreen.route)
         }
 
         else -> {} // No hacer nada en el estado Idle

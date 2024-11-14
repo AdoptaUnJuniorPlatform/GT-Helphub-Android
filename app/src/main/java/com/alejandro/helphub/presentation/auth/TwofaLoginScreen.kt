@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.presentation.profile.RegisterHeader
 import com.alejandro.helphub.presentation.profile.StepButtons
 import com.alejandro.helphub.utils.ResultStatus
@@ -44,8 +45,8 @@ fun TwofaLoginScreen(
                     "Error durante el login",
                     Toast.LENGTH_SHORT
                 ).show()
-                navController.navigate("LoginScreen") {
-                    popUpTo("TwofaLoginScreen") { inclusive = true }
+                navController.navigate(RootNavGraphObjects.LoginScreen.route) {
+                    popUpTo(RootNavGraphObjects.TwofaLoginScreen.route) { inclusive = true }
                 }
             }
             else -> {} // Manejo de otros estados si es necesario
@@ -86,7 +87,8 @@ fun TwofaLoginScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = { navController.navigate("MainScreen") })
+        SuccessCard(onNavigate = { navController.navigate(RootNavGraphObjects.MainScreen.route){popUpTo(0)
+            launchSingleTop=true} })
     }
 }
 
@@ -109,8 +111,8 @@ fun LoginValidationButton(
                 Log.i("2FA", "Código 2FA correcto.")
                 authViewModel.loginUser()
                 authViewModel.clearTwofaField()
-                navController.navigate("MainScreen"){popUpTo(0)
-                launchSingleTop=true}
+               // navController.navigate("MainScreen/${authViewModel.userAuthDataJson}"){popUpTo(0)
+             //   launchSingleTop=true}
             } else {
                 Log.i("2FA", "Código 2FA incorrecto.")
             }

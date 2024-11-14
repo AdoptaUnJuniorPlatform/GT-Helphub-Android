@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 
 @Composable
 fun ResetPasswordScreen(
@@ -82,7 +83,7 @@ fun ResetPasswordButton(
                 Log.i("2FA", "Código 2FA correcto.")
                 authViewModel.requestResetPassword()
                 authViewModel.clearTwofaField()
-                navController.navigate("LoginScreen")
+                navController.navigate(RootNavGraphObjects.LoginScreen.route)
             }
         },
         colors = ButtonDefaults.buttonColors(

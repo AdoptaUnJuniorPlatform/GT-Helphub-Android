@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 
 @Composable
 fun PrivacyScreen(
@@ -46,7 +47,7 @@ navController:NavHostController
 @Composable
 fun AcceptButton(navController: NavHostController) {
     Button(
-        onClick = { navController.navigate("SignUpCredsScreen") },
+        onClick = { navController.navigate(RootNavGraphObjects.SignUpCredsScreen.route) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 8.dp),

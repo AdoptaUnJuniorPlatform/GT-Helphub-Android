@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.presentation.profile.RegisterHeader
 import com.alejandro.helphub.presentation.profile.StepButtons
 
@@ -100,8 +101,8 @@ fun TwofaRegisterScreen(
                             "Error durante el registro",
                             Toast.LENGTH_SHORT
                         ).show()
-                        navController.navigate("LoginScreen") {
-                            popUpTo("DoubleAuthFactorScreen") {
+                        navController.navigate(RootNavGraphObjects.LoginScreen.route) {
+                            popUpTo(RootNavGraphObjects.TwofaRegisterScreen.route) {
                                 inclusive = true
                             }
                         }
@@ -112,7 +113,7 @@ fun TwofaRegisterScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = { navController.navigate("LoginScreen") })
+        SuccessCard(onNavigate = { navController.navigate(RootNavGraphObjects.LoginScreen.route) })
     }
 }
 

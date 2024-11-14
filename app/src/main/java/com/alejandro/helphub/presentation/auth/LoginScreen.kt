@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.utils.ResultStatus
 
 @Composable
@@ -88,7 +89,8 @@ fun LoginScreen(
                     onTextChanged = { authViewModel.updateUserEmail(it) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                PasswordLabel(onClick = { navController.navigate("ForgotPasswordScreen") })
+                PasswordLabel(onClick = { navController.navigate(
+                    RootNavGraphObjects.ForgotPasswordScreen.route) })
                 Spacer(modifier = Modifier.height(10.dp))
                 Password(userData.password) {
                     authViewModel.updateUserPassword(
@@ -106,7 +108,7 @@ fun LoginScreen(
                     text = stringResource(id = R.string.login)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                SignUpLink(onClick = { navController.navigate("SignUpCredsScreen") })
+                SignUpLink(onClick = { navController.navigate(RootNavGraphObjects.SignUpCredsScreen.route) })
             }
         }
     }
@@ -138,7 +140,7 @@ fun LoginButton(
     Button(
         onClick = {
             authViewModel.generateAndSendTwoFaCodeLogin()
-            navController.navigate("TwofaLoginScreen")
+            navController.navigate(RootNavGraphObjects.TwofaLoginScreen.route)
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -156,7 +158,7 @@ fun LoginButton(
     when (twoFaStatus) {
         is ResultStatus.Success -> {
             authViewModel.resetTwoFaStatus()
-            navController.navigate("TwofaLoginScreen")
+            navController.navigate(RootNavGraphObjects.TwofaLoginScreen.route)
         }
         is ResultStatus.Error -> {
             authViewModel.resetTwoFaStatus()
@@ -165,7 +167,7 @@ fun LoginButton(
                 (twoFaStatus as ResultStatus.Error).message,
                 Toast.LENGTH_SHORT
             ).show()
-            navController.navigate("LoginScreen")
+            navController.navigate(RootNavGraphObjects.LoginScreen.route)
         }
         else -> {} // No hacer nada en el estado Idle
     }

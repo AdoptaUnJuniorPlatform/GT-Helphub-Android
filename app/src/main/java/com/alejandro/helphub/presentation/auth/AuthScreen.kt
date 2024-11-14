@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 
 @Composable
 fun AuthScreen(
@@ -93,10 +94,10 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 AuthButtons(
                     text = stringResource(id = R.string.to_singUp).uppercase(),
-                    onNextClick = { navController.navigate("SignUpCredsScreen") })
+                    onNextClick = { navController.navigate(RootNavGraphObjects.SignUpCredsScreen.route) })
                 Spacer(modifier = Modifier.height(8.dp))
                 AuthButtons(text = stringResource(id = R.string.to_login).uppercase(),
-                    onNextClick = { navController.navigate("LoginScreen") })
+                    onNextClick = { navController.navigate(RootNavGraphObjects.LoginScreen.route) })
             }
         }
     }
