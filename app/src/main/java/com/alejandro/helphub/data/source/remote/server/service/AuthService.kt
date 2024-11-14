@@ -1,5 +1,7 @@
 package com.alejandro.helphub.data.source.remote.server.service
 
+import com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO
+import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import com.alejandro.helphub.data.source.remote.server.AuthClient
 import com.alejandro.helphub.data.source.remote.server.response.LoginResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
@@ -15,14 +17,14 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
         return authClient.getUserById(userId)
     }
 
-    suspend fun registerNewUser(userDTO: com.alejandro.helphub.data.source.remote.dto.auth.UserDTO): String {
+    suspend fun registerNewUser(userDTO: UserDTO): String {
         return withContext(Dispatchers.IO) {
             val response = authClient.registerNewUser(userDTO)
             response.body()?.code ?: "No code"
         }
     }
 
-    suspend fun doLogin(loginDTO: com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO): Result<LoginResponse> {
+    suspend fun doLogin(loginDTO: LoginDTO): Result<LoginResponse> {
         return withContext(Dispatchers.IO) {
             val response = authClient.doLogin(loginDTO)
             if (response.isSuccessful) {

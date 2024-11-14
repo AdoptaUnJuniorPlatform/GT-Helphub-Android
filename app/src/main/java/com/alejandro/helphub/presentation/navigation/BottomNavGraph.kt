@@ -71,7 +71,7 @@ fun BottomNavGraph(
                 navController = navController
             )
         }
-        composable("ProfileSetupStep4b") {
+        composable("ProfileSetupStep4b"){
             ProfileSetupStep4b(
                 profileViewModel = profileViewModel,
                 navController = navController

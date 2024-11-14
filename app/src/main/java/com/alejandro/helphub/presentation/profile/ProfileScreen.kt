@@ -60,27 +60,27 @@ import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview
+
 @Composable
 fun ProfileScreen(
-    //id: String?,
-    //userId: String?,
-    //profileViewModel: ProfileViewModel
+    id: String?,
+    userId: String?,
+    profileViewModel: ProfileViewModel
 ) {
-    /*
-        LaunchedEffect(id, userId) {
-            id?.let {
-                profileViewModel.getProfileById(it)
-            }
-            userId?.let {
-                profileViewModel.getUserById(userId)
-                profileViewModel.getSkillsByUserId(userId)
-            }
-        }
-        val userProfile = profileViewModel.userProfileData.collectAsState().value
-        val user = profileViewModel.userAuthData.collectAsState().value
 
-    */
+    LaunchedEffect(id, userId) {
+        id?.let {
+            profileViewModel.getProfileById(it)
+        }
+        userId?.let {
+            profileViewModel.getUserById(userId)
+            profileViewModel.getSkillsByUserId(userId)
+        }
+    }
+    val userProfile = profileViewModel.userProfileData.collectAsState().value
+    val user = profileViewModel.userAuthData.collectAsState().value
+
+
     Scaffold {
         Box(
             modifier = Modifier
@@ -90,13 +90,12 @@ fun ProfileScreen(
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
                 UserCard(
-                    // userProfile = userProfile,user=user
+                    userProfile = userProfile, user = user
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
-                    //  profileViewModel
+                    profileViewModel
                 )
-                // Spacer(modifier = Modifier.height(12.dp))
 
             }
         }
@@ -106,7 +105,7 @@ fun ProfileScreen(
 
 @Composable
 fun ToggleButtons(
-    //profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel
 ) {
     val selectedOption = rememberSaveable { mutableStateOf("HABILIDADES") }
 
@@ -164,7 +163,7 @@ fun ToggleButtons(
 
     if (selectedOption.value == "HABILIDADES") {
         UserSkills(
-            //profileViewModel
+            profileViewModel
         )
     } else {
         UserReviews()
@@ -174,9 +173,9 @@ fun ToggleButtons(
 
 @Composable
 fun UserSkills(
-    // profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel
 ) {
-    // val skillDataList by profileViewModel.skillDataList.collectAsState()
+    val skillDataList by profileViewModel.skillDataList.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "Mis habilidades",
@@ -197,14 +196,14 @@ fun UserSkills(
     }
     Spacer(modifier = Modifier.height(12.dp))
     SkillsRow(
-        //  userSkillsList=skillDataList
+        userSkillsList = skillDataList
     )
 
 }
 
 @Composable
 fun SkillsRow(
-    //  userSkillsList: List<SkillData>
+    userSkillsList: List<SkillData>
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -213,12 +212,9 @@ fun SkillsRow(
             .offset((-12).dp)
     ) {
         LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
-            // items(userSkillsList) { userSkills ->
-            //SkillCard(userSkills = userSkills)
-            items(2) { userSkills ->
-                SkillCard()
+            items(userSkillsList) { userSkills ->
+                SkillCard(userSkills = userSkills)
             }
-
         }
     }
 }
@@ -226,7 +222,7 @@ fun SkillsRow(
 
 @Composable
 fun SkillCard(
-    //userSkills: SkillData
+    userSkills: SkillData
 ) {
     Card(
         modifier = Modifier
@@ -238,9 +234,9 @@ fun SkillCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Pintura al óleo",
+                text = userSkills.title,
                 fontWeight = FontWeight.Bold,
-                // userSkills.title,
+
                 fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(5.dp))
@@ -255,11 +251,9 @@ fun SkillCard(
                 ).forEach { level ->
                     Box(
                         modifier = Modifier
-                            .background
-                            //(if(level== userSkills.level
-                            // )Color.Blue else
-                                (
-                                Color.Transparent,
+                            .background(
+                                if (level == userSkills.level) Color.Blue else
+                                    Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .border(
@@ -272,9 +266,8 @@ fun SkillCard(
                         Text(
                             text = level,
                             fontSize = 14.sp,
-                            color =
-                            // if(level==userSkills.level) Color.White else
-                            Color.Black
+                            color = if (level == userSkills.level) Color.White else
+                                Color.Black
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -283,9 +276,7 @@ fun SkillCard(
             Spacer(modifier = Modifier.height(16.dp))
             Box(modifier = Modifier.height(60.dp)) {
                 Text(
-                    text = "Aprende a preprarar un plato vegano delicioso y nutritivo (desde entrantes hasta postres)"
-                    // userSkills.description
-                    ,
+                    text = userSkills.description,
                     fontSize = 15.sp
 
                 )
@@ -445,7 +436,7 @@ fun UserRating() {
 
 @Composable
 fun UserCard(
-    //userProfile: UserProfileData,user:UserAuthData
+    userProfile: UserProfileData, user: UserAuthData
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -479,18 +470,12 @@ fun UserCard(
                             .background(Color.Red)
                     )
                 }
-                /*
-                                Image(
-                                    painter = painterResource(id = R.drawable.pfp_pedro),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(140.dp)
-                                )
-                                */
+
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = "Juanita Pérez",
-                        // "${user.nameUser} ${user.surnameUser}",
+                        text =
+                        "${user.nameUser} ${user.surnameUser}",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -500,22 +485,25 @@ fun UserCard(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Box(modifier = Modifier
-                        .border(
-                        width = 1.dp,
-                            color = Color.Gray,
-                        shape = RoundedCornerShape(6.dp))
-                        .padding(horizontal = 10.dp, vertical = 2.dp)
-                    ) { Text(text = "8:00 a 17:00") }
-                            Spacer (modifier = Modifier.height(16.dp))
-                            DayBox ()
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = Color.Gray,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 2.dp)
+                    ) { Text(text = userProfile.preferredTimeRange) }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DayBox(userProfile)
 
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Card(
                 modifier = Modifier
-                    //.padding(12.dp)
+
                     .width(340.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(
@@ -532,9 +520,9 @@ fun UserCard(
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(modifier = Modifier.height(50.dp)) {
                         Text(
-                            text = "Soy una artista que ama pintar, tengo 8 años de experiencia enseñando y pintando. Además me encantan los animales como las artes en general.",
+                            text =    userProfile.description,
                             fontSize = 13.sp
-                            // userProfile.description
+
                         )
                     }
                 }
@@ -546,17 +534,17 @@ fun UserCard(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
-            CategoriesOfInterest()
+            CategoriesOfInterest(userProfile)
         }
 
     }
 }
 
 @Composable
-fun CategoriesOfInterest() {
+fun CategoriesOfInterest(userProfile: UserProfileData) {
     Row {
-        //userProfileData.selectedCategories.forEach { category ->
-        listOf("Informática", "Idiomas", "Tutorias").forEach { category ->
+
+        userProfile.interestedSkills.forEach { category ->
 
             Box(
                 modifier = Modifier
@@ -578,7 +566,7 @@ fun CategoriesOfInterest() {
 }
 
 @Composable
-fun DayBox() {
+fun DayBox(userProfile: UserProfileData) {
     Row {
         listOf(
             "L",
@@ -592,10 +580,10 @@ fun DayBox() {
             Box(
                 modifier = Modifier
                     .background(
-                        color = //if (day == userProfileData.selectedLevel)
-                        MaterialTheme.colorScheme.primary
-                        //else Color.Transparent,
-                        , shape = RoundedCornerShape(20.dp)
+                        color = if (day in userProfile.selectedDays)
+                            MaterialTheme.colorScheme.primary
+                        else Color.Transparent,
+                        shape = RoundedCornerShape(20.dp)
                     )
                     .border(
                         width = 1.dp,
@@ -607,9 +595,9 @@ fun DayBox() {
                 Text(
                     text = day,
                     fontSize = 14.sp,
-                    color = //if (level == userProfileData.selectedLevel)
-                    Color.White
-                    //else Color.Black
+                    color = if (day in userProfile.selectedDays)
+                        Color.White
+                    else Color.Black
                 )
             }
             Spacer(modifier = Modifier.width(6.dp))

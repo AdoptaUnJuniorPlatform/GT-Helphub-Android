@@ -9,11 +9,11 @@ import retrofit2.http.POST
 
 interface TwofaClient {
     @POST("/api/helphub/email-service/emailAcount")
-    suspend fun sendTwoFaRegister(@Body userDTO: com.alejandro.helphub.data.source.remote.dto.auth.UserDTO): Response<TwofaResponse>
+    suspend fun sendTwoFaRegister(@Body userDTO:UserDTO): Response<TwofaResponse>
 
     @POST("/api/helphub/email-service/resetEmail")
-    suspend fun sendTwoFaResetPassword(@Body sendTwofaDTO: com.alejandro.helphub.data.source.remote.dto.auth.SendTwofaDTO): Response<TwofaResponse>
+    suspend fun sendTwoFaResetPassword(@Body sendTwofaDTO:SendTwofaDTO): Response<TwofaResponse>
 
     @POST("/api/helphub/email-service/loginEmail")
-    suspend fun sendTwoFaLogin(@Body sendTwofaDTO: com.alejandro.helphub.data.source.remote.dto.auth.SendTwofaDTO): Response<TwofaResponse>
+    suspend fun sendTwoFaLogin(@Body sendTwofaDTO:SendTwofaDTO): Response<TwofaResponse>
 }

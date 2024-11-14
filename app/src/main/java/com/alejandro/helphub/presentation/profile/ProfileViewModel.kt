@@ -4,9 +4,11 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 import com.alejandro.helphub.data.source.remote.server.response.UserId
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
+import com.alejandro.helphub.domain.models.SkillUIState
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
@@ -14,6 +16,7 @@ import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetUserInfoUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
+import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +30,8 @@ class ProfileViewModel @Inject constructor(
     private val getProfileByIdUseCase: GetProfileByIdUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val createProfileUseCase: CreateProfileUseCase,
-    private val createSkillUseCase: CreateSkillUseCase
+    private val createSkillUseCase: CreateSkillUseCase,
+    private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -37,6 +41,10 @@ class ProfileViewModel @Inject constructor(
     private val _skillData = MutableStateFlow(SkillData())
     val skillData: StateFlow<SkillData> = _skillData.asStateFlow()
 
+    private val _skillDataList =
+        MutableStateFlow<List<SkillData>>(emptyList()) // Esto crea una lista vacía de SkillData
+    val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
+
     //<!--------------------Profile ---------------->
 
     private val _userAuthData = MutableStateFlow(UserAuthData())
@@ -44,13 +52,84 @@ class ProfileViewModel @Inject constructor(
         _userAuthData.asStateFlow()
 
     private val _profileUIState = MutableStateFlow<ProfileUIState>(
-        ProfileUIState.Idle)
-    val profileUIState: StateFlow<ProfileUIState> = _profileUIState.asStateFlow()
+        ProfileUIState.Idle
+    )
+    val profileUIState: StateFlow<ProfileUIState> =
+        _profileUIState.asStateFlow()
+
+    private val _skillUIState = MutableStateFlow<SkillUIState>(
+        SkillUIState.Idle
+    )
+    val skillUIState: StateFlow<SkillUIState> = _skillUIState.asStateFlow()
+
+
+    fun getSkillsByUserId(userId: String) {
+        viewModelScope.launch {
+            _skillUIState.value = SkillUIState.Loading
+            Log.d("ProfileViewModel", "Fetching skills for userId: $userId")
+
+            try {
+                val response = getSkillsByUserIdUseCase(userId)
+                // Verifica si la respuesta fue exitosa
+                if (response.isSuccessful) {
+                    response.body()?.let { skillResponseList ->
+                        if (skillResponseList.isNotEmpty()) {
+                            _skillDataList.value =
+                                skillResponseList.map { skill ->
+                                    SkillData(
+                                        id = skill.id,
+                                        title = skill.title,
+                                        level = skill.level,
+                                        mode = skill.mode,
+                                        description = skill.description,
+                                        category = skill.category,
+                                        userId = skill.userId
+                                    )
+                                }
+
+                            _skillUIState.value =
+                                SkillUIState.Success(skillResponseList)
+                            Log.i(
+                                "ProfileViewModel",
+                                "Skills loaded successfully: ${skillResponseList.size} skills"
+                            )
+                            skillResponseList.forEach { skill ->
+                                Log.i(
+                                    "ProfileViewModel",
+                                    "Skill ID: ${skill.id}, Title: ${skill.title}, Level: ${skill.level}, " +
+                                            "Mode: ${skill.mode}, Description: ${skill.description}, " +
+                                            "Categories: ${skill.category.joinToString()}, UserId: ${skill.userId}"
+                                )
+                            }
+                        } else {
+                            _skillUIState.value = SkillUIState.SkillNotFound
+                            Log.w(
+                                "ProfileViewModel",
+                                "No skills found for userId: $userId"
+                            )
+                        }
+                    }
+                } else {
+                    _skillUIState.value =
+                        SkillUIState.Error(500) // Error en la respuesta
+                    Log.e("ProfileViewModel", "Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _skillUIState.value =
+                    SkillUIState.Error(500) // Error desconocido
+                Log.e("ProfileViewModel", "Error loading skills: ${e.message}")
+            }
+        }
+    }
+
 
     fun getUserById(userId: String) {
         viewModelScope.launch {
             _profileUIState.value = ProfileUIState.Loading
-            Log.d("ProfileViewModel", "Fetching user for userId: $userId")
+            Log.d(
+                "ProfileViewModel",
+                "Fetching user for userId: $userId"
+            )
 
             try {
                 val response = getUserByIdUseCase(userId)
@@ -63,31 +142,44 @@ class ProfileViewModel @Inject constructor(
                             surnameUser = userResponse.surnameUser,
                         )
 
-                        _profileUIState.value = ProfileUIState.Success(userResponse)
-                        Log.i("ProfileViewModel", "Profile loaded successfully $userResponse")
+                        _profileUIState.value =
+                            ProfileUIState.Success(userResponse)
+                        Log.i(
+                            "ProfileViewModel",
+                            "User loaded successfully $userResponse"
+                        )
                     } ?: run {
-                        _profileUIState.value = ProfileUIState.ProfileNotFound
-                        Log.w("ProfileViewModel", "Profile not found")
+                        _profileUIState.value =
+                            ProfileUIState.ProfileNotFound
+                        Log.w("ProfileViewModel", "User not found")
                     }
                 } else {
-                    _profileUIState.value = ProfileUIState.Error(500) // Or another error code
-                    Log.e("ProfileViewModel", "Error: ${response.code()}")
+                    _profileUIState.value =
+                        ProfileUIState.Error(500) // Or another error code
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error: ${response.code()}"
+                    )
                 }
             } catch (e: Exception) {
-                _profileUIState.value = ProfileUIState.Error(500) // Or another error code
-                Log.e("ProfileViewModel", "Error loading profile: ${e.message}")
+                _profileUIState.value =
+                    ProfileUIState.Error(500) // Or another error code
+                Log.e(
+                    "ProfileViewModel",
+                    "Error loading user: ${e.message}"
+                )
             }
         }
     }
 
 
-
-
-
     fun getProfileById(id: String) {
         viewModelScope.launch {
             _profileUIState.value = ProfileUIState.Loading
-            Log.d("ProfileViewModel", "Fetching profile for userId: $id")
+            Log.d(
+                "ProfileViewModel",
+                "Fetching profile for userId: $id"
+            )
 
             try {
                 val response = getProfileByIdUseCase(id)
@@ -102,19 +194,32 @@ class ProfileViewModel @Inject constructor(
                             location = profileResponse.location
                         )
 
-                        _profileUIState.value = ProfileUIState.Success(profileResponse)
-                        Log.i("ProfileViewModel", "Profile loaded successfully $profileResponse")
+                        _profileUIState.value =
+                            ProfileUIState.Success(profileResponse)
+                        Log.i(
+                            "ProfileViewModel",
+                            "Profile loaded successfully $profileResponse"
+                        )
                     } ?: run {
-                        _profileUIState.value = ProfileUIState.ProfileNotFound
+                        _profileUIState.value =
+                            ProfileUIState.ProfileNotFound
                         Log.w("ProfileViewModel", "Profile not found")
                     }
                 } else {
-                    _profileUIState.value = ProfileUIState.Error(500) // Or another error code
-                    Log.e("ProfileViewModel", "Error: ${response.code()}")
+                    _profileUIState.value =
+                        ProfileUIState.Error(500) // Or another error code
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error: ${response.code()}"
+                    )
                 }
             } catch (e: Exception) {
-                _profileUIState.value = ProfileUIState.Error(500) // Or another error code
-                Log.e("ProfileViewModel", "Error loading profile: ${e.message}")
+                _profileUIState.value =
+                    ProfileUIState.Error(500) // Or another error code
+                Log.e(
+                    "ProfileViewModel",
+                    "Error loading profile: ${e.message}"
+                )
             }
         }
     }
@@ -123,7 +228,10 @@ class ProfileViewModel @Inject constructor(
     //<!--------------------Profile Setup Step 1 ---------------->
 
     fun updateUserDescription(userDescription: String) {
-        Log.d("ProfileViewModel", "Updating postTitle to: $userDescription")
+        Log.d(
+            "ProfileViewModel",
+            "Updating postTitle to: $userDescription"
+        )
         val updateUserData =
             userProfileData.value.copy(description = userDescription)
         _userProfileData.value = updateUserData
@@ -132,7 +240,8 @@ class ProfileViewModel @Inject constructor(
 
     fun updatePostalCode(postalCode: String) {
         Log.d("ProfileViewModel", "Updating postalCode to: $postalCode")
-        val updateUserData = userProfileData.value.copy(location = postalCode)
+        val updateUserData =
+            userProfileData.value.copy(location = postalCode)
         _userProfileData.value = updateUserData
         navigateToStep2()
     }
@@ -154,7 +263,8 @@ class ProfileViewModel @Inject constructor(
         _isNavigationToStep3Enabled.asStateFlow()
 
     fun updateUserPhotoUri(photoUri: Uri) {
-        val updateUserData = userProfileData.value.copy(profilePicture = photoUri.toString())
+        val updateUserData =
+            userProfileData.value.copy(profilePicture = photoUri.toString())
         _userProfileData.value = updateUserData
         navigateToStep3()
     }
@@ -166,14 +276,16 @@ class ProfileViewModel @Inject constructor(
 
     //<!--------------------Profile Setup Step 3 ---------------->
 
-    private val _isNavigationToStep4PostEnabled = MutableStateFlow(false)
+    private val _isNavigationToStep4PostEnabled =
+        MutableStateFlow(false)
     val isNavigationToStep4PostEnabled: StateFlow<Boolean> =
         _isNavigationToStep4PostEnabled.asStateFlow()
 
     private val _expanded = MutableStateFlow(false)
     val expanded: StateFlow<Boolean> = _expanded.asStateFlow()
 
-    private val _selectedDays = MutableStateFlow<List<String>>(emptyList())
+    private val _selectedDays =
+        MutableStateFlow<List<String>>(emptyList())
     val selectedDays: StateFlow<List<String>> = _selectedDays
 
     fun toggleDropdown() {
@@ -198,7 +310,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateAvailability(availability: String) {
-        Log.d("ProfileViewModel", "Updating selectedLevel to: $availability")
+        Log.d(
+            "ProfileViewModel",
+            "Updating selectedLevel to: $availability"
+        )
         val updateUserData =
             _userProfileData.value.copy(preferredTimeRange = availability)
         _userProfileData.value = updateUserData
@@ -212,7 +327,8 @@ class ProfileViewModel @Inject constructor(
     }
     //<!--------------------Profile Setup Step 4a ---------------->
 
-    private val _isNavigationToStep4SkillEnabled = MutableStateFlow(false)
+    private val _isNavigationToStep4SkillEnabled =
+        MutableStateFlow(false)
     val isNavigationToStep4SkillEnabled: StateFlow<Boolean> =
         _isNavigationToStep4SkillEnabled.asStateFlow()
 
@@ -269,7 +385,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun onCategoryChecked(category: String, isChecked: Boolean) {
-        val currentCategories = _selectedCategories.value.toMutableList()
+        val currentCategories =
+            _selectedCategories.value.toMutableList()
         when {
             isChecked && currentCategories.size < 2 -> currentCategories.add(
                 category
@@ -282,7 +399,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateSelectedCategories(categories: List<String>) {
-        Log.d("ProfileViewModel", "Updating selectedCategories to: $categories")
+        Log.d(
+            "ProfileViewModel",
+            "Updating selectedCategories to: $categories"
+        )
         _skillData.value =
             skillData.value.copy(category = categories)
         navigateToStep5()
@@ -293,10 +413,13 @@ class ProfileViewModel @Inject constructor(
             try {
                 val result = createSkillUseCase(skillData.value)
                 _createSkillResult.value = result
-                Log.i("CreateSkill","Skill Created successfully")
+                Log.i("CreateSkill", "Skill Created successfully")
 
             } catch (e: Exception) {
-                Log.e("CreateSkill", "Error creating skill: ${e.message}")
+                Log.e(
+                    "CreateSkill",
+                    "Error creating skill: ${e.message}"
+                )
                 _createSkillResult.value = null
 
             }
@@ -330,7 +453,10 @@ class ProfileViewModel @Inject constructor(
     val selectedCategoriesOfInterest: StateFlow<List<String>> =
         _selectedCategoriesOfInterest.asStateFlow()
 
-    fun onCategoriesOfInterestChecked(category: String, isSelected: Boolean) {
+    fun onCategoriesOfInterestChecked(
+        category: String,
+        isSelected: Boolean
+    ) {
         val currentCategories =
             _selectedCategoriesOfInterest.value.toMutableList()
         when {
@@ -358,10 +484,13 @@ class ProfileViewModel @Inject constructor(
             try {
                 val result = createProfileUseCase(userProfileData.value)
                 _createProfileResult.value = result
-                Log.i("CreateProfile","Profile Created successfully")
+                Log.i("CreateProfile", "Profile Created successfully")
 
             } catch (e: Exception) {
-                Log.e("CreateProfile", "Error creating profile: ${e.message}")
+                Log.e(
+                    "CreateProfile",
+                    "Error creating profile: ${e.message}"
+                )
                 _createProfileResult.value = null
 
             }

@@ -123,8 +123,7 @@ fun ProfileSetupStep4b(
 @Composable
 fun OpeSkillCard(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
-) {
+    navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -260,9 +259,8 @@ fun DataCard(
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         Text(
-                            text = //"${userInfo?.nameUser}" +
-                                    //" ${profile.surnameUser}" +
-                                    "Manolito",
+                            text = "Manolito",
+                            //"${user.nameUser} ${user.surnameUser}",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterVertically)
