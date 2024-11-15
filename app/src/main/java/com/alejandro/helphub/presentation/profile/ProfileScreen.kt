@@ -63,9 +63,7 @@ import com.alejandro.helphub.domain.models.UserProfileData
 
 @Composable
 fun ProfileScreen(
-    id: String?,
-    userId: String?,
-    profileViewModel: ProfileViewModel
+    id: String?, userId: String?, profileViewModel: ProfileViewModel
 ) {
 
     LaunchedEffect(id, userId) {
@@ -85,7 +83,8 @@ fun ProfileScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp), contentAlignment = Alignment.TopCenter
+                .padding(16.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -96,18 +95,16 @@ fun ProfileScreen(
                 ToggleButtons(
                     profileViewModel
                 )
-
             }
         }
     }
 }
 
-
 @Composable
 fun ToggleButtons(
     profileViewModel: ProfileViewModel
 ) {
-    val selectedOption = rememberSaveable { mutableStateOf("HABILIDADES") }
+    val selectedOption = rememberSaveable { mutableStateOf("skills") }
 
     Box(
         modifier = Modifier
@@ -117,18 +114,16 @@ fun ToggleButtons(
             .background(Color.White)
     ) {
         Row {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { selectedOption.value = "HABILIDADES" }
-                    .background(if (selectedOption.value == "HABILIDADES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
-                    .padding(vertical = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .clickable { selectedOption.value = "skills" }
+                .background(if (selectedOption.value == "skills") MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                .padding(vertical = 12.dp),
+                contentAlignment = Alignment.Center) {
                 Text(
-                    text = "HABILIDADES",
+                    text = stringResource(id = R.string.skills).uppercase(),
                     fontWeight = FontWeight.Bold,
-                    color = if (selectedOption.value == "HABILIDADES") MaterialTheme.colorScheme.primary else Color.Gray,
+                    color = if (selectedOption.value == "skills") MaterialTheme.colorScheme.primary else Color.Gray,
                     fontSize = 12.sp
                 )
             }
@@ -140,20 +135,18 @@ fun ToggleButtons(
                     .height(40.dp)
             )
 
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { selectedOption.value = "VALORACIONES" }
-                    .background(
-                        if (selectedOption.value == "VALORACIONES") MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                    )
-                    .padding(vertical = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .clickable { selectedOption.value = "reviews" }
+                .background(
+                    if (selectedOption.value == "reviews") MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                )
+                .padding(vertical = 12.dp),
+                contentAlignment = Alignment.Center) {
                 Text(
-                    text = "VALORACIONES",
+                    text = stringResource(id = R.string.reviews).uppercase(),
                     fontWeight = FontWeight.Bold,
-                    color = if (selectedOption.value == "VALORACIONES") MaterialTheme.colorScheme.primary else Color.Gray,
+                    color = if (selectedOption.value == "reviews") MaterialTheme.colorScheme.primary else Color.Gray,
                     fontSize = 12.sp
                 )
             }
@@ -161,7 +154,7 @@ fun ToggleButtons(
     }
     Spacer(modifier = Modifier.height(16.dp))
 
-    if (selectedOption.value == "HABILIDADES") {
+    if (selectedOption.value == "skills") {
         UserSkills(
             profileViewModel
         )
@@ -178,20 +171,23 @@ fun UserSkills(
     val skillDataList by profileViewModel.skillDataList.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "Mis habilidades",
+            text = stringResource(id = R.string.my_skills),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.width(24.dp))
         Button(
-            onClick = {}, shape = RoundedCornerShape(6.dp),
+            onClick = {},
+            shape = RoundedCornerShape(6.dp),
             elevation = ButtonDefaults.buttonElevation(6.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
             contentPadding = PaddingValues(start = 8.dp, end = 16.dp)
         ) {
-            Icon(imageVector = Icons.Default.AddCircle, contentDescription = "")
+            Icon(imageVector = Icons.Default.AddCircle, contentDescription = stringResource(
+                id = R.string.add_skills
+            ))
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "NUEVA HABILIDAD", fontSize = 12.sp)
+            Text(text = stringResource(id = R.string.new_skill).uppercase(), fontSize = 12.sp)
         }
     }
     Spacer(modifier = Modifier.height(12.dp))
@@ -234,8 +230,7 @@ fun SkillCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = userSkills.title,
-                fontWeight = FontWeight.Bold,
+                text = userSkills.title, fontWeight = FontWeight.Bold,
 
                 fontSize = 18.sp
             )
@@ -252,8 +247,7 @@ fun SkillCard(
                     Box(
                         modifier = Modifier
                             .background(
-                                if (level == userSkills.level) Color.Blue else
-                                    Color.Transparent,
+                                if (level == userSkills.level) Color.Blue else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .border(
@@ -266,8 +260,7 @@ fun SkillCard(
                         Text(
                             text = level,
                             fontSize = 14.sp,
-                            color = if (level == userSkills.level) Color.White else
-                                Color.Black
+                            color = if (level == userSkills.level) Color.White else Color.Black
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -276,8 +269,7 @@ fun SkillCard(
             Spacer(modifier = Modifier.height(16.dp))
             Box(modifier = Modifier.height(60.dp)) {
                 Text(
-                    text = userSkills.description,
-                    fontSize = 15.sp
+                    text = userSkills.description, fontSize = 15.sp
 
                 )
             }
@@ -292,18 +284,17 @@ fun SkillCard(
                     ),
                     border = BorderStroke(width = 2.dp, color = Color.Gray)
                 ) {
-                    Text(text = "BORRAR")
+                    Text(text = stringResource(id = R.string.delete).uppercase())
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Button(
                     onClick = {},
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
+                        containerColor = Color.Blue, contentColor = Color.White
                     )
                 ) {
-                    Text(text = "EDITAR")
+                    Text(text = stringResource(id = R.string.edit).uppercase())
                 }
             }
 
@@ -317,7 +308,7 @@ fun SkillCard(
 fun UserReviews() {
     UserRating()
     Spacer(modifier = Modifier.height(16.dp))
-    Text(text = "Mis Reseñas", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+    Text(text = stringResource(id = R.string.my_reviews), fontWeight = FontWeight.Bold, fontSize = 24.sp)
     Spacer(modifier = Modifier.height(12.dp))
     ReviewRow()
 }
@@ -392,7 +383,7 @@ fun UserRating() {
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
-                text = "Valoración general",
+                text = stringResource(id = R.string.overall_review),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -444,15 +435,13 @@ fun UserCard(
     ) {
         Column(
             modifier = Modifier.padding(
-                start = 12.dp,
-                end = 6.dp,
-                bottom = 12.dp
+                start = 12.dp, end = 6.dp, bottom = 12.dp
             )
         ) {
             Spacer(modifier = Modifier.height(15.dp))
             Row {
                 Text(
-                    text = "Mi Perfil",
+                    text = stringResource(id = R.string.my_profile),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -474,14 +463,13 @@ fun UserCard(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text =
-                        "${user.nameUser} ${user.surnameUser}",
+                        text = "${user.nameUser} ${user.surnameUser}",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "Disponibilidad horaria",
+                        text = stringResource(id = R.string.preferred_time_range),
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -497,15 +485,13 @@ fun UserCard(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     DayBox(userProfile)
-
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Card(
                 modifier = Modifier
 
-                    .width(340.dp),
-                colors = CardDefaults.cardColors(
+                    .width(340.dp), colors = CardDefaults.cardColors(
                     containerColor = Color(
                         0x39D5D3DA
                     )
@@ -513,51 +499,43 @@ fun UserCard(
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
                     Text(
-                        text = "Descripcion",
+                        text = stringResource(id = R.string.description),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(modifier = Modifier.height(50.dp)) {
                         Text(
-                            text =    userProfile.description,
-                            fontSize = 13.sp
-
+                            text = userProfile.description, fontSize = 13.sp
                         )
                     }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Habilidades que me interesan",
+                text = stringResource(id = R.string.interested_skills),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
             CategoriesOfInterest(userProfile)
         }
-
     }
 }
 
 @Composable
 fun CategoriesOfInterest(userProfile: UserProfileData) {
     Row {
-
         userProfile.interestedSkills.forEach { category ->
-
             Box(
                 modifier = Modifier
-
                     .background(
-                        Color(0x39D5D3DA),
-                        shape = RoundedCornerShape(12.dp)
+                        Color(0x39D5D3DA), shape = RoundedCornerShape(12.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = category,
-                    fontSize = 12.sp
+                    text = category, fontSize = 12.sp
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -569,19 +547,12 @@ fun CategoriesOfInterest(userProfile: UserProfileData) {
 fun DayBox(userProfile: UserProfileData) {
     Row {
         listOf(
-            "L",
-            "M",
-            "X",
-            "J",
-            "V",
-            "S",
-            "D"
+            "L", "M", "X", "J", "V", "S", "D"
         ).forEach { day ->
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (day in userProfile.selectedDays)
-                            MaterialTheme.colorScheme.primary
+                        color = if (day in userProfile.selectedDays) MaterialTheme.colorScheme.primary
                         else Color.Transparent,
                         shape = RoundedCornerShape(20.dp)
                     )
@@ -595,8 +566,7 @@ fun DayBox(userProfile: UserProfileData) {
                 Text(
                     text = day,
                     fontSize = 14.sp,
-                    color = if (day in userProfile.selectedDays)
-                        Color.White
+                    color = if (day in userProfile.selectedDays) Color.White
                     else Color.Black
                 )
             }

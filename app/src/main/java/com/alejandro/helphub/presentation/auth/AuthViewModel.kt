@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +36,7 @@ class AuthViewModel @Inject constructor(
     private val sendTwoFaLoginUseCase: SendTwoFaLoginUseCase
 ) :
     ViewModel() {
+
 
     private val _userAuthData = MutableStateFlow(UserAuthData())
     val userAuthData: StateFlow<UserAuthData> = _userAuthData.asStateFlow()
@@ -77,17 +80,21 @@ class AuthViewModel @Inject constructor(
     fun onSwitchCheckedChanged(isChecked: Boolean) {
         _isSwitchChecked.value = isChecked
         _userAuthData.value =
-            _userAuthData.value.copy(optionCall = isChecked, showPhone = isChecked)
+            _userAuthData.value.copy(
+                optionCall = isChecked,
+                showPhone = isChecked
+            )
     }
 
     fun updateSignUpButtonState() {
-        _isSignUpButtonEnabled.value = userAuthData.value.nameUser.isNotBlank() &&
-                userAuthData.value.surnameUser.isNotBlank() &&
-                userAuthData.value.phone.isNotBlank() &&
-                userAuthData.value.email.isNotBlank() &&
-                isValidEmail(userAuthData.value.email) &&
-                userAuthData.value.password.isNotBlank() &&
-                _isCheckBoxChecked.value == true
+        _isSignUpButtonEnabled.value =
+            userAuthData.value.nameUser.isNotBlank() &&
+                    userAuthData.value.surnameUser.isNotBlank() &&
+                    userAuthData.value.phone.isNotBlank() &&
+                    userAuthData.value.email.isNotBlank() &&
+                    isValidEmail(userAuthData.value.email) &&
+                    userAuthData.value.password.isNotBlank() &&
+                    _isCheckBoxChecked.value == true
     }
 
     fun updatePhoneNumber(phoneNumber: String) {
@@ -100,10 +107,14 @@ class AuthViewModel @Inject constructor(
         _userAuthData.update { it.copy(countryCode = country.code) }
     }
 
+    private val _email = MutableStateFlow<String?>(null)
+    val email: StateFlow<String?> get() = _email
+
     fun updateUserEmail(email: String) {
         Log.d("AuthViewModel", "Updating email to: $email")
         val updateUserData = userAuthData.value.copy(email = email)
         _userAuthData.value = updateUserData
+        _email.value=email
         updateSignUpButtonState()
     }
 
@@ -205,6 +216,7 @@ class AuthViewModel @Inject constructor(
     fun isTwoFaCodeValid(): Boolean {
         Log.i("2FA", "Código 2FA ingresado: ${inputTwoFaCode.value}")
         Log.i("2FA", "Código 2FA almacenado: ${userAuthData.value.twoFa}")
+        Log.i("2FA", "Email almacenado: ${userAuthData.value.email}")
         return userAuthData.value.twoFa == inputTwoFaCode.value
     }
 
@@ -246,8 +258,10 @@ class AuthViewModel @Inject constructor(
             try {
                 val result = loginUseCase(userAuthData.value)
                 _loginStatus.value = result.fold(
-                    onSuccess = { token ->_authToken.value=token
-                                ResultStatus.Success(token)},
+                    onSuccess = { token ->
+                        _authToken.value = token
+                        ResultStatus.Success(token)
+                    },
                     onFailure = { e ->
                         ResultStatus.Error(
                             e.message ?: "Error desconocido"
@@ -262,7 +276,7 @@ class AuthViewModel @Inject constructor(
                 _isLoginLoading.value = false
             }
         }
-        _isAuthenticated.value=true
+        _isAuthenticated.value = true
     }
 
 //<!--------------------2fa Login Screen ---------------->

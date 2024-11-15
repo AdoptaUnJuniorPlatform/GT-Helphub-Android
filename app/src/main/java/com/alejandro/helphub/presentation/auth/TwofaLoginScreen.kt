@@ -87,7 +87,10 @@ fun TwofaLoginScreen(
         }
     }
     if (showSuccessCard) {
-        SuccessCard(onNavigate = { navController.navigate(RootNavGraphObjects.MainScreen.route){popUpTo(0)
+        val email by authViewModel.email.collectAsState()
+        SuccessCard(onNavigate = { navController.navigate(RootNavGraphObjects.MainScreen.createRoute(
+            email!!
+        )){popUpTo(0)
             launchSingleTop=true} })
     }
 }

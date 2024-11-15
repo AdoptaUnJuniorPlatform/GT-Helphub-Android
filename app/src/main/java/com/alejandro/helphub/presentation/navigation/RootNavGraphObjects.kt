@@ -6,9 +6,10 @@ import kotlinx.serialization.Serializable
 sealed class RootNavGraphObjects(
     val route: String
 ) {
+    @Serializable
     object MainScreen : RootNavGraphObjects(
-        route = "MainScreen"
-    )
+        route = "MainScreen/{email}"
+    ){fun createRoute(email:String)="MainScreen/$email"}
 
     object Home : RootNavGraphObjects(
         route = "Home"

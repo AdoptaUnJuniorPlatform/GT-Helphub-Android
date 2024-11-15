@@ -1,6 +1,7 @@
 package com.alejandro.helphub.presentation.profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -51,11 +52,13 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 @Composable
 fun ProfileSetupStep2(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val isStep3Enabled by profileViewModel.isNavigationToStep3Enabled.collectAsState(
@@ -90,10 +93,10 @@ fun ProfileSetupStep2(
                 Spacer(modifier = Modifier.height(40.dp))
                 StepButtons(
                     onBackClick = {
-                        navController.navigate("ProfileSetupStep1")
+                        navController.navigate(BottomBarScreen.ProfileSetupStep1.createRoute(email!!))
                     },
                     onNextClick = {
-                        navController.navigate("ProfileSetupStep3")
+                        navController.navigate(BottomBarScreen.ProfileSetupStep3.createRoute(email!!))
                     },
                     enabled = isStep3Enabled
                 )

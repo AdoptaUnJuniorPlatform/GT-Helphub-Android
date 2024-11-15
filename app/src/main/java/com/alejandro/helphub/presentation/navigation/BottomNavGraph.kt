@@ -41,48 +41,55 @@ fun BottomNavGraph(
             route = BottomBarScreen.Profile.route,
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType },
-                navArgument("userId"){type=NavType.StringType})
+                navArgument("userId") { type = NavType.StringType })
         ) { navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getString("id")
             val userId = navBackStackEntry.arguments?.getString("userId")
-            ProfileScreen(id = id, userId =userId, profileViewModel)
+            ProfileScreen(id = id, userId = userId, profileViewModel)
         }
-        composable("ProfileSetupStep1/{userAuthDataJson") { backStackEntry->
-            val userAuthDataJson = backStackEntry.arguments?.getString("userAuthDataJson")
+        composable(BottomBarScreen.ProfileSetupStep1.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep1(
                 profileViewModel = profileViewModel,
                 navController = navController,
-                userAuthDataJson=userAuthDataJson
+                email = email
             )
         }
-        composable("ProfileSetupStep2") {
+        composable(BottomBarScreen.ProfileSetupStep2.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep2(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController,
+                email = email
             )
         }
-        composable("ProfileSetupStep3") {
+        composable(BottomBarScreen.ProfileSetupStep3.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep3(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController, email = email
             )
         }
-        composable("ProfileSetupStep4a") {
+        composable(BottomBarScreen.ProfileSetupStep4a.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep4a(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController, email = email
             )
         }
-        composable("ProfileSetupStep4b"){
+        composable(BottomBarScreen.ProfileSetupStep4b.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep4b(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController, email = email
             )
         }
-        composable("ProfileSetupStep5") {
+        composable(BottomBarScreen.ProfileSetupStep5.route) {backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
             ProfileSetupStep5(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController,
+                email = email
             )
         }
     }

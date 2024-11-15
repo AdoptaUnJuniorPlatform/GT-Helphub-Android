@@ -104,10 +104,10 @@
     <string name="availability_question">¿Qué día estás disponible?</string>
     <string name="step_three_description">En Helphub queremos facilitar a los usuarios la coordinación de horarios.</string>
     <string name="availability_title">Horario flexible</string>
-    <string name="eight_to_nine">08:00 a 21:00</string>
-    <string name="five_to_nine">17:00 a 21:00</string>
-    <string name="three_to_five">15:00 a 17:00</string>
-    <string name="eight_to_two">08:00 a 14:00</string>
+    <string name="eight_to_five">08:00 a 17:00</string>
+    <string name="five_to_nine">17:00 a 21:00</string>V
+    <string name="three_to_five">15:00 a 17:00</string>V
+    <string name="eight_to_two">08:00 a 14:00</string>V
     <string name="select_day">Seleccionar día</string>
     <string name="select_more_days">Puedes seleccionar más de un día</string>
     <string name="days">Días</string>
@@ -215,4 +215,19 @@
     <string name="diego_availability">08:00 a 17:00</string>
     <string name="diego_skill">Sesiones de entrenamiento personal en la playa enfocadas en mejorar tu resistencia y fuerza, con rutinas sencillas.</string>
     <string name="diego_category">Fitness</string>
-    </resources>
+    <!--Profile Screen -->
+    <string name="skills">Habilidades</string>
+    <string name="reviews">Valoraciones</string>
+    <string name="my_skills">Mis habilidades</string>
+    <string name="new_skill">Nueva habilidad</string>
+    <string name="delete">Borrar</string>
+    <string name="edit">Editar</string>
+    <string name="my_reviews">Mis reseñas</string>
+    <string name="overall_review">Valoración general</string>
+    <string name="my_profile">Mi perfil</string>
+    <string name="preferred_time_range">Disponibilidad horaria</string>
+    <string name="description">Descripción</string>
+    <string name="interested_skills">Habilidades que me interesan</string>
+
+
+</resources>

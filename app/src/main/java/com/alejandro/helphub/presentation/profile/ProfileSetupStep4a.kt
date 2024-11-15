@@ -1,5 +1,6 @@
 package com.alejandro.helphub.presentation.profile
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -49,11 +50,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 @Composable
 fun ProfileSetupStep4a(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
@@ -95,8 +98,8 @@ fun ProfileSetupStep4a(
                 item { Spacer(modifier = Modifier.height(22.dp)) }
                 item {
                     StepButtons(
-                        onBackClick = { navController.navigate("ProfileSetupStep3") },
-                        onNextClick = { navController.navigate("ProfileSetupStep4b") },
+                        onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep3.createRoute(email!!)) },
+                        onNextClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4b.createRoute(email!!)) },
                         enabled = isStep4SkillEnabled
                     )
                 }

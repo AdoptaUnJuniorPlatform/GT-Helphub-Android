@@ -2,8 +2,10 @@ package com.alejandro.helphub.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.alejandro.helphub.MainScreen
 import com.alejandro.helphub.presentation.auth.AuthViewModel
 import com.alejandro.helphub.presentation.auth.TwofaRegisterScreen
@@ -25,11 +27,15 @@ fun RootNavGraph(navController: NavHostController,
 )
 {
     NavHost(navController = navController, startDestination = "SplashScreen") {
-        composable(RootNavGraphObjects.MainScreen.route) {
+        composable(RootNavGraphObjects.MainScreen.route,
+            arguments= listOf(navArgument("email"){type=NavType.StringType})
+        ) {navBackStackEntry->
+            val email= navBackStackEntry.arguments?.getString("email")
             MainScreen(
                 navigationViewModel = navigationViewModel,
                 navController = navController,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                email=email
             )
         }
         composable(RootNavGraphObjects.Home.route) {

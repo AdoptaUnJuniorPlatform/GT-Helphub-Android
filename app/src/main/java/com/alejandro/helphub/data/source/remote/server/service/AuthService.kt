@@ -13,6 +13,12 @@ import javax.inject.Inject
 
 class AuthService @Inject constructor(private val authClient: AuthClient) {
 
+
+    suspend fun getUserByEmail(email: String): Response<List<ProfileResponse>> {
+        return authClient.getUserByEmail(email)
+    }
+
+
     suspend fun getUserById(userId: String): Response<ProfileResponse> {
         return authClient.getUserById(userId)
     }

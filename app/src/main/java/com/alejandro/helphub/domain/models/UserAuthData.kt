@@ -1,5 +1,9 @@
 package com.alejandro.helphub.domain.models
 
+import android.os.Parcelable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class UserAuthData (
     val nameUser:String="",
     val surnameUser:String="",

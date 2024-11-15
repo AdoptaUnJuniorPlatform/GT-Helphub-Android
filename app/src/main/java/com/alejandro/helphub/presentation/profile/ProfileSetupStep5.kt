@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 @Composable
 fun ProfileSetupStep5(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
 ) {
     val isHomeEnabled by profileViewModel.isNavigationToHomeEnabled.collectAsState(
         initial = false
@@ -68,7 +70,7 @@ fun ProfileSetupStep5(
                 Spacer(modifier = Modifier.height(16.dp))
                 Spacer(modifier = Modifier.height(134.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("ProfileSetupStep4b") },
+                    onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4b.createRoute(email!!)) },
                     onNextClick = {
                         profileViewModel.createProfile()
                         navController.navigate("Home") },

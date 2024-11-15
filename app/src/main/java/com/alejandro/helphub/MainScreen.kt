@@ -48,9 +48,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.alejandro.helphub.presentation.profile.ProfileViewModel
 import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.presentation.auth.AuthViewModel
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 import com.alejandro.helphub.presentation.navigation.BottomNavGraph
 import com.alejandro.helphub.presentation.navigation.NavigationViewModel
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.presentation.navigation.bottomBarIcons
 
 
@@ -60,19 +62,19 @@ fun MainScreen(
     navigationViewModel: NavigationViewModel,
     navController: NavHostController,
     profileViewModel: ProfileViewModel,
+    email:String?
 ) {
-
     var showPopUp by remember { mutableStateOf(false) }
     val currentDestination=navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(bottomBar = {
 
-        if(currentDestination != "ProfileSetupStep1" &&
-            currentDestination != "ProfileSetupStep2" &&
-            currentDestination != "ProfileSetupStep3" &&
-            currentDestination != "ProfileSetupStep4a" &&
-            currentDestination != "ProfileSetupStep4b" &&
-            currentDestination != "ProfileSetupStep5")
+        if(currentDestination != BottomBarScreen.ProfileSetupStep1.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep2.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep3.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep4a.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep4b.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep5.route)
         {
             BottomBar(
                 navController =navController,
@@ -91,8 +93,8 @@ fun MainScreen(
                 CardPopUp(onCompleteProfile = {
                     showPopUp = false
                     navigationViewModel.resetState()
-                    navController.navigate("ProfileSetupStep1"){
-                        popUpTo("MainScreen"){saveState=true}
+                    navController.navigate(BottomBarScreen.ProfileSetupStep1.createRoute(email!!)){
+                        popUpTo(RootNavGraphObjects.MainScreen.route){saveState=true}
                         launchSingleTop=true
                         restoreState=true
                     }

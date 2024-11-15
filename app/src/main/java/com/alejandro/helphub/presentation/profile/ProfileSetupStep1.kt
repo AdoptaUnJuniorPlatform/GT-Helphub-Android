@@ -1,5 +1,6 @@
 package com.alejandro.helphub.presentation.profile
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -43,12 +45,18 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.domain.models.UserAuthData
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
+import kotlinx.serialization.json.Json
 
 @Composable
 fun ProfileSetupStep1(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
+
 ) {
+
     val isStep2Enabled by profileViewModel.isNavigationToStep2Enabled.collectAsState(
         initial = false
     )
@@ -78,8 +86,8 @@ fun ProfileSetupStep1(
                 Location(profileViewModel)
                 Spacer(modifier = Modifier.height(104.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("Home") },
-                    onNextClick = { navController.navigate("ProfileSetupStep2") },
+                    onBackClick = { navController.navigate(BottomBarScreen.Home.route) },
+                    onNextClick = { navController.navigate(BottomBarScreen.ProfileSetupStep2.createRoute(email!!)) },
                     enabled = isStep2Enabled
                 )
             }
@@ -217,6 +225,7 @@ fun TextBox(profileViewModel: ProfileViewModel) {
                 .fillMaxWidth()
                 .height(180.dp),
             shape = RoundedCornerShape(14.dp),
+            textStyle = TextStyle(fontSize = 16.sp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.LightGray,

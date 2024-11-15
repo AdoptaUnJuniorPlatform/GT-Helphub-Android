@@ -15,6 +15,30 @@ class AuthRepository @Inject constructor(
     private val userDataMapper:UserDataMapper,
     private val tokenRepository:TokenRepository
 ) {
+    suspend fun getUserByEmail(email: String): Response<List<ProfileResponse>>{
+    return try {
+        val response = authService.getUserByEmail(email)
+
+        // Retornamos directamente el Response de Retrofit
+        if (response.isSuccessful) {
+            response
+        } else {
+            // Si la respuesta no es exitosa, devolvemos un Response con un error
+            Log.e("AuthRepository", "Failed with error code: ${response.code()}")
+            Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
+                null
+            )
+            )
+        }
+    } catch (e: Exception) {
+        Log.e("AuthRepository", "Error fetching user: ${e.message}")
+        // Retornamos un Response con error si ocurre una excepción
+        Response.error(500,
+            (e.message ?: "Unknown error").toResponseBody(null)
+        )
+    }
+}
+
     suspend fun getUserById(userId: String): Response<ProfileResponse>{
         return try {
             val response = authService.getUserById(userId)

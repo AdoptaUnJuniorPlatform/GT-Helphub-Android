@@ -4,8 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
-import com.alejandro.helphub.data.source.remote.server.response.UserId
+import com.alejandro.helphub.domain.models.ProfileListUIState
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.SkillUIState
@@ -14,7 +13,7 @@ import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
-import com.alejandro.helphub.domain.usecase.profile.GetUserInfoUseCase
+import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getUserByEmailUseCase: GetUserByEmailUseCase,
     private val getProfileByIdUseCase: GetProfileByIdUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val createProfileUseCase: CreateProfileUseCase,
@@ -56,6 +55,14 @@ class ProfileViewModel @Inject constructor(
     )
     val profileUIState: StateFlow<ProfileUIState> =
         _profileUIState.asStateFlow()
+
+
+
+    private val _profileListUIState = MutableStateFlow<ProfileListUIState>(
+        ProfileListUIState.Idle
+    )
+    val profileListUIState: StateFlow<ProfileListUIState> =
+        _profileListUIState.asStateFlow()
 
     private val _skillUIState = MutableStateFlow<SkillUIState>(
         SkillUIState.Idle
@@ -372,6 +379,66 @@ class ProfileViewModel @Inject constructor(
 
     private val _createSkillResult = MutableStateFlow<String?>(null)
     val createSkillResult: StateFlow<String?> get() = _createSkillResult
+
+    private val _userAuthDataList =
+        MutableStateFlow<List<UserAuthData>>(emptyList()) // Esto crea una lista vacía de SkillData
+    val userAuthDataList: StateFlow<List<UserAuthData>> =
+        _userAuthDataList.asStateFlow()
+
+    fun getUserByEmail(email: String) {
+        viewModelScope.launch {
+            _profileListUIState.value = ProfileListUIState.Loading
+            Log.d(
+                "ProfileViewModel",
+                "Fetching user for email: $email"
+            )
+            try {
+                val response = getUserByEmailUseCase(email)
+                // Verifica si la respuesta fue exitosa
+                if (response.isSuccessful) {
+                    response.body()?.let { userResponseList ->
+                        if (userResponseList.isNotEmpty()) {
+                            _userAuthDataList.value =
+                                userResponseList.map { user ->
+                                    UserAuthData(
+                                        nameUser = user.nameUser,
+                                        surnameUser = user.surnameUser
+                                    )
+
+                                }
+                            _profileListUIState.value =
+                                ProfileListUIState.Success(userResponseList)
+                            Log.i(
+                                "ProfileViewModel",
+                                "User loaded successfully ${userResponseList.size} users"
+                            )
+                            userResponseList.forEach { user ->
+                                Log.i(
+                                    "ProfileViewModel",
+                                    "User auth: ${user.nameUser}, Title: ${user.surnameUser}"
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    _profileListUIState.value =
+                        ProfileListUIState.Error(500) // Or another error code
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error: ${response.code()}"
+                    )
+                }
+            } catch (e: Exception) {
+                _profileListUIState.value =
+                    ProfileListUIState.Error(500) // Or another error code
+                Log.e(
+                    "ProfileViewModel",
+                    "Error loading user: ${e.message}"
+                )
+            }
+        }
+    }
+
 
     fun updateSkillDescription(skillDescription: String) {
         Log.d(

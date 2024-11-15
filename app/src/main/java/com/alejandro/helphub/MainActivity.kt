@@ -27,10 +27,12 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val isAuthenticated =
                 authViewModel.isAuthenticated.collectAsState().value
+            val email = authViewModel.email.collectAsState().value
+
             if (isAuthenticated) {
                 //NavigationWrapper()
                 BottomNavGraph(navController = navController, profileViewModel = profileViewModel)
-               MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel)
+               MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel,email=email)
             }else{
                 RootNavGraph(
                     navController = navController,

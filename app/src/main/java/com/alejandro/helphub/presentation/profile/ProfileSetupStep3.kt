@@ -1,5 +1,6 @@
 package com.alejandro.helphub.presentation.profile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,11 +44,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 @Composable
 fun ProfileSetupStep3(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
 ) {
     val isStep4Enabled by profileViewModel.isNavigationToStep4PostEnabled.collectAsState(
         initial = false
@@ -79,8 +82,8 @@ fun ProfileSetupStep3(
                 DaySelection(profileViewModel)
                 Spacer(modifier = Modifier.height(14.dp))
                 StepButtons(
-                    onBackClick = { navController.navigate("ProfileSetupStep2") },
-                    onNextClick = { navController.navigate("ProfileSetupStep4a") },
+                    onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep3.createRoute(email!!)) },
+                    onNextClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4a.createRoute(email!!)) },
                     enabled = isStep4Enabled
                 )
             }
@@ -248,7 +251,7 @@ fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
             }
             Box {
                 RadioButton(
-                    text = stringResource(id = R.string.eight_to_nine),
+                    text = stringResource(id = R.string.eight_to_five),
                     selectedItem = selectedItem,
                     onItemSelected = {
                         selectedItem = it

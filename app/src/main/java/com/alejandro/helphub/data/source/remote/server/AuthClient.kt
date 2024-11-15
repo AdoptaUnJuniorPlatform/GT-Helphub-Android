@@ -6,7 +6,6 @@ import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import com.alejandro.helphub.data.source.remote.server.response.LoginResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.TwofaResponse
-import com.alejandro.helphub.data.source.remote.server.response.UserId
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -26,4 +25,7 @@ interface AuthClient {
 
     @GET("/api/helphub/user/user-id/{id}")
     suspend fun getUserById(@Path("id")userId:String):Response<ProfileResponse>
+
+    @GET("/api/helphub/user/{email}")
+    suspend fun getUserByEmail(@Path("email")email:String):Response<List<ProfileResponse>>
 }

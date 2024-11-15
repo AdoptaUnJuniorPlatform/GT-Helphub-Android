@@ -44,6 +44,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,17 +65,26 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
+import com.alejandro.helphub.domain.models.UserAuthData
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 @Composable
 fun ProfileSetupStep4b(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    email:String?
 ) {
+    LaunchedEffect(email) {
+        email?.let {
+            profileViewModel.getUserByEmail(email)
+        }
+    }
     var showCard by remember { mutableStateOf(false) }
     var showDataCard by remember { mutableStateOf(false) }
     val isStep5Enabled by profileViewModel.isNavigationToStep5Enabled.collectAsState(
         initial = false
     )
+    val userAuthDataList by profileViewModel.userAuthDataList.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { innerPadding ->
@@ -103,7 +113,7 @@ fun ProfileSetupStep4b(
                     CategorySelection(profileViewModel)
                     Spacer(modifier = Modifier.height(58.dp))
                     StepButtons(
-                        onBackClick = { navController.navigate("ProfileSetupStep4a") },
+                        onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4a.createRoute(email!!)) },
                         onNextClick = {
                             profileViewModel.createSkill()
 
@@ -115,7 +125,7 @@ fun ProfileSetupStep4b(
             }
         }
         if (showDataCard) {
-            OpeSkillCard(profileViewModel, navController)
+            OpeSkillCard(profileViewModel, navController, userAuthDataList = userAuthDataList)
         }
     }
 }
@@ -123,7 +133,11 @@ fun ProfileSetupStep4b(
 @Composable
 fun OpeSkillCard(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController) {
+    navController: NavHostController,
+    userAuthDataList: List<UserAuthData>
+) {
+
+val userAuthData=userAuthDataList.firstOrNull()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -134,14 +148,17 @@ fun OpeSkillCard(
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        DataCard(profileViewModel, navController)
+        userAuthData?.let{
+            DataCard(profileViewModel = profileViewModel, navController = navController, userAuthData = it )
+        }
     }
 }
 
 @Composable
 fun DataCard(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    userAuthData: UserAuthData
 ) {
     val userProfileData by profileViewModel.userProfileData.collectAsState()
     val skillData by profileViewModel.skillData.collectAsState()
@@ -259,8 +276,7 @@ fun DataCard(
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         Text(
-                            text = "Manolito",
-                            //"${user.nameUser} ${user.surnameUser}",
+                            text = "${userAuthData.nameUser} ${userAuthData.surnameUser}",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -374,7 +390,7 @@ fun DataCard(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = { navController.navigate("ProfileSetupStep5") },
+                    onClick = { navController.navigate(BottomBarScreen.ProfileSetupStep5.route) },
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier.align(Alignment.End),
                     colors = ButtonDefaults.buttonColors(
