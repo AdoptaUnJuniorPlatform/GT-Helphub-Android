@@ -6,20 +6,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
-import androidx.navigation.Navigation
 import androidx.navigation.compose.rememberNavController
-import com.alejandro.helphub.features.auth.presentation.AuthViewModel
-import com.alejandro.helphub.features.profile.presentation.ProfileViewModel
-import com.alejandro.helphub.navigation.presentation.BottomNavGraph
-import com.alejandro.helphub.navigation.presentation.NavigationViewModel
-import com.alejandro.helphub.navigation.presentation.RootNavGraph
+import com.alejandro.helphub.presentation.auth.AuthViewModel
+import com.alejandro.helphub.presentation.profile.ProfileViewModel
+import com.alejandro.helphub.presentation.navigation.BottomNavGraph
+import com.alejandro.helphub.presentation.navigation.NavigationViewModel
+import com.alejandro.helphub.presentation.navigation.RootNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
-    private val navigationViewModel:NavigationViewModel by viewModels()
+    private val navigationViewModel: NavigationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +27,12 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val isAuthenticated =
                 authViewModel.isAuthenticated.collectAsState().value
+            val email = authViewModel.email.collectAsState().value
+
             if (isAuthenticated) {
+                //NavigationWrapper()
                 BottomNavGraph(navController = navController, profileViewModel = profileViewModel)
-               MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel)
+               MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel,email=email)
             }else{
                 RootNavGraph(
                     navController = navController,

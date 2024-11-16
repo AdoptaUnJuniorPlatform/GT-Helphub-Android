@@ -1,6 +1,7 @@
 package com.alejandro.helphub
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,9 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.WarningAmber
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,22 +38,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.alejandro.helphub.features.profile.presentation.ProfileViewModel
-import com.alejandro.helphub.navigation.domain.ProfileUIState
-import com.alejandro.helphub.navigation.presentation.BottomBarScreen
-import com.alejandro.helphub.navigation.presentation.BottomNavGraph
-import com.alejandro.helphub.navigation.presentation.NavigationViewModel
+import com.alejandro.helphub.presentation.profile.ProfileViewModel
+import com.alejandro.helphub.domain.models.ProfileUIState
+import com.alejandro.helphub.presentation.auth.AuthViewModel
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
+import com.alejandro.helphub.presentation.navigation.BottomNavGraph
+import com.alejandro.helphub.presentation.navigation.NavigationViewModel
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
+import com.alejandro.helphub.presentation.navigation.bottomBarIcons
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -61,21 +61,20 @@ import com.alejandro.helphub.navigation.presentation.NavigationViewModel
 fun MainScreen(
     navigationViewModel: NavigationViewModel,
     navController: NavHostController,
-    profileViewModel: ProfileViewModel
-
+    profileViewModel: ProfileViewModel,
+    email:String?
 ) {
     var showPopUp by remember { mutableStateOf(false) }
-    //val bottomNavController=rememberNavController()
     val currentDestination=navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(bottomBar = {
 
-        if(currentDestination != "ProfileSetupStep1" &&
-            currentDestination != "ProfileSetupStep2" &&
-            currentDestination != "ProfileSetupStep3" &&
-            currentDestination != "ProfileSetupStep4a" &&
-            currentDestination != "ProfileSetupStep4b" &&
-            currentDestination != "ProfileSetupStep5")
+        if(currentDestination != BottomBarScreen.ProfileSetupStep1.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep2.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep3.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep4a.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep4b.route &&
+            currentDestination != BottomBarScreen.ProfileSetupStep5.route)
         {
             BottomBar(
                 navController =navController,
@@ -94,8 +93,8 @@ fun MainScreen(
                 CardPopUp(onCompleteProfile = {
                     showPopUp = false
                     navigationViewModel.resetState()
-                    navController.navigate("ProfileSetupStep1"){
-                        popUpTo("MainScreen"){saveState=true}
+                    navController.navigate(BottomBarScreen.ProfileSetupStep1.createRoute(email!!)){
+                        popUpTo(RootNavGraphObjects.MainScreen.route){saveState=true}
                         launchSingleTop=true
                         restoreState=true
                     }
@@ -126,8 +125,10 @@ fun BottomBar(
         when (val state=uiState) {
             is ProfileUIState.Success -> {
                 val statusCode = state.profile.statusCode
+                val id=state.profile.id
+                val userId=state.profile.userId.id
                 if (statusCode == null) {
-                    navController.navigate(BottomBarScreen.Profile.route) {
+                    navController.navigate(BottomBarScreen.Profile.createRoute(id,userId)) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
@@ -176,7 +177,8 @@ fun BottomBar(
                 },
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector =bottomBarIcons[screen.route] ?: Icons.Default.Home,
+                       // imageVector = screen.icon,
                         contentDescription = screen.title,
                         modifier = Modifier.offset(y = 8.dp)
                     )
