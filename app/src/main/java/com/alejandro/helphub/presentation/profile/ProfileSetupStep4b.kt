@@ -166,7 +166,7 @@ fun DataCard(
         "CongratulationsBox",
         "userDescription: ${userProfileData.description}," +
                 "postalCode: ${userProfileData.location}, " +
-                "userPhotoUri: ${userProfileData.profilePicture}, " +
+                "userPhotoUri: ${userProfileData.profileImage}, " +
                 "availability: ${userProfileData.preferredTimeRange}, " +
                 "days: ${userProfileData.selectedDays}, " +
                 "postTitle: ${skillData.title}, " +
@@ -264,7 +264,7 @@ fun DataCard(
                         Box(modifier = Modifier.size(50.dp)) {
                             Image(
                                 painter = rememberAsyncImagePainter(
-                                    userProfileData.profilePicture
+                                    userProfileData.profileImage
                                 ),
                                 contentDescription = stringResource(id = R.string.user_photo_content_description),
                                 modifier = Modifier

@@ -1,9 +1,13 @@
 package com.alejandro.helphub.presentation.profile
 
+import android.content.Context
 import android.net.Uri
+import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.ProfileListUIState
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
@@ -14,6 +18,7 @@ import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
+import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +26,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +39,8 @@ class ProfileViewModel @Inject constructor(
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val createProfileUseCase: CreateProfileUseCase,
     private val createSkillUseCase: CreateSkillUseCase,
-    private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase
+    private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase,
+    private val uploadProfileImageUseCase: UploadProfileImageUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -55,7 +65,6 @@ class ProfileViewModel @Inject constructor(
     )
     val profileUIState: StateFlow<ProfileUIState> =
         _profileUIState.asStateFlow()
-
 
 
     private val _profileListUIState = MutableStateFlow<ProfileListUIState>(
@@ -196,9 +205,13 @@ class ProfileViewModel @Inject constructor(
                     response.body()?.let { profileResponse ->
 
                         _userProfileData.value = UserProfileData(
-                            profilePicture = profileResponse.profilePicture,
+                            profileImage = profileResponse.profilePicture,
                             description = profileResponse.description,
-                            location = profileResponse.location
+                            location = profileResponse.location,
+                            preferredTimeRange = profileResponse.preferredTimeRange,
+                            interestedSkills = profileResponse.interestedSkills,
+                            selectedDays = profileResponse.selectedDays
+
                         )
 
                         _profileUIState.value =
@@ -269,16 +282,98 @@ class ProfileViewModel @Inject constructor(
     val isNavigationToStep3Enabled: StateFlow<Boolean> =
         _isNavigationToStep3Enabled.asStateFlow()
 
-    fun updateUserPhotoUri(photoUri: Uri) {
+    fun updateUserPhotoUri(photoUri: Uri,context: Context) {
         val updateUserData =
-            userProfileData.value.copy(profilePicture = photoUri.toString())
+            userProfileData.value.copy(profileImage = photoUri.toString())
         _userProfileData.value = updateUserData
+
+        uploadProfileImage(photoUri,context)
+
+
+
         navigateToStep3()
     }
+    /*
+    fun getRealPathFromURI(contentUri: Uri, context: Context): String {
+        val cursor = context.contentResolver.query(contentUri, null, null, null, null)
+        cursor?.moveToFirst()
+        val idx = cursor?.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        val filePath = cursor?.getString(idx ?: 0)
+        cursor?.close()
+        return filePath ?: ""
+    }
+*/
+    fun createTempFileFromUri(uri: Uri, context: Context): File? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+            tempFile.outputStream().use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+            tempFile
+        } catch (e: Exception) {
+            Log.e("UploadProfileImage", "Error creando archivo temporal: ${e.message}")
+            null
+        }
+    }
+
+
+    fun uploadProfileImage(photoUri: Uri, context: Context) {
+        viewModelScope.launch {
+            val userId = userAuthDataList.value.firstOrNull()?.id ?: ""
+            //  val imageProfile = userProfileData.value.profileImage
+            if (userId.isNotEmpty() && photoUri != Uri.EMPTY) {
+
+                try {
+                    // Convierte la URI de la imagen a un archivo de tipo MultipartBody.Part
+                    val imageFile = createTempFileFromUri(photoUri, context)
+                        ?: throw Exception("No se pudo crear el archivo temporal")
+                    val imagePart =
+                        imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val imageProfilePart = MultipartBody.Part.createFormData(
+                        "image_profile",
+                        imageFile.name,
+                        imagePart
+                    )
+
+                    // Crea el campo para el id_user
+                    val idUserPart =
+                        MultipartBody.Part.createFormData("id_user", userId)
+
+                    // Realiza la llamada al caso de uso
+                    val result =
+                        uploadProfileImageUseCase(idUserPart, imageProfilePart)
+
+                    if (result.idImage.isNotEmpty()) {
+                        Log.e(
+                            "ProfileViewModel",
+                            "Imagen subida correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
+                        )
+                    } else {
+                        Log.e(
+                            "ProfileViewModel",
+                            "Error al subir la imagen: ${result.message}"
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error al procesar la imagen: ${e.message}"
+                    )
+                }
+            } else {
+                Log.e(
+                    "ProfileViewModel",
+                    "Error: ID de usuario vacío o URI de imagen no válida."
+                )
+            }
+        }
+    }
+
 
     fun navigateToStep3() {
         _isNavigationToStep3Enabled.value =
-            userProfileData.value.profilePicture != null
+            userProfileData.value.profileImage != null
     }
 
     //<!--------------------Profile Setup Step 3 ---------------->
@@ -402,7 +497,9 @@ class ProfileViewModel @Inject constructor(
                                 userResponseList.map { user ->
                                     UserAuthData(
                                         nameUser = user.nameUser,
-                                        surnameUser = user.surnameUser
+                                        surnameUser = user.surnameUser,
+                                        id = user.id
+
                                     )
 
                                 }

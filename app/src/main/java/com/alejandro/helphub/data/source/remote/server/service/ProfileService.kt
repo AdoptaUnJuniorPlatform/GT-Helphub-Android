@@ -3,18 +3,36 @@ package com.alejandro.helphub.data.source.remote.server.service
 
 import android.util.Log
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
+import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
 import com.alejandro.helphub.data.source.remote.server.ProfileClient
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
+import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
-
+    suspend fun uploadProfileImage(idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
+        val response = profileClient.uploadProfileImage(idUserPart, imageProfilePart)
+        return if (response.isSuccessful) {
+            response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "")
+        } else {
+            // Manejo de errores de la respuesta
+            ProfileImageResponse(message = "Error: ${response.message()}", idImage = "")
+        }
+    }
+/*
+    suspend fun uploadProfileImage(uploadProfileImageDTO: UploadProfileImageDTO): ProfileImageResponse {
+        return withContext(Dispatchers.IO) {
+            val response=profileClient.uploadProfileImage(uploadProfileImageDTO)
+            response.body()?: ProfileImageResponse(message = "Error", idImage = "")
+        }    }
+*/
     suspend fun getProfileById(id: String):Response<ProfileResponse>{
         return profileClient.getProfileById(id)
     }

@@ -1,6 +1,7 @@
 package com.alejandro.helphub.presentation.profile
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -77,7 +79,7 @@ fun ProfileScreen(
     }
     val userProfile = profileViewModel.userProfileData.collectAsState().value
     val user = profileViewModel.userAuthData.collectAsState().value
-
+Log.e("ProfileScreen","Comprobado valores ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}")
 
     Scaffold {
         Box(
@@ -475,6 +477,7 @@ fun UserCard(
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(
                         modifier = Modifier
+                            .wrapContentWidth()
                             .border(
                                 width = 1.dp,
                                 color = Color.Gray,
@@ -545,14 +548,23 @@ fun CategoriesOfInterest(userProfile: UserProfileData) {
 
 @Composable
 fun DayBox(userProfile: UserProfileData) {
+    val dayMapping=mapOf(
+        "Lunes" to "L",
+        "Martes" to "M",
+        "Miércoles" to "X",
+        "Jueves" to "J",
+        "Viernes" to "V",
+        "Sábado" to "S",
+        "Domingo" to "D"
+    )
+    val dayInitials = listOf("L", "M", "X", "J", "V", "S", "D")
+
     Row {
-        listOf(
-            "L", "M", "X", "J", "V", "S", "D"
-        ).forEach { day ->
+        dayInitials.forEach { day ->
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (day in userProfile.selectedDays) MaterialTheme.colorScheme.primary
+                        color = if (dayMapping.any{it.value==day&&it.key in userProfile.selectedDays}) MaterialTheme.colorScheme.primary
                         else Color.Transparent,
                         shape = RoundedCornerShape(20.dp)
                     )
@@ -566,7 +578,7 @@ fun DayBox(userProfile: UserProfileData) {
                 Text(
                     text = day,
                     fontSize = 14.sp,
-                    color = if (day in userProfile.selectedDays) Color.White
+                    color = if (dayMapping.any{it.value==day&&it.key in userProfile.selectedDays}) Color.White
                     else Color.Black
                 )
             }

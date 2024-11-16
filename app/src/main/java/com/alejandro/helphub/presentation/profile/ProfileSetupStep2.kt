@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,11 +61,21 @@ fun ProfileSetupStep2(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
     email:String?
-) {
+)
+{
+
+    LaunchedEffect(email) {
+        email?.let {
+            profileViewModel.getUserByEmail(email)
+        }
+    }
+
     var showDialog by remember { mutableStateOf(false) }
     val isStep3Enabled by profileViewModel.isNavigationToStep3Enabled.collectAsState(
-        initial = false
-    )
+        initial = false)
+
+
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -174,12 +186,14 @@ fun ShowDialog(showDialog: Boolean, onDismiss: () -> Unit) {
 @Composable
 fun UploadPhoto(profileViewModel: ProfileViewModel) {
     var photoUri by remember { mutableStateOf<Uri?>(null) }
+    val context= LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             photoUri = it
-            profileViewModel.updateUserPhotoUri(it)
+            profileViewModel.updateUserPhotoUri(it, context)
+            profileViewModel.uploadProfileImage(it,context)
         }
     }
     Box(

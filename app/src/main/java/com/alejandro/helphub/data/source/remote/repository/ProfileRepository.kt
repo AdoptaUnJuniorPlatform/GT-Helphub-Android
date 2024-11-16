@@ -4,9 +4,12 @@ import android.util.Log
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
+import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
+import com.alejandro.helphub.domain.models.ProfileImageData
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
@@ -17,6 +20,16 @@ class ProfileRepository @Inject constructor(
     private val profileService: ProfileService,
     private val profileDataMapper: ProfileDataMapper
 ) {
+    /*suspend fun uploadProfileImage(profileImageData: ProfileImageData): ProfileImageResponse {
+        val uploadProfileImageDTO =
+            profileDataMapper.uploadProfileImageDTO(profileImageData)
+        return profileService.uploadProfileImage(uploadProfileImageDTO)
+    }
+    */
+
+    suspend fun uploadProfileImage(idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
+        return profileService.uploadProfileImage(idUserPart, imageProfilePart)
+    }
 
     suspend fun getProfileById(id: String): Response<ProfileResponse> {
         return try {
