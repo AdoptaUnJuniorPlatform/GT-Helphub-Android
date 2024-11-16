@@ -1,6 +1,8 @@
 package com.alejandro.helphub.presentation.profile
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
@@ -18,6 +20,7 @@ import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
+import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
@@ -42,7 +45,8 @@ class ProfileViewModel @Inject constructor(
     private val createProfileUseCase: CreateProfileUseCase,
     private val createSkillUseCase: CreateSkillUseCase,
     private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase,
-    private val uploadProfileImageUseCase: UploadProfileImageUseCase
+    private val uploadProfileImageUseCase: UploadProfileImageUseCase,
+    private val getProfileImageUseCase: GetProfileImageUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -284,27 +288,25 @@ class ProfileViewModel @Inject constructor(
     val isNavigationToStep3Enabled: StateFlow<Boolean> =
         _isNavigationToStep3Enabled.asStateFlow()
 
-    fun updateUserPhotoUri(photoUri: Uri,context: Context) {
-        val updateUserData =
-            userProfileData.value.copy(profileImage = photoUri.toString())
-        _userProfileData.value = updateUserData
+    fun updateUserPhotoUri(photoUri: Uri, context: Context) {
+        try {
+            // Convierte el Uri a un ByteArray
+            val byteArray = context.contentResolver.openInputStream(photoUri)?.readBytes()
 
-        uploadProfileImage(photoUri,context)
+            // Actualiza el perfil con el nuevo ByteArray de la imagen
+            val updateUserData = userProfileData.value.copy(profileImage = byteArray)
+            _userProfileData.value = updateUserData
 
+            // Sube la imagen
+            uploadProfileImage(photoUri, context)
 
-
-        navigateToStep3()
+            // Navega a la siguiente pantalla
+            navigateToStep3()
+        } catch (e: Exception) {
+            Log.e("ProfileViewModel", "Error al convertir la imagen a ByteArray: ${e.message}")
+        }
     }
-    /*
-    fun getRealPathFromURI(contentUri: Uri, context: Context): String {
-        val cursor = context.contentResolver.query(contentUri, null, null, null, null)
-        cursor?.moveToFirst()
-        val idx = cursor?.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-        val filePath = cursor?.getString(idx ?: 0)
-        cursor?.close()
-        return filePath ?: ""
-    }
-*/
+
     fun createTempFileFromUri(uri: Uri, context: Context): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -320,6 +322,12 @@ class ProfileViewModel @Inject constructor(
     }
     private val _profileImageId = MutableStateFlow<String?>(null)
     val profileImageId: StateFlow<String?> = _profileImageId
+
+    private val _profileImage = MutableStateFlow<ByteArray?>(null)
+    val profileImage: StateFlow<ByteArray?> = _profileImage
+
+    private val _profileImageBitmap = MutableStateFlow<Bitmap?>(null)
+    val profileImageBitmap: StateFlow<Bitmap?> = _profileImageBitmap
 
     fun uploadProfileImage(photoUri: Uri, context: Context) {
         viewModelScope.launch {
@@ -348,7 +356,7 @@ class ProfileViewModel @Inject constructor(
                         uploadProfileImageUseCase(idUserPart, imageProfilePart)
 
                     if (result.idImage.isNotEmpty()) {
-                        Log.e(
+                        Log.d(
                             "ProfileViewModel",
                             "Imagen subida correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
                         )
@@ -381,7 +389,7 @@ class ProfileViewModel @Inject constructor(
                 sharedPreferences.edit()
                     .putString("profile_image_id", idImage)
                     .apply()
-                Log.e("ProfileViewModel", "ID de la imagen guardado en SharedPreferences: $idImage")
+                Log.d("ProfileViewModel", "ID de la imagen guardado en SharedPreferences: $idImage")
 
             }
         }
@@ -391,6 +399,53 @@ class ProfileViewModel @Inject constructor(
         val sharedPreferences = context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("profile_image_id", null)
     }
+
+    fun getBitmapFromByteArray(byteArray: ByteArray?): Bitmap? {
+        return byteArray?.let {
+            BitmapFactory.decodeByteArray(it, 0, it.size)
+        }
+    }
+
+
+    fun getProfileImage(context: Context) {
+        viewModelScope.launch {
+            val imageId = getProfileImageId(context)
+
+            if (imageId != null) {
+                try {
+                    val response = getProfileImageUseCase(imageId)
+
+                    if (response.isSuccessful) {
+                        // Si la respuesta es exitosa, obtenemos el flujo de la imagen
+                        val inputStream = response.body()?.byteStream()
+
+                        if (inputStream != null) {
+                            // Aquí puedes convertir el InputStream en una imagen para mostrarla en la UI
+                            // Por ejemplo, guardarla en un archivo o mostrarla con una librería como Glide
+                            val byteArray = inputStream.readBytes()
+                            val bitmap = getBitmapFromByteArray(byteArray)
+
+                            _profileImage.value = byteArray
+                            _profileImageBitmap.value = bitmap
+
+                            Log.i("ProfileViewModel", "Imagen recuperada correctamente.")
+                            // Aquí puedes usar el InputStream o guardarlo como un archivo
+                        } else {
+                            Log.e("ProfileViewModel", "Error: El flujo de la imagen está vacío")
+                        }
+                    } else {
+                        Log.e("ProfileViewModel", "Error al recuperar la imagen: ${response.code()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("ProfileViewModel", "Error al recuperar la imagen: ${e.message}")
+                }
+            } else {
+                Log.i("ProfileViewModel", "ID de imagen no encontrado en SharedPreferences")
+            }
+        }
+    }
+
+
 
     fun navigateToStep3() {
         _isNavigationToStep3Enabled.value =

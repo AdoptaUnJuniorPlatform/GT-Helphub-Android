@@ -13,29 +13,31 @@ import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
+
+
+    suspend fun getProfileImageByImageId(id: String):Response<ResponseBody>{
+        return profileClient.getProfileImageByImageId(id)
+    }
     suspend fun uploadProfileImage(idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
         val response = profileClient.uploadProfileImage(idUserPart, imageProfilePart)
         return if (response.isSuccessful) {
-            response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "")
+            response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "",statusCode="")
         } else {
             // Manejo de errores de la respuesta
-            ProfileImageResponse(message = "Error: ${response.message()}", idImage = "")
+            ProfileImageResponse(message = "Error: ${response.message()}", idImage = "",statusCode="")
         }
     }
-/*
-    suspend fun uploadProfileImage(uploadProfileImageDTO: UploadProfileImageDTO): ProfileImageResponse {
-        return withContext(Dispatchers.IO) {
-            val response=profileClient.uploadProfileImage(uploadProfileImageDTO)
-            response.body()?: ProfileImageResponse(message = "Error", idImage = "")
-        }    }
-*/
+
     suspend fun getProfileById(id: String):Response<ProfileResponse>{
         return profileClient.getProfileById(id)
     }
+
+
 
     suspend fun getUserInfo(email: String): Response<SearchResponse> {
         return profileClient.getUserInfo(email)
@@ -67,7 +69,7 @@ class ProfileService @Inject constructor(private val profileClient: ProfileClien
                                 description = "",
                                 interestedSkills = emptyList(),
                                 location = "",
-                                profilePicture = "",
+                                profilePicture = null,
                                 preferredTimeRange = "",
                                 selectedDays = emptyList()
                             )

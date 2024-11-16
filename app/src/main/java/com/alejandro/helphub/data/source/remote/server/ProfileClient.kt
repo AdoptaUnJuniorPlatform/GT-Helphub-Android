@@ -8,6 +8,7 @@ import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDT
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -18,20 +19,25 @@ import retrofit2.http.Path
 
 interface ProfileClient {
     @GET("/api/helphub/user/{email}")
-    suspend fun getUserInfo(@Path("email")email:String):Response<SearchResponse>
+    suspend fun getUserInfo(@Path("email") email: String): Response<SearchResponse>
 
     @POST("/api/helphub/profile")
-    suspend fun createProfile(@Body createProfileDTO:CreateProfileDTO ):Response<CreateSkillResponse>
+    suspend fun createProfile(@Body createProfileDTO: CreateProfileDTO): Response<CreateSkillResponse>
 
     @GET("/api/helphub/profile")
     suspend fun fetchProfile(): Response<ProfileResponse>
 
     @GET("/api/helphub/profile/{id}")
-    suspend fun getProfileById(@Path("id")id:String): Response<ProfileResponse>
+    suspend fun getProfileById(@Path("id") id: String): Response<ProfileResponse>
 
     @Multipart
     @POST("/api/helphub/upload-service/upload-profileImage")
-    suspend fun uploadProfileImage(@Part id_user: MultipartBody.Part,
-                                   @Part image_profile: MultipartBody.Part):Response<ProfileImageResponse>
+    suspend fun uploadProfileImage(
+        @Part id_user: MultipartBody.Part,
+        @Part image_profile: MultipartBody.Part
+    ): Response<ProfileImageResponse>
 
+
+    @GET("/api/helphub/upload-service/profile-image/{id}")
+    suspend fun getProfileImageByImageId(@Path("id") id: String): Response<ResponseBody>
 }

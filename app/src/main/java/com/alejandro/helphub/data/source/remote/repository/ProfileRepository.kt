@@ -8,7 +8,6 @@ import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResp
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
-import com.alejandro.helphub.domain.models.ProfileImageData
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -20,13 +19,30 @@ class ProfileRepository @Inject constructor(
     private val profileService: ProfileService,
     private val profileDataMapper: ProfileDataMapper
 ) {
-    /*suspend fun uploadProfileImage(profileImageData: ProfileImageData): ProfileImageResponse {
-        val uploadProfileImageDTO =
-            profileDataMapper.uploadProfileImageDTO(profileImageData)
-        return profileService.uploadProfileImage(uploadProfileImageDTO)
-    }
-    */
 
+    suspend fun getProfileImageByImageId(id: String): Response<ResponseBody> {
+        return try {
+            val response = profileService.getProfileImageByImageId(id)
+
+            // Retornamos directamente el Response de Retrofit
+            if (response.isSuccessful) {
+                response
+            } else {
+                // Si la respuesta no es exitosa, devolvemos un Response con un error
+                Log.e("ProfileRepository", "Failed with error code: ${response.code()}")
+                Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
+                    null
+                )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Error fetching profile image: ${e.message}")
+            // Retornamos un Response con error si ocurre una excepción
+            Response.error(500,
+                (e.message ?: "Unknown error").toResponseBody(null)
+            )
+        }
+    }
     suspend fun uploadProfileImage(idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
         return profileService.uploadProfileImage(idUserPart, imageProfilePart)
     }

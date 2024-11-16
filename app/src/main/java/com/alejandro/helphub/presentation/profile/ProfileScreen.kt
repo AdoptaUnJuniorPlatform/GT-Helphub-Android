@@ -50,16 +50,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.alejandro.helphub.R
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
+import java.io.ByteArrayInputStream
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
@@ -67,7 +74,7 @@ import com.alejandro.helphub.domain.models.UserProfileData
 fun ProfileScreen(
     id: String?, userId: String?, profileViewModel: ProfileViewModel
 ) {
-
+    val context = LocalContext.current
     LaunchedEffect(id, userId) {
         id?.let {
             profileViewModel.getProfileById(it)
@@ -75,11 +82,15 @@ fun ProfileScreen(
         userId?.let {
             profileViewModel.getUserById(userId)
             profileViewModel.getSkillsByUserId(userId)
+            profileViewModel.getProfileImage(context)
         }
     }
     val userProfile = profileViewModel.userProfileData.collectAsState().value
     val user = profileViewModel.userAuthData.collectAsState().value
-Log.e("ProfileScreen","Comprobado valores ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}")
+    Log.e(
+        "ProfileScreen",
+        "Comprobado valores ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}"
+    )
 
     Scaffold {
         Box(
@@ -91,7 +102,7 @@ Log.e("ProfileScreen","Comprobado valores ${userProfile.description} ${userProfi
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
                 UserCard(
-                    userProfile = userProfile, user = user
+                    userProfile = userProfile, user = user, profileViewModel
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
@@ -185,11 +196,17 @@ fun UserSkills(
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
             contentPadding = PaddingValues(start = 8.dp, end = 16.dp)
         ) {
-            Icon(imageVector = Icons.Default.AddCircle, contentDescription = stringResource(
-                id = R.string.add_skills
-            ))
+            Icon(
+                imageVector = Icons.Default.AddCircle,
+                contentDescription = stringResource(
+                    id = R.string.add_skills
+                )
+            )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = stringResource(id = R.string.new_skill).uppercase(), fontSize = 12.sp)
+            Text(
+                text = stringResource(id = R.string.new_skill).uppercase(),
+                fontSize = 12.sp
+            )
         }
     }
     Spacer(modifier = Modifier.height(12.dp))
@@ -310,7 +327,11 @@ fun SkillCard(
 fun UserReviews() {
     UserRating()
     Spacer(modifier = Modifier.height(16.dp))
-    Text(text = stringResource(id = R.string.my_reviews), fontWeight = FontWeight.Bold, fontSize = 24.sp)
+    Text(
+        text = stringResource(id = R.string.my_reviews),
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp
+    )
     Spacer(modifier = Modifier.height(12.dp))
     ReviewRow()
 }
@@ -429,8 +450,12 @@ fun UserRating() {
 
 @Composable
 fun UserCard(
-    userProfile: UserProfileData, user: UserAuthData
+    userProfile: UserProfileData,
+    user: UserAuthData,
+    profileViewModel: ProfileViewModel
 ) {
+    val profileImageBytes by profileViewModel.profileImage.collectAsState()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0x0FA58E8E))
@@ -452,78 +477,98 @@ fun UserCard(
             Spacer(modifier = Modifier.height(22.dp))
             Row {
                 Box(modifier = Modifier.size(120.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.default_profile_icon),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.Red)
-                    )
-                }
+                    profileImageBytes?.let {
+                        Log.d("UserCard", "ByteArray size: ${profileImageBytes?.size ?: 0}")
 
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = "${user.nameUser} ${user.surnameUser}",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(id = R.string.preferred_time_range),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 2.dp)
-                    ) { Text(text = userProfile.preferredTimeRange) }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    DayBox(userProfile)
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                modifier = Modifier
-
-                    .width(340.dp), colors = CardDefaults.cardColors(
-                    containerColor = Color(
-                        0x39D5D3DA
-                    )
-                )
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
-                    Text(
-                        text = stringResource(id = R.string.description),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Box(modifier = Modifier.height(70.dp)) {
-                        Text(
-                            text = userProfile.description, fontSize = 13.sp
+                        val painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(it) // Convertimos el ByteArray a InputStream
+                               // .apply { crossfade(true)} // Habilitamos la animación de transición }
+                                .build()
+                        )
+                        val painterState = painter.state
+                        if (painterState is AsyncImagePainter.State.Error) {
+                            Log.e("UserCard", "Error al cargar la imagen: ${painterState.result.throwable}")
+                        }
+                        Image(
+                            painter = painter,
+                            contentDescription = "stringResource(id = R.string.profile_image)",
+                            modifier = Modifier.fillMaxSize().clip(
+                                RoundedCornerShape(12.dp)
+                            ),
+                            contentScale = ContentScale.Crop // Para ajustar la imagen
+                        )
+                    } ?: run {
+                        // Si no hay imagen, mostramos un placeholder (opcional)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Gray)
                         )
                     }
                 }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = "${user.nameUser} ${user.surnameUser}",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(id = R.string.preferred_time_range),
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                ) { Text(text = userProfile.preferredTimeRange) }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                DayBox(userProfile)
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(id = R.string.interested_skills),
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            CategoriesOfInterest(userProfile)
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Card(
+            modifier = Modifier
+
+                .width(340.dp), colors = CardDefaults.cardColors(
+                containerColor = Color(
+                    0x39D5D3DA
+                )
+            )
+        ) {
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = stringResource(id = R.string.description),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(modifier = Modifier.height(70.dp)) {
+                    Text(
+                        text = userProfile.description, fontSize = 13.sp
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.interested_skills),
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        CategoriesOfInterest(userProfile)
     }
+}
 }
 
 @Composable
@@ -548,7 +593,7 @@ fun CategoriesOfInterest(userProfile: UserProfileData) {
 
 @Composable
 fun DayBox(userProfile: UserProfileData) {
-    val dayMapping=mapOf(
+    val dayMapping = mapOf(
         "Lunes" to "L",
         "Martes" to "M",
         "Miércoles" to "X",
@@ -564,7 +609,7 @@ fun DayBox(userProfile: UserProfileData) {
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (dayMapping.any{it.value==day&&it.key in userProfile.selectedDays}) MaterialTheme.colorScheme.primary
+                        color = if (dayMapping.any { it.value == day && it.key in userProfile.selectedDays }) MaterialTheme.colorScheme.primary
                         else Color.Transparent,
                         shape = RoundedCornerShape(20.dp)
                     )
@@ -578,7 +623,7 @@ fun DayBox(userProfile: UserProfileData) {
                 Text(
                     text = day,
                     fontSize = 14.sp,
-                    color = if (dayMapping.any{it.value==day&&it.key in userProfile.selectedDays}) Color.White
+                    color = if (dayMapping.any { it.value == day && it.key in userProfile.selectedDays }) Color.White
                     else Color.Black
                 )
             }

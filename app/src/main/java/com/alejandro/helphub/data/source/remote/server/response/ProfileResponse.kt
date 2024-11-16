@@ -13,7 +13,7 @@ data class ProfileResponse (
     @SerializedName("description") val description:String,
     @SerializedName("interestedSkills") val interestedSkills:List<String>,
     @SerializedName("location") val location: String,
-    @SerializedName("profilePicture") val profilePicture: String,
+    @SerializedName("profilePicture") val profilePicture: ByteArray?,
     @SerializedName("preferredTimeRange") val preferredTimeRange: String,
     @SerializedName("selectedDays") val selectedDays: List<String>,
 )
