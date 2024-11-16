@@ -22,10 +22,12 @@ import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -316,7 +318,8 @@ class ProfileViewModel @Inject constructor(
             null
         }
     }
-
+    private val _profileImageId = MutableStateFlow<String?>(null)
+    val profileImageId: StateFlow<String?> = _profileImageId
 
     fun uploadProfileImage(photoUri: Uri, context: Context) {
         viewModelScope.launch {
@@ -349,6 +352,8 @@ class ProfileViewModel @Inject constructor(
                             "ProfileViewModel",
                             "Imagen subida correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
                         )
+                        _profileImageId.value = result.idImage
+                        saveProfileImageId(context, result.idImage)
                     } else {
                         Log.e(
                             "ProfileViewModel",
@@ -369,7 +374,23 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+    private fun saveProfileImageId(context: Context, idImage: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val sharedPreferences = context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit()
+                    .putString("profile_image_id", idImage)
+                    .apply()
+                Log.e("ProfileViewModel", "ID de la imagen guardado en SharedPreferences: $idImage")
 
+            }
+        }
+    }
+
+    fun getProfileImageId(context: Context): String? {
+        val sharedPreferences = context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("profile_image_id", null)
+    }
 
     fun navigateToStep3() {
         _isNavigationToStep3Enabled.value =

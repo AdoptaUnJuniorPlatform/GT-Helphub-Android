@@ -507,7 +507,7 @@ fun UserCard(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Box(modifier = Modifier.height(50.dp)) {
+                    Box(modifier = Modifier.height(70.dp)) {
                         Text(
                             text = userProfile.description, fontSize = 13.sp
                         )
