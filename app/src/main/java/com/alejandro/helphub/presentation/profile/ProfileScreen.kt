@@ -213,14 +213,16 @@ fun UserSkills(
     }
     Spacer(modifier = Modifier.height(12.dp))
     SkillsRow(
-        userSkillsList = skillDataList
+        userSkillsList = skillDataList,
+        profileViewModel = profileViewModel
     )
 
 }
 
 @Composable
 fun SkillsRow(
-    userSkillsList: List<SkillData>
+    userSkillsList: List<SkillData>,
+    profileViewModel: ProfileViewModel
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -230,7 +232,7 @@ fun SkillsRow(
     ) {
         LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
             items(userSkillsList) { userSkills ->
-                SkillCard(userSkills = userSkills)
+                SkillCard(userSkills = userSkills, profileViewModel = profileViewModel)
             }
         }
     }
@@ -239,7 +241,8 @@ fun SkillsRow(
 
 @Composable
 fun SkillCard(
-    userSkills: SkillData
+    userSkills: SkillData,
+    profileViewModel: ProfileViewModel
 ) {
     Card(
         modifier = Modifier
@@ -297,7 +300,7 @@ fun SkillCard(
             Spacer(modifier = Modifier.height(4.dp))
             Row {
                 Button(
-                    onClick = {},
+                    onClick = {profileViewModel.deleteSkill(userSkills.id)},
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,

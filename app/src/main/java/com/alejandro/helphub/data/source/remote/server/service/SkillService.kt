@@ -10,6 +10,11 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class SkillService @Inject constructor(private val skillClient: SkillClient) {
+
+    suspend fun deleteSkill(skillId:String):Response<Unit>{
+         return skillClient.deleteSkill(skillId)
+    }
+
     suspend fun createSkill(createSkillDTO:CreateSkillDTO): String {
         return withContext(Dispatchers.IO) {
             val response = skillClient.createSkill(createSkillDTO)

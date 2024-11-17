@@ -173,7 +173,7 @@ fun SaveButton(
             )
         ) {
             Text(
-                text = stringResource(id = R.string.next),
+                text = "GUARDAR",
                 color = if (enabled) Color.Blue else Color.LightGray
             )
         }

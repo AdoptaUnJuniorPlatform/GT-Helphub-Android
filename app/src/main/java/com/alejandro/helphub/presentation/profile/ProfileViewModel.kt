@@ -23,6 +23,7 @@ import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
+import com.alejandro.helphub.domain.usecase.skill.DeleteSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,8 @@ class ProfileViewModel @Inject constructor(
     private val createSkillUseCase: CreateSkillUseCase,
     private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase,
-    private val getProfileImageUseCase: GetProfileImageUseCase
+    private val getProfileImageUseCase: GetProfileImageUseCase,
+    private val deleteSkillUseCase: DeleteSkillUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -83,6 +85,26 @@ class ProfileViewModel @Inject constructor(
         SkillUIState.Idle
     )
     val skillUIState: StateFlow<SkillUIState> = _skillUIState.asStateFlow()
+
+
+    fun deleteSkill(skillId: String) {
+        viewModelScope.launch {
+            _skillUIState.value = SkillUIState.Loading
+            try {
+                val response = deleteSkillUseCase(skillId)
+                if (response.isSuccessful) {
+                    // Si la eliminación es exitosa, actualiza la lista de habilidades
+                    _skillDataList.value = _skillDataList.value.filterNot { it.id == skillId }
+                    _skillUIState.value = SkillUIState.Success(emptyList()) // O la lista actualizada
+                } else {
+                    _skillUIState.value = SkillUIState.Error(500) // Error en la respuesta
+                }
+            } catch (e: Exception) {
+                _skillUIState.value = SkillUIState.Error(500) // Error desconocido
+            }
+        }
+    }
+
 
 
     fun getSkillsByUserId(userId: String) {

@@ -15,6 +15,11 @@ class SkillRepository @Inject constructor(
     private val skillService: SkillService,
     private val skillDataMapper: com.alejandro.helphub.data.source.remote.mappers.SkillDataMapper
 ) {
+
+    suspend fun deleteSkill(skillId: String):Response<Unit> {
+       return  skillService.deleteSkill(skillId)
+    }
+
     suspend fun getSkillsByUserId(userId: String): Response<List<SkillResponse>> {
         return try {
             val response = skillService.getSkillsByUserId(userId)
@@ -44,8 +49,8 @@ class SkillRepository @Inject constructor(
     }
 
 
-suspend fun createSkill(skillData: SkillData): String {
-    val skillDTO = skillDataMapper.createSkillDTO(skillData)
-    return skillService.createSkill(skillDTO)
-}
+    suspend fun createSkill(skillData: SkillData): String {
+        val skillDTO = skillDataMapper.createSkillDTO(skillData)
+        return skillService.createSkill(skillDTO)
+    }
 }
