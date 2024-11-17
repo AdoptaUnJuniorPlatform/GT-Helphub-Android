@@ -80,7 +80,7 @@ fun ProfileSetupStep1(
                 StepOneProgressIndicator()
                 StepOneTitle()
                 Spacer(modifier = Modifier.height(20.dp))
-                Description()
+                Description(text = stringResource(id = R.string.user_description_title))
                 TextBox(profileViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 Location(profileViewModel)
@@ -252,9 +252,10 @@ fun TextBox(profileViewModel: ProfileViewModel) {
 }
 
 @Composable
-fun Description() {
+fun Description(text:String) {
     Text(
-        text = stringResource(id = R.string.user_description_title),
+        //text = stringResource(id = R.string.user_description_title),
+        text=text,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
         color = Color.Black,

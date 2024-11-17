@@ -97,6 +97,10 @@ sealed class BottomBarScreen(
         route = "NewSkillScreen2",
         title = ""
     )
+    object EditProfileScreen:BottomBarScreen(
+        route = "EditProfileScreen",
+        title = ""
+    )
 
 
 }

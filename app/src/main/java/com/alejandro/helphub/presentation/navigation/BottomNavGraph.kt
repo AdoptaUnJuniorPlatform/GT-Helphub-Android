@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.alejandro.helphub.presentation.chat.ChatScreen
 import com.alejandro.helphub.presentation.home.Home
 import com.alejandro.helphub.presentation.notifications.NotificationsScreen
+import com.alejandro.helphub.presentation.profile.EditProfileScreen
 import com.alejandro.helphub.presentation.profile.NewSkillScreen1
 import com.alejandro.helphub.presentation.profile.NewSkillScreen2
 import com.alejandro.helphub.presentation.profile.ProfileScreen
@@ -104,6 +105,12 @@ fun BottomNavGraph(
             NewSkillScreen2(
                 profileViewModel = profileViewModel,
                 navController=navController
+            )
+        }
+        composable(BottomBarScreen.EditProfileScreen.route){
+            EditProfileScreen(
+                profileViewModel = profileViewModel,
+                navController = navController
             )
         }
     }

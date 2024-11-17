@@ -66,7 +66,7 @@ fun ProfileSetupStep5(
                 Spacer(modifier = Modifier.height(16.dp))
                 Learn()
                 Spacer(modifier = Modifier.height(16.dp))
-                PopularCategories(profileViewModel)
+                PopularCategories(profileViewModel, text = stringResource(id = R.string.choose_categories))
                 Spacer(modifier = Modifier.height(16.dp))
                 Spacer(modifier = Modifier.height(134.dp))
                 StepButtons(
@@ -112,7 +112,8 @@ fun CategoryBox(
 
 @Composable
 fun PopularCategories(
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    text:String
 ) {
     val categories = listOf(
         stringResource(id = R.string.animals),
@@ -139,7 +140,7 @@ fun PopularCategories(
                 .fillMaxWidth()
         ) {
             Text(
-                text = stringResource(id = R.string.popular_categories),
+                text = text,
                 fontSize = 22.sp,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold

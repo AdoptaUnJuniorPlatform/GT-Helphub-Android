@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,6 +37,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,20 +63,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.alejandro.helphub.R
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
-import java.io.ByteArrayInputStream
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
 @Composable
 fun ProfileScreen(
-    id: String?, userId: String?, profileViewModel: ProfileViewModel,navController:NavHostController
+    id: String?,
+    userId: String?,
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController
 ) {
     val context = LocalContext.current
     LaunchedEffect(id, userId) {
@@ -104,11 +107,14 @@ fun ProfileScreen(
             Column {
                 Spacer(modifier = Modifier.height(40.dp))
                 UserCard(
-                    userProfile = userProfile, user = user, profileViewModel
+                    userProfile = userProfile,
+                    user = user,
+                    profileViewModel,
+                    navController
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
-                    profileViewModel,navController
+                    profileViewModel, navController
                 )
             }
         }
@@ -117,7 +123,7 @@ fun ProfileScreen(
 
 @Composable
 fun ToggleButtons(
-    profileViewModel: ProfileViewModel,navController: NavHostController
+    profileViewModel: ProfileViewModel, navController: NavHostController
 ) {
     val selectedOption = rememberSaveable { mutableStateOf("skills") }
 
@@ -171,7 +177,7 @@ fun ToggleButtons(
 
     if (selectedOption.value == "skills") {
         UserSkills(
-            profileViewModel,navController
+            profileViewModel, navController
         )
     } else {
         UserReviews()
@@ -181,7 +187,7 @@ fun ToggleButtons(
 
 @Composable
 fun UserSkills(
-    profileViewModel: ProfileViewModel,navController: NavHostController
+    profileViewModel: ProfileViewModel, navController: NavHostController
 ) {
     val skillDataList by profileViewModel.skillDataList.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -192,7 +198,7 @@ fun UserSkills(
         )
         Spacer(modifier = Modifier.width(24.dp))
         Button(
-            onClick = {navController.navigate(BottomBarScreen.NewSkillScreen1.route)},
+            onClick = { navController.navigate(BottomBarScreen.NewSkillScreen1.route) },
             shape = RoundedCornerShape(6.dp),
             elevation = ButtonDefaults.buttonElevation(6.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
@@ -232,7 +238,10 @@ fun SkillsRow(
     ) {
         LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
             items(userSkillsList) { userSkills ->
-                SkillCard(userSkills = userSkills, profileViewModel = profileViewModel)
+                SkillCard(
+                    userSkills = userSkills,
+                    profileViewModel = profileViewModel
+                )
             }
         }
     }
@@ -300,7 +309,7 @@ fun SkillCard(
             Spacer(modifier = Modifier.height(4.dp))
             Row {
                 Button(
-                    onClick = {profileViewModel.deleteSkill(userSkills.id)},
+                    onClick = { profileViewModel.deleteSkill(userSkills.id) },
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
@@ -457,7 +466,8 @@ fun UserRating() {
 fun UserCard(
     userProfile: UserProfileData,
     user: UserAuthData,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController
 ) {
     val profileImageBytes by profileViewModel.profileImage.collectAsState()
 
@@ -470,37 +480,62 @@ fun UserCard(
                 start = 12.dp, end = 6.dp, bottom = 12.dp
             )
         ) {
-            Spacer(modifier = Modifier.height(15.dp))
-            Row {
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(id = R.string.my_profile),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically)
                 )
-                //Icon
+                IconButton(
+                    onClick = {navController.navigate(BottomBarScreen.EditProfileScreen.route) },
+                    ) {
+                    Box(modifier = Modifier.background(
+                        color = Color.Blue,
+                        shape = RoundedCornerShape(6.dp)
+
+                    ).size(30.dp), contentAlignment = Alignment.Center){
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "",
+                            tint = Color.White,
+                        )
+                    }
+                }
             }
-            Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row {
                 Box(modifier = Modifier.size(120.dp)) {
                     profileImageBytes?.let {
-                        Log.d("UserCard", "ByteArray size: ${profileImageBytes?.size ?: 0}")
+                        Log.d(
+                            "UserCard",
+                            "ByteArray size: ${profileImageBytes?.size ?: 0}"
+                        )
 
                         val painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(it) // Convertimos el ByteArray a InputStream
-                               // .apply { crossfade(true)} // Habilitamos la animación de transición }
+                                // .apply { crossfade(true)} // Habilitamos la animación de transición }
                                 .build()
                         )
                         val painterState = painter.state
                         if (painterState is AsyncImagePainter.State.Error) {
-                            Log.e("UserCard", "Error al cargar la imagen: ${painterState.result.throwable}")
+                            Log.e(
+                                "UserCard",
+                                "Error al cargar la imagen: ${painterState.result.throwable}"
+                            )
                         }
                         Image(
                             painter = painter,
                             contentDescription = "stringResource(id = R.string.profile_image)",
-                            modifier = Modifier.fillMaxSize().clip(
-                                RoundedCornerShape(12.dp)
-                            ),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(
+                                    RoundedCornerShape(12.dp)
+                                ),
                             contentScale = ContentScale.Crop // Para ajustar la imagen
                         )
                     } ?: run {
@@ -512,69 +547,70 @@ fun UserCard(
                         )
                     }
                 }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = "${user.nameUser} ${user.surnameUser}",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(id = R.string.preferred_time_range),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .border(
-                            width = 1.dp,
-                            color = Color.Gray,
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 2.dp)
-                ) { Text(text = userProfile.preferredTimeRange) }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                DayBox(userProfile)
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Card(
-            modifier = Modifier
-
-                .width(340.dp), colors = CardDefaults.cardColors(
-                containerColor = Color(
-                    0x39D5D3DA
-                )
-            )
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(
-                    text = stringResource(id = R.string.description),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Box(modifier = Modifier.height(70.dp)) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
                     Text(
-                        text = userProfile.description, fontSize = 13.sp
+                        text = "${user.nameUser} ${user.surnameUser}",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(id = R.string.preferred_time_range),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .border(
+                                width = 1.dp,
+                                color = Color.Gray,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 2.dp)
+                    ) { Text(text = userProfile.preferredTimeRange) }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DayBox(userProfile)
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier
+
+                    .width(340.dp), colors = CardDefaults.cardColors(
+                    containerColor = Color(
+                        0x39D5D3DA
+                    )
+                )
+            ) {
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.description),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(modifier = Modifier.height(70.dp)) {
+                        Text(
+                            text = userProfile.description, fontSize = 13.sp
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(id = R.string.interested_skills),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            CategoriesOfInterest(userProfile)
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(id = R.string.interested_skills),
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        CategoriesOfInterest(userProfile)
     }
 }
-}
+
 
 @Composable
 fun CategoriesOfInterest(userProfile: UserProfileData) {
