@@ -89,6 +89,14 @@ sealed class BottomBarScreen(
     ){
         fun createRoute(email: String) = "ProfileSetupStep5/$email"
     }
+    object NewSkillScreen1:BottomBarScreen(
+        route = "NewSkillScreen1",
+        title = ""
+    )
+    object NewSkillScreen2:BottomBarScreen(
+        route = "NewSkillScreen2",
+        title = ""
+    )
 
 
 }

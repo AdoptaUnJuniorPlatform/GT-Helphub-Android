@@ -9,6 +9,8 @@ import androidx.navigation.navArgument
 import com.alejandro.helphub.presentation.chat.ChatScreen
 import com.alejandro.helphub.presentation.home.Home
 import com.alejandro.helphub.presentation.notifications.NotificationsScreen
+import com.alejandro.helphub.presentation.profile.NewSkillScreen1
+import com.alejandro.helphub.presentation.profile.NewSkillScreen2
 import com.alejandro.helphub.presentation.profile.ProfileScreen
 import com.alejandro.helphub.presentation.profile.ProfileSetupStep1
 import com.alejandro.helphub.presentation.profile.ProfileSetupStep2
@@ -45,7 +47,7 @@ fun BottomNavGraph(
         ) { navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getString("id")
             val userId = navBackStackEntry.arguments?.getString("userId")
-            ProfileScreen(id = id, userId = userId, profileViewModel)
+            ProfileScreen(id = id, userId = userId, profileViewModel,navController = navController)
         }
         composable(BottomBarScreen.ProfileSetupStep1.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
@@ -92,20 +94,17 @@ fun BottomNavGraph(
                 email = email
             )
         }
+        composable(BottomBarScreen.NewSkillScreen1.route){
+            NewSkillScreen1(
+               profileViewModel = profileViewModel,
+                navController = navController,
+            )
+        }
+        composable(BottomBarScreen.NewSkillScreen2.route){
+            NewSkillScreen2(
+                profileViewModel = profileViewModel,
+                navController=navController
+            )
+        }
     }
 }
-
-
-@Composable
-fun ProfileNavGraph(
-    navController: NavHostController,
-    profileViewModel: ProfileViewModel
-) {
-    NavHost(
-        navController = navController,
-        startDestination = "ProfileSetupStep1"
-    ) {
-
-    }
-}
-

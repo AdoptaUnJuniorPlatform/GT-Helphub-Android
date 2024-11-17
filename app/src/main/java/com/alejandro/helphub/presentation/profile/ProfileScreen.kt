@@ -58,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
@@ -66,13 +67,14 @@ import com.alejandro.helphub.R
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
+import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 import java.io.ByteArrayInputStream
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 
 @Composable
 fun ProfileScreen(
-    id: String?, userId: String?, profileViewModel: ProfileViewModel
+    id: String?, userId: String?, profileViewModel: ProfileViewModel,navController:NavHostController
 ) {
     val context = LocalContext.current
     LaunchedEffect(id, userId) {
@@ -106,7 +108,7 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
-                    profileViewModel
+                    profileViewModel,navController
                 )
             }
         }
@@ -115,7 +117,7 @@ fun ProfileScreen(
 
 @Composable
 fun ToggleButtons(
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,navController: NavHostController
 ) {
     val selectedOption = rememberSaveable { mutableStateOf("skills") }
 
@@ -169,7 +171,7 @@ fun ToggleButtons(
 
     if (selectedOption.value == "skills") {
         UserSkills(
-            profileViewModel
+            profileViewModel,navController
         )
     } else {
         UserReviews()
@@ -179,7 +181,7 @@ fun ToggleButtons(
 
 @Composable
 fun UserSkills(
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,navController: NavHostController
 ) {
     val skillDataList by profileViewModel.skillDataList.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -190,7 +192,7 @@ fun UserSkills(
         )
         Spacer(modifier = Modifier.width(24.dp))
         Button(
-            onClick = {},
+            onClick = {navController.navigate(BottomBarScreen.NewSkillScreen1.route)},
             shape = RoundedCornerShape(6.dp),
             elevation = ButtonDefaults.buttonElevation(6.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),

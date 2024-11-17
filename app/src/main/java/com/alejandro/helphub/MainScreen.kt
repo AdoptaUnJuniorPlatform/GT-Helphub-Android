@@ -74,7 +74,10 @@ fun MainScreen(
             currentDestination != BottomBarScreen.ProfileSetupStep3.route &&
             currentDestination != BottomBarScreen.ProfileSetupStep4a.route &&
             currentDestination != BottomBarScreen.ProfileSetupStep4b.route &&
-            currentDestination != BottomBarScreen.ProfileSetupStep5.route)
+            currentDestination != BottomBarScreen.ProfileSetupStep5.route &&
+            currentDestination != BottomBarScreen.NewSkillScreen1.route &&
+            currentDestination != BottomBarScreen.NewSkillScreen2.route )
+
         {
             BottomBar(
                 navController =navController,
