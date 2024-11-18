@@ -72,7 +72,10 @@ class ProfileViewModel @Inject constructor(
         return _skillDataList.value.firstOrNull()?.id
     }
 
-
+    // Función para actualizartodo el objeto SkillData (por ejemplo, cuando se selecciona una habilidad para editar)
+    fun selectSkillForEdit(skill: SkillData) {
+        _skillData.value = skill
+    }
 
     fun updateSkill(skillId: String, createSkillDTO: CreateSkillDTO) {
         viewModelScope.launch {

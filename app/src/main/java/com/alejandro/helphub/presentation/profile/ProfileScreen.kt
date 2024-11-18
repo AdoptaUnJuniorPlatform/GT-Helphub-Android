@@ -334,7 +334,10 @@ fun SkillCard(
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Button(
-                    onClick = { onEditClick(userSkills.id)
+
+                    onClick = {
+                        profileViewModel.selectSkillForEdit(userSkills)
+                        onEditClick(userSkills.id)
 
                        // navController.navigate(BottomBarScreen.EditSkillScreen.route)
                               },

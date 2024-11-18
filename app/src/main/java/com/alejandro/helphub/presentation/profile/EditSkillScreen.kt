@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +63,14 @@ fun EditSkillScreen(
     var skillDescription by remember { mutableStateOf("") }
     var skillLevel by remember { mutableStateOf("") }
     var skillMode by remember { mutableStateOf("") }
+    val skillData by profileViewModel.skillData.collectAsState()
+
+    LaunchedEffect(skillData) {
+        skillTitle=skillData.title
+        skillDescription=skillData.description
+        skillLevel=skillData.level
+        skillMode=skillData.mode
+    }
 
     Scaffold(topBar = {
         Row(
@@ -116,11 +125,11 @@ fun EditSkillScreen(
                             .padding(horizontal = 16.dp)
                     ) {
                         Spacer(modifier = Modifier.height(20.dp))
-                        EditPostTitle(profileViewModel,skillTitle,{skillTitle=it})
+                        EditPostTitle(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-                        EditLevel(profileViewModel, selectedLevel = skillLevel, onLevelChange = {newLevel->skillLevel=newLevel})
+                        EditLevel(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-                        EditMode(profileViewModel, selectedMode = skillMode, onModeChange = {newMode->skillMode=newMode})
+                        EditMode(profileViewModel)
                         EditSkillDescription(profileViewModel, description = skillDescription, onDescriptionChange = {newDescription->skillDescription=newDescription})
 
                         Box(
@@ -277,7 +286,7 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
 
 @Composable
 fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,onDescriptionChange:(String)->Unit) {
-    //val skillData by profileViewModel.skillData.collectAsState()
+    val skillData by profileViewModel.skillData.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -295,11 +304,11 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = description,
+            value = skillData.description,
             //skillData.description,
             onValueChange = {
                 if (it.length <= 90) {
-                    onDescriptionChange(it) //actualizaciondellamada
+                   // onDescriptionChange(it) //actualizaciondellamada
                     profileViewModel.updateSkillDescription(it)
                 }
             },
@@ -327,8 +336,8 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
         Text(
             text = stringResource(
                 id = R.string.character_limit_ninety,
-                description.length
-               // skillData.description.length
+                //description.length
+                skillData.description.length
             ),
             fontSize = 18.sp,
             modifier = Modifier
@@ -341,7 +350,7 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
 }
 
 @Composable
-fun EditMode(profileViewModel: ProfileViewModel,selectedMode:String,onModeChange:(String)->Unit) {
+fun EditMode(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
  //   var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
     Row {
@@ -357,11 +366,10 @@ fun EditMode(profileViewModel: ProfileViewModel,selectedMode:String,onModeChange
         Box(modifier = Modifier.weight(1f)) {
             RadioButton(
                 text = stringResource(id = R.string.online),
-                selectedItem = selectedMode,
-                //selectedItem,
+                selectedItem = skillData.mode,
                 onItemSelected = {
                    // selectedItem = it
-                    onModeChange(it)
+                   // onModeChange(it)
                     profileViewModel.updateLearningMode(it)
                 },
             )
@@ -369,11 +377,10 @@ fun EditMode(profileViewModel: ProfileViewModel,selectedMode:String,onModeChange
         Box(modifier = Modifier.weight(2f)) {
             RadioButton(
                 text = stringResource(id = R.string.face_to_face),
-                selectedItem = selectedMode,
-                //selectedItem,
+                selectedItem = skillData.mode,
                 onItemSelected = {
                     // selectedItem = it
-                    onModeChange(it)
+                   // onModeChange(it)
                     profileViewModel.updateLearningMode(it)
                 })
         }
@@ -388,7 +395,9 @@ fun EditMode(profileViewModel: ProfileViewModel,selectedMode:String,onModeChange
 }
 
 @Composable
-fun EditLevel(profileViewModel: ProfileViewModel,selectedLevel:String,onLevelChange:(String)->Unit) {
+fun EditLevel(profileViewModel: ProfileViewModel
+            //  onLevelChange:(String)->Unit
+) {
     val skillData by profileViewModel.skillData.collectAsState()
    // var selectedItem by remember { mutableStateOf(skillData.level ?: "") }
 
@@ -405,11 +414,10 @@ fun EditLevel(profileViewModel: ProfileViewModel,selectedLevel:String,onLevelCha
         Box(modifier = Modifier.weight(4f)) {
             RadioButton(
                 text = stringResource(id = R.string.basic),
-                selectedItem = selectedLevel,
-                //selectedItem,
+                selectedItem = skillData.level,
                 onItemSelected = {
                     //selectedItem = it
-                    onLevelChange(it)
+                  //  onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 },
             )
@@ -417,22 +425,21 @@ fun EditLevel(profileViewModel: ProfileViewModel,selectedLevel:String,onLevelCha
         Box(modifier = Modifier.weight(4f)) {
             RadioButton(
                 text = stringResource(id = R.string.amateur),
-                selectedItem = selectedLevel,
-                //selectedItem,
+                selectedItem =
+                skillData.level,
                 onItemSelected = {
                     //selectedItem = it
-                    onLevelChange(it)
+                   // onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 })
         }
         Box(modifier = Modifier.weight(5f)) {
             RadioButton(
                 text = stringResource(id = R.string.advanced),
-                selectedItem = selectedLevel,
-                //selectedItem,
+                selectedItem = skillData.level,
                 onItemSelected = {
                     //selectedItem = it
-                    onLevelChange(it)
+                  //  onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 })
         }
@@ -440,7 +447,7 @@ fun EditLevel(profileViewModel: ProfileViewModel,selectedLevel:String,onLevelCha
 }
 
 @Composable
-fun EditPostTitle(profileViewModel: ProfileViewModel,skillTitle:String,onTitleChange:(String)->Unit) {
+fun EditPostTitle(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
     Row(
         modifier = Modifier
@@ -459,13 +466,11 @@ fun EditPostTitle(profileViewModel: ProfileViewModel,skillTitle:String,onTitleCh
             .fillMaxWidth()
     ) {
         OutlinedTextField(
-            //value = skillData.title,
-            value=skillTitle,
+            value = skillData.title,
             singleLine = true,
             onValueChange = {
                 if (it.length <= 20) {
-                    onTitleChange(it)
-                 //   profileViewModel.updatePostTitle(it)
+                    profileViewModel.updatePostTitle(it)
                 }
             },
             placeholder = {
@@ -491,8 +496,8 @@ fun EditPostTitle(profileViewModel: ProfileViewModel,skillTitle:String,onTitleCh
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-              //  skillData.title.length
-                skillTitle.length
+              skillData.title.length
+
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
