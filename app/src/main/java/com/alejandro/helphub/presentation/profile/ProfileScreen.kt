@@ -90,6 +90,8 @@ fun ProfileScreen(
             profileViewModel.getProfileImage(context)
         }
     }
+    val skillId=profileViewModel.getSkillId()
+    Log.e("ProfileScreen", "Skill ID: $skillId")
     val userProfile = profileViewModel.userProfileData.collectAsState().value
     val user = profileViewModel.userAuthData.collectAsState().value
     Log.e(
@@ -243,7 +245,13 @@ fun SkillsRow(
                 SkillCard(
                     userSkills = userSkills,
                     profileViewModel = profileViewModel,
-                    navController
+                    navController,
+                    onEditClick = { skillId ->
+                        Log.d("SkillsRow", "Edit button clicked. Skill ID: $skillId")
+
+                        // Pasamos el skillId al hacer clic en editar
+                        navController.navigate(BottomBarScreen.EditSkillScreen.createRoute(skillId))
+                    }
                 )
             }
         }
@@ -255,7 +263,8 @@ fun SkillsRow(
 fun SkillCard(
     userSkills: SkillData,
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    onEditClick:(String)->Unit
 ) {
     Card(
         modifier = Modifier
@@ -325,7 +334,10 @@ fun SkillCard(
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Button(
-                    onClick = {navController.navigate(BottomBarScreen.EditSkillScreen.route)},
+                    onClick = { onEditClick(userSkills.id)
+
+                       // navController.navigate(BottomBarScreen.EditSkillScreen.route)
+                              },
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue, contentColor = Color.White

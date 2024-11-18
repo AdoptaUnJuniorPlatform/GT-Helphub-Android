@@ -2,6 +2,7 @@ package com.alejandro.helphub.data.source.remote.repository
 
 
 import android.util.Log
+import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.data.source.remote.mappers.SkillDataMapper
 import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
@@ -13,8 +14,18 @@ import javax.inject.Inject
 
 class SkillRepository @Inject constructor(
     private val skillService: SkillService,
-    private val skillDataMapper: com.alejandro.helphub.data.source.remote.mappers.SkillDataMapper
+    private val skillDataMapper: SkillDataMapper
 ) {
+
+    suspend fun updateSkill(skillId: String,createSkillDTO: CreateSkillDTO):SkillData{
+        val response = skillService.updateSkill(skillId, createSkillDTO)
+        if (response.isSuccessful) {
+            val skillResponse = response.body() ?: throw Exception("Response body is null")
+            return skillDataMapper.mapToDomain(skillResponse)
+        } else {
+            throw Exception("Error updating skill: ${response.errorBody()?.string()}")
+        }
+    }
 
     suspend fun deleteSkill(skillId: String):Response<Unit> {
        return  skillService.deleteSkill(skillId)

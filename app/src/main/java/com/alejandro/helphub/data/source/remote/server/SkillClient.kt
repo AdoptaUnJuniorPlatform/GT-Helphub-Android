@@ -9,6 +9,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -21,5 +22,8 @@ interface SkillClient {
 
     @DELETE("/api/helphub/hability/{id}")
     suspend fun deleteSkill(@Path("id")skillId:String):Response<Unit>
+
+    @PATCH("/api/helphub/hability/{id}")
+    suspend fun updateSkill(@Path("id")skillId:String, @Body createSkillDTO: CreateSkillDTO):Response<SkillResponse>
 
 }

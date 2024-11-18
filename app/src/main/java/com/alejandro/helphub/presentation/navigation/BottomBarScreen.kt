@@ -84,7 +84,7 @@ sealed class BottomBarScreen(
     }
     @Serializable
     object ProfileSetupStep5 : BottomBarScreen(
-        route = "ProfileSetupStep5",
+        route = "ProfileSetupStep5/{email}",
         title = ""
     ){
         fun createRoute(email: String) = "ProfileSetupStep5/$email"
@@ -101,10 +101,13 @@ sealed class BottomBarScreen(
         route = "EditProfileScreen",
         title = ""
     )
+    @Serializable
     object EditSkillScreen:BottomBarScreen(
-        route = "EditSkillScreen",
+        route = "EditSkillScreen/{skillId}",
         title = ""
-    )
+    ) {
+        fun createRoute(skillId: String) = "EditSkillScreen/$skillId"
+    }
 
 
 }

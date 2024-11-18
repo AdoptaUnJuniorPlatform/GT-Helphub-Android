@@ -11,6 +11,11 @@ import javax.inject.Inject
 
 class SkillService @Inject constructor(private val skillClient: SkillClient) {
 
+
+    suspend fun updateSkill(skillId:String, createSkillDTO: CreateSkillDTO):Response<SkillResponse>{
+        return skillClient.updateSkill(skillId,createSkillDTO)
+    }
+
     suspend fun deleteSkill(skillId:String):Response<Unit>{
          return skillClient.deleteSkill(skillId)
     }

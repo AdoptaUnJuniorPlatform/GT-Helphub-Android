@@ -9,6 +9,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.ProfileListUIState
 import com.alejandro.helphub.domain.models.ProfileUIState
@@ -25,6 +26,7 @@ import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.DeleteSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByUserIdUseCase
+import com.alejandro.helphub.domain.usecase.skill.UpdateSkillUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +50,8 @@ class ProfileViewModel @Inject constructor(
     private val getSkillsByUserIdUseCase: GetSkillsByUserIdUseCase,
     private val uploadProfileImageUseCase: UploadProfileImageUseCase,
     private val getProfileImageUseCase: GetProfileImageUseCase,
-    private val deleteSkillUseCase: DeleteSkillUseCase
+    private val deleteSkillUseCase: DeleteSkillUseCase,
+    private val updateSkillUseCase: UpdateSkillUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -61,6 +64,32 @@ class ProfileViewModel @Inject constructor(
     private val _skillDataList =
         MutableStateFlow<List<SkillData>>(emptyList()) // Esto crea una lista vacía de SkillData
     val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
+
+    //<!--------------------Update Skill Screen---------------->
+
+    fun getSkillId(): String? {
+        // Extraemos el primer Skill ID de la lista, o null si la lista está vacía
+        return _skillDataList.value.firstOrNull()?.id
+    }
+
+
+
+    fun updateSkill(skillId: String, createSkillDTO: CreateSkillDTO) {
+        viewModelScope.launch {
+            try {
+                // Llama al caso de uso y obtiene los datos actualizados
+                val updatedSkill = updateSkillUseCase(skillId, createSkillDTO)
+
+                // Actualiza el estado con la nueva información
+                _skillData.value = updatedSkill
+            } catch (e: Exception) {
+                // En caso de error, maneja el estado del mensaje de error
+
+            }
+        }
+    }
+
+
 
     //<!--------------------Profile ---------------->
 

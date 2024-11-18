@@ -49,6 +49,7 @@ fun BottomNavGraph(
         ) { navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getString("id")
             val userId = navBackStackEntry.arguments?.getString("userId")
+
             ProfileScreen(id = id, userId = userId, profileViewModel,navController = navController)
         }
         composable(BottomBarScreen.ProfileSetupStep1.route) { backStackEntry ->
@@ -114,10 +115,15 @@ fun BottomNavGraph(
                 navController = navController
             )
         }
-        composable(BottomBarScreen.EditSkillScreen.route){
+        composable(BottomBarScreen.EditSkillScreen.route,
+            arguments = listOf(
+                navArgument("skillId") { type = NavType.StringType } // Argumento que se recibe
+            )){backStackEntry->
+            val skillId=backStackEntry.arguments?.getString("skillId")
             EditSkillScreen(
                 profileViewModel = profileViewModel,
-                navController = navController
+                navController = navController,
+                skillId=skillId
             )
         }
     }
