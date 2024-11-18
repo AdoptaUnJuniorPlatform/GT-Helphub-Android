@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -130,7 +131,10 @@ fun EditSkillScreen(
                         EditLevel(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
                         EditMode(profileViewModel)
+                        Spacer(modifier = Modifier.height(20.dp))
+
                         EditSkillDescription(profileViewModel, description = skillDescription, onDescriptionChange = {newDescription->skillDescription=newDescription})
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         Box(
                             modifier = Modifier

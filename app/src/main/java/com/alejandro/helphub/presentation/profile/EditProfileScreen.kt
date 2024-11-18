@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +71,8 @@ fun EditProfileScreen(
     navController: NavHostController
 ) {
     val listState = rememberLazyListState()
+
+
 
     Scaffold(topBar = {
         Row(
@@ -185,6 +188,7 @@ fun UpdatePopularCategories(
         categories.takeLast(1)
     )
     val userProfileData by profileViewModel.userProfileData.collectAsState()
+
      val selectedCategories by profileViewModel.selectedCategoriesOfInterest.collectAsState()
     Column {
         Row(
@@ -215,7 +219,7 @@ fun UpdatePopularCategories(
             Row() {
                 categoryRow.forEach { category ->
                     val isSelected =
-                         selectedCategories.contains(category)
+                         userProfileData.interestedSkills.contains(category)
                     CategoryBox(category = category, isSelected =
                     isSelected
                     ,
@@ -345,81 +349,6 @@ fun UploadNewPhoto(profileViewModel: ProfileViewModel) {
 }
 
 @Composable
-fun EditAvailabilityOptions() {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        // var selectedItem by remember { mutableStateOf(userProfileData.preferredTimeRange ?: "") }
-        var selectedItem by remember { mutableStateOf("08:00 a 14:00") }
-        Row {
-            Text(
-                text = stringResource(id = R.string.availability_hours),
-                fontSize = 22.sp,
-                modifier = Modifier.align(Alignment.CenterVertically),
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Row {
-            Box {
-                RadioButton(
-                    text = stringResource(id = R.string.eight_to_two),
-                    selectedItem = selectedItem,
-                    onItemSelected = {
-                        selectedItem = it
-                        // profileViewModel.updateAvailability(it)
-                    }
-                )
-            }
-            Box {
-                RadioButton(
-                    text = stringResource(id = R.string.three_to_five),
-                    selectedItem = selectedItem,
-                    onItemSelected = {
-                        selectedItem = it
-                        // profileViewModel.updateAvailability(it)
-                    }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row {
-            Box {
-                RadioButton(
-                    text = stringResource(id = R.string.five_to_nine),
-                    selectedItem = selectedItem,
-                    onItemSelected = {
-                        selectedItem = it
-                        // profileViewModel.updateAvailability(it)
-                    }
-                )
-            }
-            Box {
-                RadioButton(
-                    text = stringResource(id = R.string.eight_to_five),
-                    selectedItem = selectedItem,
-                    onItemSelected = {
-                        selectedItem = it
-                        // profileViewModel.updateAvailability(it)
-                    }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Row {
-            Box {
-                RadioButton(
-                    text = stringResource(id = R.string.availability_title),
-                    selectedItem = selectedItem,
-                    onItemSelected = {
-                        selectedItem = it
-                        //profileViewModel.updateAvailability(it)
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun ProfilePicTitle() {
     Text(
         text = "Foto de perfil",
@@ -432,6 +361,7 @@ fun ProfilePicTitle() {
 fun UpdateDaySelection(profileViewModel: ProfileViewModel) {
     val expanded by profileViewModel.expanded.collectAsState(initial = false)
     val selectedDays by profileViewModel.selectedDays.collectAsState()
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -475,10 +405,10 @@ fun UpdateDaySelection(profileViewModel: ProfileViewModel) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = if (selectedDays.isEmpty()) {
+                            text = if (userProfileData.selectedDays.isEmpty()) {
                                 stringResource(id = R.string.select_day)
                             } else {
-                                selectedDays.joinToString(", ")
+                                userProfileData.selectedDays.joinToString(", ")
                             },
                             modifier = Modifier.weight(1f)
                         )
