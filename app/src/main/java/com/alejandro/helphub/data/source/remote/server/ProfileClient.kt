@@ -7,12 +7,14 @@ import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
 import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
+import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -40,4 +42,7 @@ interface ProfileClient {
 
     @GET("/api/helphub/upload-service/profile-image/{id}")
     suspend fun getProfileImageByImageId(@Path("id") id: String): Response<ResponseBody>
+
+    @PATCH("/api/helphub/profile/{id}")
+    suspend fun updateProfile(@Path("id")id:String, @Body createProfileDTO: CreateProfileDTO):Response<ProfileResponse>
 }

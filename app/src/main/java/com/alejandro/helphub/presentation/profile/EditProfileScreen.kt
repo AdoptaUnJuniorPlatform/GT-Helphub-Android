@@ -62,17 +62,19 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.alejandro.helphub.R
+import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 
 
 @Composable
 fun EditProfileScreen(
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    id:String?
 ) {
     val listState = rememberLazyListState()
 
-
+val userProfileData by profileViewModel.userProfileData.collectAsState()
 
     Scaffold(topBar = {
         Row(
@@ -154,7 +156,19 @@ fun EditProfileScreen(
             }
             item {
                 UpdateButton(
-                    onNextClick = {},
+                    onNextClick = {
+                        val createProfileDTO=CreateProfileDTO(
+                            location = userProfileData.location,
+                            description = userProfileData.description,
+                            interestedSkills = userProfileData.interestedSkills,
+                            selectedDays = userProfileData.selectedDays,
+                            preferredTimeRange = userProfileData.preferredTimeRange
+                        )
+                        if(id!=null){
+                            profileViewModel.updateProfile(id,createProfileDTO)
+                        }
+                        navController.navigate(BottomBarScreen.Profile.route)
+                    },
                     enabled = true
                 )
             }

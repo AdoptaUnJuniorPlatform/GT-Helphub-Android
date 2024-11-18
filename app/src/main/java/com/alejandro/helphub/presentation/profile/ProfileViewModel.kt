@@ -9,6 +9,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
 import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.ProfileListUIState
@@ -22,6 +23,7 @@ import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
+import com.alejandro.helphub.domain.usecase.profile.UpdateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
 import com.alejandro.helphub.domain.usecase.skill.DeleteSkillUseCase
@@ -51,7 +53,8 @@ class ProfileViewModel @Inject constructor(
     private val uploadProfileImageUseCase: UploadProfileImageUseCase,
     private val getProfileImageUseCase: GetProfileImageUseCase,
     private val deleteSkillUseCase: DeleteSkillUseCase,
-    private val updateSkillUseCase: UpdateSkillUseCase
+    private val updateSkillUseCase: UpdateSkillUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -64,6 +67,22 @@ class ProfileViewModel @Inject constructor(
     private val _skillDataList =
         MutableStateFlow<List<SkillData>>(emptyList()) // Esto crea una lista vacía de SkillData
     val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
+    //<!--------------------Update Profile Screen---------------->
+
+    fun updateProfile(id:String,createProfileDTO: CreateProfileDTO){
+        viewModelScope.launch {
+            try{
+                // Llama al caso de uso y obtiene los datos actualizados
+                val updatedProfile = updateProfileUseCase(id, createProfileDTO)
+
+                // Actualiza el estado con la nueva información
+                _userProfileData.value = updatedProfile
+            }catch (e: Exception) {
+                // En caso de error, maneja el estado del mensaje de error
+
+            }
+        }
+    }
 
     //<!--------------------Update Skill Screen---------------->
 

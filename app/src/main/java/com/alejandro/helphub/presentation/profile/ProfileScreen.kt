@@ -57,7 +57,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -112,7 +111,8 @@ fun ProfileScreen(
                     userProfile = userProfile,
                     user = user,
                     profileViewModel,
-                    navController
+                    navController,
+                    id
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
@@ -486,7 +486,8 @@ fun UserCard(
     userProfile: UserProfileData,
     user: UserAuthData,
     profileViewModel: ProfileViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    id: String?
 ) {
     val profileImageBytes by profileViewModel.profileImage.collectAsState()
 
@@ -510,7 +511,8 @@ fun UserCard(
                         .align(Alignment.CenterVertically)
                 )
                 IconButton(
-                    onClick = {navController.navigate(BottomBarScreen.EditProfileScreen.route) },
+                    onClick = { if(id!=null){ navController.navigate(BottomBarScreen.EditProfileScreen.createRoute(id))}
+                        },
                     ) {
                     Box(modifier = Modifier.background(
                         color = Color.Blue,

@@ -1,6 +1,8 @@
 package com.alejandro.helphub.data.source.remote.repository
 
 import android.util.Log
+import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
+import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
@@ -8,6 +10,7 @@ import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResp
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
+import com.alejandro.helphub.domain.models.SkillData
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -19,6 +22,17 @@ class ProfileRepository @Inject constructor(
     private val profileService: ProfileService,
     private val profileDataMapper: ProfileDataMapper
 ) {
+
+    suspend fun updateProfile(id: String,createProfileDTO: CreateProfileDTO): UserProfileData {
+        val response = profileService.updateProfile(id, createProfileDTO)
+        if (response.isSuccessful) {
+            val profileResponse = response.body() ?: throw Exception("Response body is null")
+            return profileDataMapper.mapToDomain(profileResponse)
+        } else {
+            throw Exception("Error updating skill: ${response.errorBody()?.string()}")
+        }
+    }
+
 
     suspend fun getProfileImageByImageId(id: String): Response<ResponseBody> {
         return try {

@@ -97,10 +97,13 @@ sealed class BottomBarScreen(
         route = "NewSkillScreen2",
         title = ""
     )
+    @Serializable
     object EditProfileScreen:BottomBarScreen(
-        route = "EditProfileScreen",
+        route = "EditProfileScreen/{id}",
         title = ""
-    )
+    ){
+        fun createRoute(id:String)="EditProfileScreen/$id"
+    }
     @Serializable
     object EditSkillScreen:BottomBarScreen(
         route = "EditSkillScreen/{skillId}",
