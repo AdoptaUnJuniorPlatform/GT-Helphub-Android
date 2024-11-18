@@ -77,7 +77,8 @@ fun MainScreen(
             currentDestination != BottomBarScreen.ProfileSetupStep5.route &&
             currentDestination != BottomBarScreen.NewSkillScreen1.route &&
             currentDestination != BottomBarScreen.NewSkillScreen2.route &&
-            currentDestination != BottomBarScreen.EditProfileScreen.route )
+            currentDestination != BottomBarScreen.EditProfileScreen.route &&
+            currentDestination != BottomBarScreen.EditSkillScreen.route )
 
         {
             BottomBar(

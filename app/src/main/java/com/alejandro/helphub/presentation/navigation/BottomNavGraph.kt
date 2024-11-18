@@ -10,6 +10,7 @@ import com.alejandro.helphub.presentation.chat.ChatScreen
 import com.alejandro.helphub.presentation.home.Home
 import com.alejandro.helphub.presentation.notifications.NotificationsScreen
 import com.alejandro.helphub.presentation.profile.EditProfileScreen
+import com.alejandro.helphub.presentation.profile.EditSkillScreen
 import com.alejandro.helphub.presentation.profile.NewSkillScreen1
 import com.alejandro.helphub.presentation.profile.NewSkillScreen2
 import com.alejandro.helphub.presentation.profile.ProfileScreen
@@ -109,6 +110,12 @@ fun BottomNavGraph(
         }
         composable(BottomBarScreen.EditProfileScreen.route){
             EditProfileScreen(
+                profileViewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        composable(BottomBarScreen.EditSkillScreen.route){
+            EditSkillScreen(
                 profileViewModel = profileViewModel,
                 navController = navController
             )

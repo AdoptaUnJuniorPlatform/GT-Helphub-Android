@@ -220,7 +220,8 @@ fun UserSkills(
     Spacer(modifier = Modifier.height(12.dp))
     SkillsRow(
         userSkillsList = skillDataList,
-        profileViewModel = profileViewModel
+        profileViewModel = profileViewModel,
+        navController=navController
     )
 
 }
@@ -228,7 +229,8 @@ fun UserSkills(
 @Composable
 fun SkillsRow(
     userSkillsList: List<SkillData>,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -240,7 +242,8 @@ fun SkillsRow(
             items(userSkillsList) { userSkills ->
                 SkillCard(
                     userSkills = userSkills,
-                    profileViewModel = profileViewModel
+                    profileViewModel = profileViewModel,
+                    navController
                 )
             }
         }
@@ -251,7 +254,8 @@ fun SkillsRow(
 @Composable
 fun SkillCard(
     userSkills: SkillData,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController
 ) {
     Card(
         modifier = Modifier
@@ -321,7 +325,7 @@ fun SkillCard(
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Button(
-                    onClick = {},
+                    onClick = {navController.navigate(BottomBarScreen.EditSkillScreen.route)},
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue, contentColor = Color.White

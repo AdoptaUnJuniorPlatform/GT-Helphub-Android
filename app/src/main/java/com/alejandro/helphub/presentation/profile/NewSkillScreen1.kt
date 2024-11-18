@@ -83,7 +83,7 @@ fun NewSkillScreen1(
             .statusBarsPadding()) {
             Spacer(modifier = Modifier.width(16.dp))
             Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription ="",
-                Modifier.clickable { navController.navigate(BottomBarScreen.Profile) } )
+                Modifier.clickable { navController.navigate(BottomBarScreen.Profile.route) } )
             Spacer(modifier = Modifier.width(20.dp))
             Text(text = "Habilidades", fontSize = 24.sp)
         }

@@ -172,7 +172,7 @@
     <string name="step_5_title">Intercambiando habilidades</string>
     <string name="learning_question">¿Qué te gustaría aprender?</string>
     <string name="step_five_description">Nos encantaría saber qué te gustaría aprender, para que los demás usuarios puedan ofrecerte su ayuda.</string>
-    <string name="popular_categories">Categorías populares</string>
+    <string name="choose_categories">Seleccionar categorías</string>
     <string name="more_categories">Busca más categorías</string>
     <string name="select_up_to_3_categories">Puedes seleccionar hasta 3 categorías.</string>
     <!--Main Screen -->
@@ -224,7 +224,7 @@
     <string name="edit">Editar</string>
     <string name="my_reviews">Mis reseñas</string>
     <string name="overall_review">Valoración general</string>
-    <string name="my_profile">Mi perfil</string>
+    <string name="my_profile">Mi Perfil</string>
     <string name="preferred_time_range">Disponibilidad horaria</string>
     <string name="description">Descripción</string>
     <string name="interested_skills">Habilidades que me interesan</string>
