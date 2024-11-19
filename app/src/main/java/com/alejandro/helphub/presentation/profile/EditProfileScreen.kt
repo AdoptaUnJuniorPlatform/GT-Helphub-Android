@@ -40,7 +40,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,12 +69,15 @@ import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 fun EditProfileScreen(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
-    id:String?
+    id: String?,
+    userId: String?
 ) {
     val listState = rememberLazyListState()
-
-val userProfileData by profileViewModel.userProfileData.collectAsState()
-
+    val userProfileData by profileViewModel.userProfileData.collectAsState()
+    val context = LocalContext.current
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+    Log.d("EditProfileScreen", "comprobando si id esta vacio $id")
+    Log.d("EditProfileScreen", "comprobando si id esta vacio $userId")
     Scaffold(topBar = {
         Row(
             modifier = Modifier
@@ -134,7 +136,7 @@ val userProfileData by profileViewModel.userProfileData.collectAsState()
                         Spacer(modifier = Modifier.height(20.dp))
                         ProfilePicTitle()
                         Spacer(modifier = Modifier.height(10.dp))
-                        UploadNewPhoto(profileViewModel)
+                        UploadNewPhoto(profileViewModel,photoUri=photoUri, onPhotoUriChanged = {newUri->photoUri=newUri})
                         Spacer(modifier = Modifier.height(10.dp))
                         AvailabilityOptions(profileViewModel)
                         Spacer(modifier = Modifier.height(10.dp))
@@ -146,8 +148,8 @@ val userProfileData by profileViewModel.userProfileData.collectAsState()
                             UpdateDaySelection(profileViewModel = profileViewModel)
                         }
                         UpdatePopularCategories(
-                             profileViewModel = profileViewModel,
-                             text = "¿Qué te gustaría aprender?"
+                            profileViewModel = profileViewModel,
+                            text = "¿Qué te gustaría aprender?"
                         )
 
                     }
@@ -157,17 +159,22 @@ val userProfileData by profileViewModel.userProfileData.collectAsState()
             item {
                 UpdateButton(
                     onNextClick = {
-                        val createProfileDTO=CreateProfileDTO(
+                        val createProfileDTO = CreateProfileDTO(
                             location = userProfileData.location,
                             description = userProfileData.description,
                             interestedSkills = userProfileData.interestedSkills,
                             selectedDays = userProfileData.selectedDays,
                             preferredTimeRange = userProfileData.preferredTimeRange
                         )
-                        if(id!=null){
-                            profileViewModel.updateProfile(id,createProfileDTO)
+
+                        if (id != null) {
+                            if(photoUri!=null&&userId!=null)photoUri?.let { uri ->
+                                profileViewModel.updateUserPhotoUriToUpdate(id = id,userId=userId, photoUri = uri, context = context)
+                                profileViewModel.updateProfileImage(id = userId, userId=userId,photoUri = uri, context = context)
+                            }else{Log.e("EditProfileScreen", "Error: id o userId es nulo")}
+                           // profileViewModel.updateProfile(id, createProfileDTO)
                         }
-                        navController.navigate(BottomBarScreen.Profile.route)
+                       // navController.navigate(BottomBarScreen.Profile.route)
                     },
                     enabled = true
                 )
@@ -179,7 +186,7 @@ val userProfileData by profileViewModel.userProfileData.collectAsState()
 @Composable
 fun UpdatePopularCategories(
     profileViewModel: ProfileViewModel,
-    text:String
+    text: String
 ) {
 
 
@@ -203,7 +210,7 @@ fun UpdatePopularCategories(
     )
     val userProfileData by profileViewModel.userProfileData.collectAsState()
 
-     val selectedCategories by profileViewModel.selectedCategoriesOfInterest.collectAsState()
+    val selectedCategories by profileViewModel.selectedCategoriesOfInterest.collectAsState()
     Column {
         Row(
             modifier = Modifier
@@ -233,14 +240,13 @@ fun UpdatePopularCategories(
             Row() {
                 categoryRow.forEach { category ->
                     val isSelected =
-                         userProfileData.interestedSkills.contains(category)
+                        userProfileData.interestedSkills.contains(category)
                     CategoryBox(category = category, isSelected =
-                    isSelected
-                    ,
+                    isSelected,
                         onItemSelected = {
-                             profileViewModel.onCategoriesOfInterestChecked(
-                              category,
-                               it
+                            profileViewModel.onCategoriesOfInterestChecked(
+                                category,
+                                it
                             )
                         }
                     )
@@ -248,7 +254,7 @@ fun UpdatePopularCategories(
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
-          Log.d("InterestInfo", "categories: ${userProfileData.interestedSkills}")
+        Log.d("InterestInfo", "categories: ${userProfileData.interestedSkills}")
     }
 }
 
@@ -287,16 +293,12 @@ fun UpdateButton(
 }
 
 @Composable
-fun UploadNewPhoto(profileViewModel: ProfileViewModel) {
-    var photoUri by remember { mutableStateOf<Uri?>(null) }
-    val context = LocalContext.current
+fun UploadNewPhoto(profileViewModel: ProfileViewModel,photoUri: Uri?,onPhotoUriChanged: (Uri?) -> Unit) {
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            photoUri = it
-              profileViewModel.updateUserPhotoUri(it, context)
-            //  profileViewModel.uploadProfileImage(it,context)
+            onPhotoUriChanged(it)
         }
     }
     Box(

@@ -3,6 +3,7 @@ package com.alejandro.helphub.data.source.remote.server.service
 
 import android.util.Log
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
+import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
 import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
 import com.alejandro.helphub.data.source.remote.server.ProfileClient
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
@@ -18,6 +19,16 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
+
+    suspend fun updateProfileImage(id:String,idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part ):ProfileImageResponse{
+        val response= profileClient.updateProfileImageByUserId(id,idUserPart,imageProfilePart)
+        return if (response.isSuccessful) {
+            response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "",statusCode="")
+        } else {
+            // Manejo de errores de la respuesta
+            ProfileImageResponse(message = "Error: ${response.message()}", idImage = "",statusCode="")
+        }
+    }
 
 suspend fun updateProfile(id:String, createProfileDTO: CreateProfileDTO):Response<ProfileResponse>{
     return profileClient.updateProfile(id,createProfileDTO)

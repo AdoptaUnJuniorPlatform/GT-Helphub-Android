@@ -112,7 +112,8 @@ fun ProfileScreen(
                     user = user,
                     profileViewModel,
                     navController,
-                    id
+                    id,
+                    userId
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 ToggleButtons(
@@ -487,7 +488,8 @@ fun UserCard(
     user: UserAuthData,
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
-    id: String?
+    id: String?,
+    userId:String?
 ) {
     val profileImageBytes by profileViewModel.profileImage.collectAsState()
 
@@ -511,7 +513,7 @@ fun UserCard(
                         .align(Alignment.CenterVertically)
                 )
                 IconButton(
-                    onClick = { if(id!=null){ navController.navigate(BottomBarScreen.EditProfileScreen.createRoute(id))}
+                    onClick = { if(id!=null&&userId!=null){ navController.navigate(BottomBarScreen.EditProfileScreen.createRoute(id,userId))}
                         },
                     ) {
                     Box(modifier = Modifier.background(

@@ -1,6 +1,8 @@
 package com.alejandro.helphub.domain.models
 
 data class UserProfileData (
+    val id:String="",
+    val userId:String="",
     val location:String="",
     val description:String="",
     val profileImage: ByteArray?=null,

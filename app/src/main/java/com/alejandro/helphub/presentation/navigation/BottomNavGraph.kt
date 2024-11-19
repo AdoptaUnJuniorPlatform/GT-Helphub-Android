@@ -111,14 +111,17 @@ fun BottomNavGraph(
         }
         composable(BottomBarScreen.EditProfileScreen.route,
             arguments = listOf(
-                navArgument("id"){type = NavType.StringType}
+                navArgument("id"){type = NavType.StringType},
+                navArgument("userId"){type = NavType.StringType}
             )
         ){backStackEntry->
             val id=backStackEntry.arguments?.getString("id")
+            val userId=backStackEntry.arguments?.getString("userId")
             EditProfileScreen(
                 profileViewModel = profileViewModel,
                 navController = navController,
-                id=id
+                id=id,
+                userId=userId
             )
         }
         composable(BottomBarScreen.EditSkillScreen.route,

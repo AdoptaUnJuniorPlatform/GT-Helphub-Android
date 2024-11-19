@@ -7,6 +7,7 @@ import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.UserProfileData
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class ProfileDataMapper @Inject constructor() {
@@ -35,6 +36,14 @@ class ProfileDataMapper @Inject constructor() {
             preferredTimeRange = profileResponse.preferredTimeRange,
             selectedDays = profileResponse.selectedDays,
             interestedSkills = profileResponse.interestedSkills
+        )
+    }
+    fun mapImageToDomain(profileResponse: ProfileResponse):UserProfileData{
+        return UserProfileData(
+            profileImage = profileResponse.profilePicture,
+            userId = profileResponse.userId.id,
+            id = profileResponse.id
+
         )
     }
 }

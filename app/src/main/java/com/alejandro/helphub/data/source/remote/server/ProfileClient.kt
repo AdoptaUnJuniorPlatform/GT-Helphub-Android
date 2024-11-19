@@ -4,6 +4,7 @@ package com.alejandro.helphub.data.source.remote.server
 import com.alejandro.helphub.data.source.remote.server.response.CreateSkillResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
+import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
 import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
@@ -45,4 +46,11 @@ interface ProfileClient {
 
     @PATCH("/api/helphub/profile/{id}")
     suspend fun updateProfile(@Path("id")id:String, @Body createProfileDTO: CreateProfileDTO):Response<ProfileResponse>
+
+    @Multipart
+    @PATCH("/api/helphub/upload-service/profile-image-user/{id}")
+    suspend fun updateProfileImageByUserId(
+        @Path("id")id:String,
+        @Part id_user: MultipartBody.Part,
+        @Part image_profile: MultipartBody.Part):Response<ProfileImageResponse>
 }

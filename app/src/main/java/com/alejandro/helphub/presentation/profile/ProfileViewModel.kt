@@ -4,14 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
 import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
-import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.ProfileListUIState
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
@@ -23,6 +20,7 @@ import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
+import com.alejandro.helphub.domain.usecase.profile.UpdateProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.profile.UpdateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.UploadProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.CreateSkillUseCase
@@ -34,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.isActive
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,7 +53,8 @@ class ProfileViewModel @Inject constructor(
     private val getProfileImageUseCase: GetProfileImageUseCase,
     private val deleteSkillUseCase: DeleteSkillUseCase,
     private val updateSkillUseCase: UpdateSkillUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val updateProfileImageUseCase: UpdateProfileImageUseCase
 ) : ViewModel() {
 
     private val _userProfileData = MutableStateFlow(UserProfileData())
@@ -73,35 +71,129 @@ class ProfileViewModel @Inject constructor(
 
     //<!--------------------New Skill Screen---------------->
 
-    fun resetPostTitle(){
-        _skillData.update{it.copy(title = "")}
+    fun resetPostTitle() {
+        _skillData.update { it.copy(title = "") }
     }
-    fun resetSkillLevel(){
+
+    fun resetSkillLevel() {
         _skillData.update { it.copy(level = "") }
     }
-    fun resetLearningMode(){
+
+    fun resetLearningMode() {
         _skillData.update { it.copy(mode = "") }
     }
-    fun resetSkillDescription(){
+
+    fun resetSkillDescription() {
         _skillData.update { it.copy(description = "") }
     }
-    fun resetSkillCategories(){
+
+    fun resetSkillCategories() {
         _skillData.update { it.copy(category = emptyList()) }
     }
 
     //<!--------------------Update Profile Screen---------------->
 
-    fun updateProfile(id:String,createProfileDTO: CreateProfileDTO){
+    fun updateProfile(id: String, createProfileDTO: CreateProfileDTO) {
         viewModelScope.launch {
-            try{
+            try {
                 // Llama al caso de uso y obtiene los datos actualizados
                 val updatedProfile = updateProfileUseCase(id, createProfileDTO)
 
                 // Actualiza el estado con la nueva información
                 _userProfileData.value = updatedProfile
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 // En caso de error, maneja el estado del mensaje de error
 
+            }
+        }
+    }
+    fun updateUserPhotoUriToUpdate(id:String,userId:String,photoUri: Uri, context: Context) {
+        try {
+            // Convierte el Uri a un ByteArray
+            val byteArray =
+                context.contentResolver.openInputStream(photoUri)?.readBytes()
+
+            // Actualiza el perfil con el nuevo ByteArray de la imagen
+            val updateUserData =
+                userProfileData.value.copy(profileImage = byteArray)
+            _userProfileData.value = updateUserData
+
+            // Sube la imagen
+            updateProfileImage(id,userId,photoUri, context)
+
+            // Navega a la siguiente pantalla
+            navigateToStep3()
+        } catch (e: Exception) {
+            Log.e(
+                "ProfileViewModel",
+                "Error al convertir la imagen a ByteArray: ${e.message}"
+            )
+        }
+    }
+
+    fun updateProfileImage(id: String, userId:String,photoUri: Uri, context: Context) {
+        viewModelScope.launch {
+           //val userId = userAuthDataList.value.firstOrNull()?.id ?: ""
+            //  val imageProfile = userProfileData.value.profileImage
+            Log.d(
+                "ProfileViewModel",
+                "updateProfileImage called with id: $id, userId: $userId, photoUri: $photoUri"
+            )
+            if (userId.isNotEmpty() && photoUri != Uri.EMPTY) {
+
+                try {
+                    // Convierte la URI de la imagen a un archivo de tipo MultipartBody.Part
+                    val imageFile = createTempFileFromUri(photoUri, context)
+                        ?: throw Exception("No se pudo crear el archivo temporal")
+                    val imagePart =
+                        imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    val imageProfilePart = MultipartBody.Part.createFormData(
+                        "image_profile",
+                        imageFile.name,
+                        imagePart
+                    )
+
+                    // Crea el campo para el id_user
+                    val idUserPart =
+                        MultipartBody.Part.createFormData("id_user", userId)
+
+                    // Realiza la llamada al caso de uso
+                    val result =
+                        updateProfileImageUseCase(
+                            id,
+                            idUserPart,
+                            imageProfilePart
+                        )
+
+                    if (result.idImage.isNotEmpty()) {
+                        Log.d(
+                            "ProfileViewModel",
+                            "Imagen actualizada correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
+                        )
+                        _profileImageId.value = result.idImage
+                        saveProfileImageId(context, result.idImage)
+                    } else {
+                        Log.e(
+                            "ProfileViewModel",
+                            "Error al actualizar la imagen: ${result.message}"
+                        )
+                        Log.e(
+                            "ProfileViewModel",
+                            "Error: ID de usuario vacío (userId: $userId) o URI de imagen no válida (photoUri: $photoUri)."
+                        )
+
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error al procesar la imagen: ${e.message}"
+                    )
+                }
+            } else {
+                Log.e(
+                    "ProfileViewModel",
+                    "Error: ID de usuario vacío o URI de imagen no válida."
+                )
             }
         }
     }
@@ -132,7 +224,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
 
 
     //<!--------------------Profile ---------------->
@@ -167,17 +258,20 @@ class ProfileViewModel @Inject constructor(
                 val response = deleteSkillUseCase(skillId)
                 if (response.isSuccessful) {
                     // Si la eliminación es exitosa, actualiza la lista de habilidades
-                    _skillDataList.value = _skillDataList.value.filterNot { it.id == skillId }
-                    _skillUIState.value = SkillUIState.Success(emptyList()) // O la lista actualizada
+                    _skillDataList.value =
+                        _skillDataList.value.filterNot { it.id == skillId }
+                    _skillUIState.value =
+                        SkillUIState.Success(emptyList()) // O la lista actualizada
                 } else {
-                    _skillUIState.value = SkillUIState.Error(500) // Error en la respuesta
+                    _skillUIState.value =
+                        SkillUIState.Error(500) // Error en la respuesta
                 }
             } catch (e: Exception) {
-                _skillUIState.value = SkillUIState.Error(500) // Error desconocido
+                _skillUIState.value =
+                    SkillUIState.Error(500) // Error desconocido
             }
         }
     }
-
 
 
     fun getSkillsByUserId(userId: String) {
@@ -383,13 +477,15 @@ class ProfileViewModel @Inject constructor(
     val isNavigationToStep3Enabled: StateFlow<Boolean> =
         _isNavigationToStep3Enabled.asStateFlow()
 
-    fun updateUserPhotoUri(photoUri: Uri, context: Context) {
+    fun updateUserPhotoUriToUpload(photoUri: Uri, context: Context) {
         try {
             // Convierte el Uri a un ByteArray
-            val byteArray = context.contentResolver.openInputStream(photoUri)?.readBytes()
+            val byteArray =
+                context.contentResolver.openInputStream(photoUri)?.readBytes()
 
             // Actualiza el perfil con el nuevo ByteArray de la imagen
-            val updateUserData = userProfileData.value.copy(profileImage = byteArray)
+            val updateUserData =
+                userProfileData.value.copy(profileImage = byteArray)
             _userProfileData.value = updateUserData
 
             // Sube la imagen
@@ -398,23 +494,31 @@ class ProfileViewModel @Inject constructor(
             // Navega a la siguiente pantalla
             navigateToStep3()
         } catch (e: Exception) {
-            Log.e("ProfileViewModel", "Error al convertir la imagen a ByteArray: ${e.message}")
+            Log.e(
+                "ProfileViewModel",
+                "Error al convertir la imagen a ByteArray: ${e.message}"
+            )
         }
     }
 
     fun createTempFileFromUri(uri: Uri, context: Context): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
-            val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+            val tempFile =
+                File.createTempFile("temp_image", ".jpg", context.cacheDir)
             tempFile.outputStream().use { outputStream ->
                 inputStream?.copyTo(outputStream)
             }
             tempFile
         } catch (e: Exception) {
-            Log.e("UploadProfileImage", "Error creando archivo temporal: ${e.message}")
+            Log.e(
+                "UploadProfileImage",
+                "Error creando archivo temporal: ${e.message}"
+            )
             null
         }
     }
+
     private val _profileImageId = MutableStateFlow<String?>(null)
     val profileImageId: StateFlow<String?> = _profileImageId
 
@@ -477,21 +581,29 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
     private fun saveProfileImageId(context: Context, idImage: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val sharedPreferences = context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
+                val sharedPreferences = context.getSharedPreferences(
+                    "helphub_prefs",
+                    Context.MODE_PRIVATE
+                )
                 sharedPreferences.edit()
                     .putString("profile_image_id", idImage)
                     .apply()
-                Log.d("ProfileViewModel", "ID de la imagen guardado en SharedPreferences: $idImage")
+                Log.d(
+                    "ProfileViewModel",
+                    "ID de la imagen guardado en SharedPreferences: $idImage"
+                )
 
             }
         }
     }
 
     fun getProfileImageId(context: Context): String? {
-        val sharedPreferences = context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("profile_image_id", null)
     }
 
@@ -523,23 +635,37 @@ class ProfileViewModel @Inject constructor(
                             _profileImage.value = byteArray
                             _profileImageBitmap.value = bitmap
 
-                            Log.i("ProfileViewModel", "Imagen recuperada correctamente.")
+                            Log.i(
+                                "ProfileViewModel",
+                                "Imagen recuperada correctamente."
+                            )
                             // Aquí puedes usar el InputStream o guardarlo como un archivo
                         } else {
-                            Log.e("ProfileViewModel", "Error: El flujo de la imagen está vacío")
+                            Log.e(
+                                "ProfileViewModel",
+                                "Error: El flujo de la imagen está vacío"
+                            )
                         }
                     } else {
-                        Log.e("ProfileViewModel", "Error al recuperar la imagen: ${response.code()}")
+                        Log.e(
+                            "ProfileViewModel",
+                            "Error al recuperar la imagen: ${response.code()}"
+                        )
                     }
                 } catch (e: Exception) {
-                    Log.e("ProfileViewModel", "Error al recuperar la imagen: ${e.message}")
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error al recuperar la imagen: ${e.message}"
+                    )
                 }
             } else {
-                Log.i("ProfileViewModel", "ID de imagen no encontrado en SharedPreferences")
+                Log.i(
+                    "ProfileViewModel",
+                    "ID de imagen no encontrado en SharedPreferences"
+                )
             }
         }
     }
-
 
 
     fun navigateToStep3() {

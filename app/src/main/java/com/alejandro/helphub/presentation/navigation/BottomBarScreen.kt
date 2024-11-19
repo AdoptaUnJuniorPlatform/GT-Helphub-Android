@@ -99,10 +99,10 @@ sealed class BottomBarScreen(
     )
     @Serializable
     object EditProfileScreen:BottomBarScreen(
-        route = "EditProfileScreen/{id}",
+        route = "EditProfileScreen/{id}/{userId}",
         title = ""
     ){
-        fun createRoute(id:String)="EditProfileScreen/$id"
+        fun createRoute(id:String,userId: String)="EditProfileScreen/$id/$userId"
     }
     @Serializable
     object EditSkillScreen:BottomBarScreen(

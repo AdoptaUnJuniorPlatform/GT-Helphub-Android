@@ -1,7 +1,6 @@
 package com.alejandro.helphub.presentation.profile
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -192,7 +191,7 @@ fun UploadPhoto(profileViewModel: ProfileViewModel) {
     ) { uri: Uri? ->
         uri?.let {
             photoUri = it
-            profileViewModel.updateUserPhotoUri(it, context)
+            profileViewModel.updateUserPhotoUriToUpload(it, context)
             profileViewModel.uploadProfileImage(it,context)
         }
     }

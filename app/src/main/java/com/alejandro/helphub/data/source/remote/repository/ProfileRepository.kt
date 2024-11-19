@@ -2,6 +2,7 @@ package com.alejandro.helphub.data.source.remote.repository
 
 import android.util.Log
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
+import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
 import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
@@ -10,6 +11,7 @@ import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResp
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
+import com.alejandro.helphub.domain.models.ProfileImageData
 import com.alejandro.helphub.domain.models.SkillData
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -22,6 +24,11 @@ class ProfileRepository @Inject constructor(
     private val profileService: ProfileService,
     private val profileDataMapper: ProfileDataMapper
 ) {
+
+    suspend fun updateProfileImage(id:String,idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
+        return profileService.updateProfileImage(id,idUserPart, imageProfilePart)
+    }
+
 
     suspend fun updateProfile(id: String,createProfileDTO: CreateProfileDTO): UserProfileData {
         val response = profileService.updateProfile(id, createProfileDTO)
