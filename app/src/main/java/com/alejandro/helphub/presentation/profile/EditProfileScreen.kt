@@ -172,9 +172,9 @@ fun EditProfileScreen(
                                 profileViewModel.updateUserPhotoUriToUpdate(id = id,userId=userId, photoUri = uri, context = context)
                                 profileViewModel.updateProfileImage(id = userId, userId=userId,photoUri = uri, context = context)
                             }else{Log.e("EditProfileScreen", "Error: id o userId es nulo")}
-                           // profileViewModel.updateProfile(id, createProfileDTO)
+                           profileViewModel.updateProfile(id, createProfileDTO)
                         }
-                       // navController.navigate(BottomBarScreen.Profile.route)
+                        navController.navigate(BottomBarScreen.Profile.route)
                     },
                     enabled = true
                 )

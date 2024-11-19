@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -57,11 +56,11 @@ fun NewSkillScreen2(
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.go_back),
                 Modifier.clickable { navController.popBackStack() }
             )
             Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "Habilidades", fontSize = 24.sp)
+            Text(text = stringResource(id = R.string.skills), fontSize = 24.sp)
         }
 
     }) { innerPadding ->
@@ -147,11 +146,11 @@ fun SaveButton(
                     .size(16.dp)
                     .offset((-8).dp),
                 tint = Color.Black,
-                contentDescription = stringResource(id = R.string.go_back)
+                contentDescription = stringResource(id = R.string.go_back).uppercase()
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = stringResource(id = R.string.go_back),
+                text = stringResource(id = R.string.go_back).uppercase(),
                 color = Color.DarkGray
             )
         }
@@ -173,10 +172,9 @@ fun SaveButton(
             )
         ) {
             Text(
-                text = "GUARDAR",
+                text = stringResource(id = R.string.save).uppercase(),
                 color = if (enabled) Color.Blue else Color.LightGray
             )
         }
     }
-
 }

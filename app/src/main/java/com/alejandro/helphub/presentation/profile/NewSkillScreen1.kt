@@ -18,21 +18,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Button
@@ -40,7 +33,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -62,7 +54,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -73,20 +64,22 @@ import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 @Composable
 fun NewSkillScreen1(
     profileViewModel: ProfileViewModel,
-    navController:NavHostController
+    navController: NavHostController
 ) {
     var showCard by remember { mutableStateOf(false) }
-//var isNewSkillScreen2 enabled
 
     Scaffold(topBar = {
-        Row(modifier = Modifier
-            .padding(top = 20.dp)
-            .statusBarsPadding()) {
+        Row(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .statusBarsPadding()
+        ) {
             Spacer(modifier = Modifier.width(16.dp))
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription ="",
-                Modifier.clickable { navController.navigate(BottomBarScreen.Profile.route) } )
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                contentDescription = stringResource(id = R.string.go_back),
+                Modifier.clickable { navController.navigate(BottomBarScreen.Profile.route) })
             Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "Habilidades", fontSize = 24.sp)
+            Text(text = stringResource(id = R.string.skills), fontSize = 24.sp)
         }
 
     }) { innerPadding ->
@@ -101,7 +94,6 @@ fun NewSkillScreen1(
                 )
         ) {
             Column(
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .zIndex(0f)
@@ -109,12 +101,21 @@ fun NewSkillScreen1(
                 Spacer(modifier = Modifier.height(30.dp))
                 SkillCounterCard(profileViewModel)
                 Spacer(modifier = Modifier.height(12.dp))
-                Card( colors = CardDefaults.cardColors(containerColor = Color(0x0FA58E8E))){
-                    Column(modifier=Modifier.padding(horizontal = 16.dp)){
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(
+                            0x0FA58E8E
+                        )
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Spacer(modifier = Modifier.height(20.dp))
                         NewSkill()
                         Spacer(modifier = Modifier.height(20.dp))
-                        NewPostTitle(profileViewModel,showCard = showCard,onShowCardChange={showCard=it})
+                        NewPostTitle(
+                            profileViewModel,
+                            showCard = showCard,
+                            onShowCardChange = { showCard = it })
                         Spacer(modifier = Modifier.height(20.dp))
                         NewSkillLevel(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
@@ -123,15 +124,21 @@ fun NewSkillScreen1(
                     }
                 }
                 Spacer(modifier = Modifier.height(100.dp))
-                NextButton(onNextClick = {navController.navigate(BottomBarScreen.NewSkillScreen2.route)}, enabled = true)
+                NextButton(onNextClick = {
+                    navController.navigate(
+                        BottomBarScreen.NewSkillScreen2.route
+                    )
+                }, enabled = true)
             }
         }
     }
 }
 
 @Composable
-fun NextButton( onNextClick: () -> Unit,
-                enabled: Boolean) {
+fun NextButton(
+    onNextClick: () -> Unit,
+    enabled: Boolean
+) {
 
     Row(
         modifier = Modifier
@@ -156,7 +163,7 @@ fun NextButton( onNextClick: () -> Unit,
             )
         ) {
             Text(
-                text = stringResource(id = R.string.next),
+                text = stringResource(id = R.string.next).uppercase(),
                 color = if (enabled) Color.Blue else Color.LightGray
             )
         }
@@ -183,7 +190,7 @@ fun SkillCounterCard(profileViewModel: ProfileViewModel) {
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Ya tienes ${skillDataList.size} habilidades",
+                    text = "${stringResource(id = R.string.you_have)} ${skillDataList.size} ${stringResource(id = R.string._skills)}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF3F6810),
@@ -207,7 +214,7 @@ fun SkillCounterCard(profileViewModel: ProfileViewModel) {
 @Composable
 fun NewSkillMode(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
-    var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
+    var selectedItem by remember { mutableStateOf(skillData.mode) }
     LaunchedEffect(Unit) {
         profileViewModel.resetLearningMode()
     }
@@ -253,8 +260,8 @@ fun NewSkillMode(profileViewModel: ProfileViewModel) {
 
 @Composable
 fun NewSkillLevel(profileViewModel: ProfileViewModel) {
-     val skillData by profileViewModel.skillData.collectAsState()
-    var selectedItem by remember { mutableStateOf(skillData.level ?: "") }
+    val skillData by profileViewModel.skillData.collectAsState()
+    var selectedItem by remember { mutableStateOf(skillData.level) }
     LaunchedEffect(Unit) {
         profileViewModel.resetSkillLevel()
     }
@@ -271,7 +278,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(100.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.basic),
-                selectedItem = skillData.level?:"",
+                selectedItem = skillData.level,
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -281,7 +288,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(100.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.amateur),
-                selectedItem = skillData.level?:"",
+                selectedItem = skillData.level,
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -290,7 +297,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(160.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.advanced),
-                selectedItem = skillData.level?:"",
+                selectedItem = skillData.level,
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -298,7 +305,6 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         }
     }
 }
-
 
 @Composable
 fun NewSkillRadioButton(
@@ -326,7 +332,7 @@ fun NewSkillRadioButton(
             )
         )
         Text(
-            text = text,fontSize=12.sp,
+            text = text, fontSize = 12.sp,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
         )
@@ -348,11 +354,10 @@ fun NewPostTitle(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Column(modifier=Modifier.width(150.dp)){
+        Column(modifier = Modifier.width(150.dp)) {
             Text(
                 text = stringResource(id = R.string.post_title),
                 fontSize = 22.sp,
-              //  modifier = Modifier.align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )
         }
@@ -440,7 +445,7 @@ fun NewPostTitle(
             onValueChange = {
 
                 if (it.length <= 20) {
-                profileViewModel.updatePostTitle(it)
+                    profileViewModel.updatePostTitle(it)
                 }
             },
             placeholder = {
@@ -479,10 +484,14 @@ fun NewPostTitle(
 
 @Composable
 fun NewSkill() {
-    Text(text = "Nueva Habilidad", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    Text(
+        text = stringResource(id = R.string.new_skill),
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold
+    )
     Spacer(modifier = Modifier.height(12.dp))
     Text(
-        text = "Puedes agregar varias habilidades y editarlas más tarde.",
+        text = stringResource(id = R.string.add_skills),
         fontSize = 16.sp
     )
 }

@@ -136,7 +136,6 @@ fun OpeSkillCard(
     navController: NavHostController,
     userAuthDataList: List<UserAuthData>
 ) {
-
 val userAuthData=userAuthDataList.firstOrNull()
     Box(
         modifier = Modifier
@@ -175,7 +174,6 @@ fun DataCard(
                 "skilLDescription: ${skillData.description}, " +
                 "selectedCategory: ${skillData.category},"
     )
-
         Card(
             modifier = Modifier
                 .wrapContentHeight()
@@ -196,7 +194,7 @@ fun DataCard(
                     .padding(horizontal = 15.dp, vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row() {
+                Row{
                     Image(
                         painter = painterResource(id = R.drawable.congrats),
                         contentDescription = stringResource(id = R.string.congratulations),
@@ -296,8 +294,7 @@ fun DataCard(
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = skillData.mode
-                                ?: stringResource(id = R.string.not_available),
+                            text = skillData.mode,
                             fontSize = 16.sp
                         )
                     }
@@ -350,8 +347,7 @@ fun DataCard(
                                 .padding(horizontal = 10.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = userProfileData.preferredTimeRange
-                                    ?: stringResource(id = R.string.not_available),
+                                text = userProfileData.preferredTimeRange,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -402,7 +398,6 @@ fun DataCard(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-
 }
 
 @Composable
@@ -469,7 +464,7 @@ fun CategorySelection(profileViewModel: ProfileViewModel) {
                 onDismissRequest = { profileViewModel.toggleDropdown() }
             ) {
                 categories.forEach { category ->
-                    var isChecked = selectedCategories.contains(category)
+                    val isChecked = selectedCategories.contains(category)
                     DropdownMenuItem(
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -1,6 +1,5 @@
 package com.alejandro.helphub.presentation.profile
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -111,7 +110,7 @@ fun ProfileSetupStep4a(
 @Composable
 fun Mode(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
-    var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
+    var selectedItem by remember { mutableStateOf(skillData.mode) }
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -156,7 +155,7 @@ fun Level(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
     var selectedItem by remember {
         mutableStateOf(
-            skillData.level ?: ""
+            skillData.level
         )
     }
     Row {

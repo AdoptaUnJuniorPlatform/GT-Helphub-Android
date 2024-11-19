@@ -62,7 +62,6 @@ fun ProfileSetupStep2(
     email:String?
 )
 {
-
     LaunchedEffect(email) {
         email?.let {
             profileViewModel.getUserByEmail(email)
@@ -72,8 +71,6 @@ fun ProfileSetupStep2(
     var showDialog by remember { mutableStateOf(false) }
     val isStep3Enabled by profileViewModel.isNavigationToStep3Enabled.collectAsState(
         initial = false)
-
-
 
     Scaffold { innerPadding ->
         Box(
@@ -96,8 +93,7 @@ fun ProfileSetupStep2(
                 StepTwoProgressIndicator()
                 StepTwoTitle()
                 Spacer(modifier = Modifier.height(20.dp))
-                ChooseImage(showDialog = showDialog,
-                    onShowDialogChange = { showDialog = it })
+                ChooseImage(onShowDialogChange = { showDialog = it })
                 Spacer(modifier = Modifier.height(20.dp))
                 UploadPhoto(profileViewModel)
                 Examples()
@@ -291,7 +287,7 @@ fun Examples() {
 }
 
 @Composable
-fun ChooseImage(showDialog: Boolean, onShowDialogChange: (Boolean) -> Unit) {
+fun ChooseImage(onShowDialogChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

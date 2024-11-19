@@ -1,6 +1,5 @@
 package com.alejandro.helphub.presentation.profile
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -150,7 +149,7 @@ fun DaySelection(profileViewModel: ProfileViewModel) {
                 stringResource(id = R.string.sunday),
             )
             daysOfWeek.forEach { day ->
-                var isChecked = selectedDays.contains(day)
+                val isChecked = selectedDays.contains(day)
                 DropdownMenuItem(
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -206,7 +205,7 @@ fun RadioButton(
 @Composable
 fun AvailabilityOptions(profileViewModel: ProfileViewModel) {
     val userProfileData by profileViewModel.userProfileData.collectAsState()
-    var selectedItem by remember { mutableStateOf(userProfileData.preferredTimeRange ?: "") }
+    var selectedItem by remember { mutableStateOf(userProfileData.preferredTimeRange) }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             Text(

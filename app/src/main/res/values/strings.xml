@@ -68,8 +68,8 @@
     <string name="accept_everything">Aceptar todo</string>
 
     <!--Profile Setup Step 1 -->
-    <string name="go_back">ATRÁS</string>
-    <string name="next">SIGUIENTE</string>
+    <string name="go_back">Atrás</string>
+    <string name="next">Siguiente</string>
     <string name="location">Ubicación</string>
     <string name="postal_code">Código Postal (CP)</string>
     <string name="postal_code_content_description">Código postal</string>
@@ -227,7 +227,20 @@
     <string name="my_profile">Mi Perfil</string>
     <string name="preferred_time_range">Disponibilidad horaria</string>
     <string name="description">Descripción</string>
+    <string name="pfp_content_description">Foto de perfil de usuario</string>
+    <string name="star_content_description">Icono de estrella</string>
+    <string name="edit_content_description">Editar</string>
     <string name="interested_skills">Habilidades que me interesan</string>
-
-
+    <string name="lore_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="monday_letter">L</string>
+    <string name="tuesday_letter">M</string>
+    <string name="wednesday_letter">X</string>
+    <string name="thursday_letter">J</string>
+    <string name="friday_letter">V</string>
+    <string name="saturday_letter">S</string>
+    <string name="sunday_letter">D</string>
+    <string name="save">Guardar</string>
+    <!--New Skills Screen -->
+<string name="you_have">Ya tienes</string>
+    <string name="_skills"> habilidades.</string>
 </resources>

@@ -89,15 +89,14 @@ fun ProfileScreen(
             profileViewModel.getProfileImage(context)
         }
     }
-    val skillId=profileViewModel.getSkillId()
-    Log.e("ProfileScreen", "Skill ID: $skillId")
+    val skillId = profileViewModel.getSkillId()
+    Log.d("ProfileScreen", "Skill ID: $skillId")
     val userProfile = profileViewModel.userProfileData.collectAsState().value
     val user = profileViewModel.userAuthData.collectAsState().value
-    Log.e(
+    Log.d(
         "ProfileScreen",
         "Comprobado valores ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}"
     )
-
     Scaffold {
         Box(
             modifier = Modifier
@@ -129,7 +128,6 @@ fun ToggleButtons(
     profileViewModel: ProfileViewModel, navController: NavHostController
 ) {
     val selectedOption = rememberSaveable { mutableStateOf("skills") }
-
     Box(
         modifier = Modifier
             .fillMaxWidth(0.6f)
@@ -151,14 +149,12 @@ fun ToggleButtons(
                     fontSize = 12.sp
                 )
             }
-
             VerticalDivider(
                 color = Color.LightGray,
                 modifier = Modifier
                     .width(1.dp)
                     .height(40.dp)
             )
-
             Box(modifier = Modifier
                 .weight(1f)
                 .clickable { selectedOption.value = "reviews" }
@@ -177,7 +173,6 @@ fun ToggleButtons(
         }
     }
     Spacer(modifier = Modifier.height(16.dp))
-
     if (selectedOption.value == "skills") {
         UserSkills(
             profileViewModel, navController
@@ -186,7 +181,6 @@ fun ToggleButtons(
         UserReviews()
     }
 }
-
 
 @Composable
 fun UserSkills(
@@ -224,9 +218,8 @@ fun UserSkills(
     SkillsRow(
         userSkillsList = skillDataList,
         profileViewModel = profileViewModel,
-        navController=navController
+        navController = navController
     )
-
 }
 
 @Composable
@@ -246,12 +239,16 @@ fun SkillsRow(
                 SkillCard(
                     userSkills = userSkills,
                     profileViewModel = profileViewModel,
-                    navController,
                     onEditClick = { skillId ->
-                        Log.d("SkillsRow", "Edit button clicked. Skill ID: $skillId")
-
-                        // Pasamos el skillId al hacer clic en editar
-                        navController.navigate(BottomBarScreen.EditSkillScreen.createRoute(skillId))
+                        Log.d(
+                            "SkillsRow",
+                            "Edit button clicked. Skill ID: $skillId"
+                        )
+                        navController.navigate(
+                            BottomBarScreen.EditSkillScreen.createRoute(
+                                skillId
+                            )
+                        )
                     }
                 )
             }
@@ -259,13 +256,11 @@ fun SkillsRow(
     }
 }
 
-
 @Composable
 fun SkillCard(
     userSkills: SkillData,
     profileViewModel: ProfileViewModel,
-    navController: NavHostController,
-    onEditClick:(String)->Unit
+    onEditClick: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -278,14 +273,12 @@ fun SkillCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = userSkills.title, fontWeight = FontWeight.Bold,
-
                 fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(5.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(5.dp))
             Row {
-
                 listOf(
                     stringResource(id = R.string.basic), stringResource(
                         id = R.string.amateur
@@ -317,7 +310,6 @@ fun SkillCard(
             Box(modifier = Modifier.height(60.dp)) {
                 Text(
                     text = userSkills.description, fontSize = 15.sp
-
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -335,13 +327,10 @@ fun SkillCard(
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Button(
-
                     onClick = {
                         profileViewModel.selectSkillForEdit(userSkills)
                         onEditClick(userSkills.id)
-
-                       // navController.navigate(BottomBarScreen.EditSkillScreen.route)
-                              },
+                    },
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue, contentColor = Color.White
@@ -350,11 +339,8 @@ fun SkillCard(
                     Text(text = stringResource(id = R.string.edit).uppercase())
                 }
             }
-
         }
-
     }
-
 }
 
 @Composable
@@ -399,19 +385,19 @@ fun ReviewCard() {
                     .padding(end = 16.dp)
             ) {
                 Text(
-                    text = "Las clases de pintura al óleo han sido maravillosas. ¡Además, intercambiar habilidades de cocina vendiaor sskdfjs  skdfjhsd kfhsd ksdjfh kdsjfhsk ksdjfh kjdfh ksskdjfh kjds fhsd kjsdfh kjsdfh sdkjdfh ksdhk kjsdfh ksdhfk.",
+                    text = stringResource(id = R.string.lore_ipsum), //Aquí irá la reseña del usuario
                     fontSize = 14.sp,
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 Image(
-                    painter = painterResource(id = R.drawable.pfp_laura),
-                    contentDescription = ""
+                    painter = painterResource(id = R.drawable.pfp_laura), //Aqui irá la foto de perfil del usuario que reseña
+                    contentDescription = stringResource(id = R.string.pfp_content_description)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Laura García",
+                    text = "Laura García", //Aqui irá el nombre del usuario que hace la review
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -431,7 +417,7 @@ fun UserRating() {
                 .background(MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "5",
+                text = "5", //Aqui irá la valoración del usuario
                 color = Color.White,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -445,41 +431,24 @@ fun UserRating() {
                 fontWeight = FontWeight.Bold
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color.Yellow,
-                    modifier = Modifier.size(12.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color.Yellow,
-                    modifier = Modifier.size(12.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color.Yellow,
-                    modifier = Modifier.size(12.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color.Yellow,
-                    modifier = Modifier.size(12.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color.Yellow,
-                    modifier = Modifier.size(12.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(text = "Excelente", fontSize = 16.sp)
+                Star()
+                Star()
+                Star()
+                Star()
+                Star()
             }
         }
     }
+}
+
+@Composable
+fun Star() {
+    Icon(
+        imageVector = Icons.Default.Star,
+        contentDescription = stringResource(id = R.string.star_content_description),
+        tint = Color.Yellow,
+        modifier = Modifier.size(12.dp)
+    )
 }
 
 @Composable
@@ -489,7 +458,7 @@ fun UserCard(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
     id: String?,
-    userId:String?
+    userId: String?
 ) {
     val profileImageBytes by profileViewModel.profileImage.collectAsState()
 
@@ -513,17 +482,28 @@ fun UserCard(
                         .align(Alignment.CenterVertically)
                 )
                 IconButton(
-                    onClick = { if(id!=null&&userId!=null){ navController.navigate(BottomBarScreen.EditProfileScreen.createRoute(id,userId))}
-                        },
+                    onClick = {
+                        if (id != null && userId != null) {
+                            navController.navigate(
+                                BottomBarScreen.EditProfileScreen.createRoute(
+                                    id,
+                                    userId
+                                )
+                            )
+                        }
+                    },
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color.Blue,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .size(30.dp), contentAlignment = Alignment.Center
                     ) {
-                    Box(modifier = Modifier.background(
-                        color = Color.Blue,
-                        shape = RoundedCornerShape(6.dp)
-
-                    ).size(30.dp), contentAlignment = Alignment.Center){
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "",
+                            contentDescription = stringResource(id = R.string.edit_content_description),
                             tint = Color.White,
                         )
                     }
@@ -537,11 +517,9 @@ fun UserCard(
                             "UserCard",
                             "ByteArray size: ${profileImageBytes?.size ?: 0}"
                         )
-
                         val painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(it) // Convertimos el ByteArray a InputStream
-                                // .apply { crossfade(true)} // Habilitamos la animación de transición }
+                                .data(it) // Convertimos el ByteArray a Input stream
                                 .build()
                         )
                         val painterState = painter.state
@@ -559,10 +537,9 @@ fun UserCard(
                                 .clip(
                                     RoundedCornerShape(12.dp)
                                 ),
-                            contentScale = ContentScale.Crop // Para ajustar la imagen
+                            contentScale = ContentScale.Crop
                         )
-                    } ?: run {
-                        // Si no hay imagen, mostramos un placeholder (opcional)
+                    } ?: run { // Si no hay imagen, mostramos un placeholder
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -634,7 +611,6 @@ fun UserCard(
     }
 }
 
-
 @Composable
 fun CategoriesOfInterest(userProfile: UserProfileData) {
     Row {
@@ -658,16 +634,23 @@ fun CategoriesOfInterest(userProfile: UserProfileData) {
 @Composable
 fun DayBox(userProfile: UserProfileData) {
     val dayMapping = mapOf(
-        "Lunes" to "L",
-        "Martes" to "M",
-        "Miércoles" to "X",
-        "Jueves" to "J",
-        "Viernes" to "V",
-        "Sábado" to "S",
-        "Domingo" to "D"
+        stringResource(id = R.string.monday) to stringResource(id = R.string.monday_letter),
+        stringResource(id = R.string.tuesday) to stringResource(id = R.string.tuesday_letter),
+        stringResource(id = R.string.wednesday) to stringResource(id = R.string.wednesday_letter),
+        stringResource(id = R.string.thursday) to stringResource(id = R.string.thursday_letter),
+        stringResource(id = R.string.friday) to stringResource(id = R.string.friday_letter),
+        stringResource(id = R.string.saturday) to stringResource(id = R.string.saturday_letter),
+        stringResource(id = R.string.sunday) to stringResource(id = R.string.sunday_letter)
     )
-    val dayInitials = listOf("L", "M", "X", "J", "V", "S", "D")
-
+    val dayInitials = listOf(
+        stringResource(id = R.string.monday_letter),
+        stringResource(id = R.string.tuesday_letter),
+        stringResource(id = R.string.wednesday_letter),
+        stringResource(id = R.string.thursday_letter),
+        stringResource(id = R.string.friday_letter),
+        stringResource(id = R.string.saturday_letter),
+        stringResource(id = R.string.sunday_letter)
+    )
     Row {
         dayInitials.forEach { day ->
             Box(

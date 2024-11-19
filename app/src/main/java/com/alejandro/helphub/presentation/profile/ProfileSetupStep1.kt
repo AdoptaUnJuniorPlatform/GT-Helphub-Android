@@ -1,6 +1,5 @@
 package com.alejandro.helphub.presentation.profile
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -45,9 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
-import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
-import kotlinx.serialization.json.Json
 
 @Composable
 fun ProfileSetupStep1(
@@ -254,7 +251,6 @@ fun TextBox(profileViewModel: ProfileViewModel) {
 @Composable
 fun Description(text:String) {
     Text(
-        //text = stringResource(id = R.string.user_description_title),
         text=text,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,

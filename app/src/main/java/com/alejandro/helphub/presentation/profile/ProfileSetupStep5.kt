@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.alejandro.helphub.R
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
+import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 
 @Composable
 fun ProfileSetupStep5(
@@ -73,7 +74,7 @@ fun ProfileSetupStep5(
                     onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4b.createRoute(email!!)) },
                     onNextClick = {
                         profileViewModel.createProfile()
-                        navController.navigate("Home") },
+                        navController.navigate(RootNavGraphObjects.Home.route) },
                     enabled = isHomeEnabled
                 )
             }

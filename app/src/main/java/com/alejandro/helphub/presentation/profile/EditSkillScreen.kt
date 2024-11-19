@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -55,11 +54,9 @@ import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 fun EditSkillScreen(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
-    skillId:String?
+    skillId: String?
 ) {
-
     val listState = rememberLazyListState()
-///???
     var skillTitle by remember { mutableStateOf("") }
     var skillDescription by remember { mutableStateOf("") }
     var skillLevel by remember { mutableStateOf("") }
@@ -67,12 +64,11 @@ fun EditSkillScreen(
     val skillData by profileViewModel.skillData.collectAsState()
 
     LaunchedEffect(skillData) {
-        skillTitle=skillData.title
-        skillDescription=skillData.description
-        skillLevel=skillData.level
-        skillMode=skillData.mode
+        skillTitle = skillData.title
+        skillDescription = skillData.description
+        skillLevel = skillData.level
+        skillMode = skillData.mode
     }
-
     Scaffold(topBar = {
         Row(
             modifier = Modifier
@@ -82,21 +78,19 @@ fun EditSkillScreen(
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.go_back),
                 Modifier.clickable {
                     navController.navigate(BottomBarScreen.Profile.route)
                 }
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
-                text = "Habilidades",
+                text = stringResource(id = R.string.skills),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
         }
-
     }) { innerPadding ->
-
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -110,7 +104,6 @@ fun EditSkillScreen(
                 )
         ) {
             item { Spacer(modifier = Modifier.height(30.dp)) }
-
             item {
                 Card(
                     colors = CardDefaults.cardColors(
@@ -132,19 +125,21 @@ fun EditSkillScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         EditMode(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-
-                        EditSkillDescription(profileViewModel, description = skillDescription, onDescriptionChange = {newDescription->skillDescription=newDescription})
+                        EditSkillDescription(
+                            profileViewModel,
+                            description = skillDescription,
+                            onDescriptionChange = { newDescription ->
+                                skillDescription = newDescription
+                            })
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .zIndex(1f)  // Add zIndex here instead
+                                .zIndex(1f)
                         ) {
                             EditCategory(profileViewModel)
                         }
-
-
                     }
                 }
 
@@ -162,7 +157,10 @@ fun EditSkillScreen(
                             mode = skillMode
                         )
                         if (skillId != null) {
-                            profileViewModel.updateSkill(skillId,createSkillDTO)
+                            profileViewModel.updateSkill(
+                                skillId,
+                                createSkillDTO
+                            )
                         }
                         navController.navigate(BottomBarScreen.Profile.route)
                     },
@@ -179,7 +177,6 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
     val expanded by profileViewModel.expanded.collectAsState()
     val selectedCategories by profileViewModel.selectedCategories.collectAsState()
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,7 +190,6 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-
         ) {
             Column {
                 Surface(
@@ -246,7 +242,6 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                         ) {
-
                             val categories = listOf(
                                 stringResource(id = R.string.animals),
                                 stringResource(id = R.string.help),
@@ -260,7 +255,7 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
                                 stringResource(id = R.string.others)
                             )
                             categories.forEach { category ->
-                                var isChecked =
+                                val isChecked =
                                     selectedCategories.contains(category)
                                 DropdownMenuItem(
                                     text = {
@@ -289,7 +284,11 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
 }
 
 @Composable
-fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,onDescriptionChange:(String)->Unit) {
+fun EditSkillDescription(
+    profileViewModel: ProfileViewModel,
+    description: String,
+    onDescriptionChange: (String) -> Unit
+) {
     val skillData by profileViewModel.skillData.collectAsState()
     Row(
         modifier = Modifier
@@ -312,7 +311,6 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
             //skillData.description,
             onValueChange = {
                 if (it.length <= 90) {
-                   // onDescriptionChange(it) //actualizaciondellamada
                     profileViewModel.updateSkillDescription(it)
                 }
             },
@@ -340,7 +338,6 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
         Text(
             text = stringResource(
                 id = R.string.character_limit_ninety,
-                //description.length
                 skillData.description.length
             ),
             fontSize = 18.sp,
@@ -356,7 +353,7 @@ fun EditSkillDescription(profileViewModel: ProfileViewModel,description:String,o
 @Composable
 fun EditMode(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
- //   var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
+
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -372,8 +369,6 @@ fun EditMode(profileViewModel: ProfileViewModel) {
                 text = stringResource(id = R.string.online),
                 selectedItem = skillData.mode,
                 onItemSelected = {
-                   // selectedItem = it
-                   // onModeChange(it)
                     profileViewModel.updateLearningMode(it)
                 },
             )
@@ -383,8 +378,6 @@ fun EditMode(profileViewModel: ProfileViewModel) {
                 text = stringResource(id = R.string.face_to_face),
                 selectedItem = skillData.mode,
                 onItemSelected = {
-                    // selectedItem = it
-                   // onModeChange(it)
                     profileViewModel.updateLearningMode(it)
                 })
         }
@@ -399,11 +392,10 @@ fun EditMode(profileViewModel: ProfileViewModel) {
 }
 
 @Composable
-fun EditLevel(profileViewModel: ProfileViewModel
-            //  onLevelChange:(String)->Unit
+fun EditLevel(
+    profileViewModel: ProfileViewModel
 ) {
     val skillData by profileViewModel.skillData.collectAsState()
-   // var selectedItem by remember { mutableStateOf(skillData.level ?: "") }
 
     Row {
         Text(
@@ -420,8 +412,6 @@ fun EditLevel(profileViewModel: ProfileViewModel
                 text = stringResource(id = R.string.basic),
                 selectedItem = skillData.level,
                 onItemSelected = {
-                    //selectedItem = it
-                  //  onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 },
             )
@@ -432,8 +422,6 @@ fun EditLevel(profileViewModel: ProfileViewModel
                 selectedItem =
                 skillData.level,
                 onItemSelected = {
-                    //selectedItem = it
-                   // onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 })
         }
@@ -442,8 +430,6 @@ fun EditLevel(profileViewModel: ProfileViewModel
                 text = stringResource(id = R.string.advanced),
                 selectedItem = skillData.level,
                 onItemSelected = {
-                    //selectedItem = it
-                  //  onLevelChange(it)
                     profileViewModel.updateSelectedLevel(it)
                 })
         }
@@ -500,8 +486,7 @@ fun EditPostTitle(profileViewModel: ProfileViewModel) {
         Text(
             text = stringResource(
                 id = R.string.character_limit_twenty,
-              skillData.title.length
-
+                skillData.title.length
             ), fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
