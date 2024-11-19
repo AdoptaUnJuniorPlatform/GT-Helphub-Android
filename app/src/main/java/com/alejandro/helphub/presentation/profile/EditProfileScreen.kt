@@ -76,8 +76,9 @@ fun EditProfileScreen(
     val userProfileData by profileViewModel.userProfileData.collectAsState()
     val context = LocalContext.current
     var photoUri by remember { mutableStateOf<Uri?>(null) }
-    Log.d("EditProfileScreen", "comprobando si id esta vacio $id")
+
     Log.d("EditProfileScreen", "comprobando si id esta vacio $userId")
+
     Scaffold(topBar = {
         Row(
             modifier = Modifier
@@ -87,19 +88,17 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.go_back),
                 Modifier.clickable { navController.navigate(BottomBarScreen.Profile.route) }
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
-                text = "Editar Perfil",
+                text = stringResource(id = R.string.edit_profile),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
         }
-
     }) { innerPadding ->
-
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -113,7 +112,6 @@ fun EditProfileScreen(
                 )
         ) {
             item { Spacer(modifier = Modifier.height(30.dp)) }
-
             item {
                 Card(
                     colors = CardDefaults.cardColors(
@@ -136,26 +134,26 @@ fun EditProfileScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         ProfilePicTitle()
                         Spacer(modifier = Modifier.height(10.dp))
-                        UploadNewPhoto(profileViewModel,photoUri=photoUri, onPhotoUriChanged = {newUri->photoUri=newUri})
+                        UploadNewPhoto(photoUri=photoUri, onPhotoUriChanged = {newUri->photoUri=newUri})
                         Spacer(modifier = Modifier.height(10.dp))
                         AvailabilityOptions(profileViewModel)
                         Spacer(modifier = Modifier.height(10.dp))
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .zIndex(1f)  // Add zIndex here instead
+                                .zIndex(1f)
                         ) {
                             UpdateDaySelection(profileViewModel = profileViewModel)
                         }
+                        Spacer(modifier = Modifier.height(20.dp))
                         UpdatePopularCategories(
                             profileViewModel = profileViewModel,
-                            text = "¿Qué te gustaría aprender?"
+                            text = stringResource(id = R.string.learning_question)
                         )
-
                     }
                 }
-
             }
+            item { Spacer(modifier = Modifier.height(40.dp)) }
             item {
                 UpdateButton(
                     onNextClick = {
@@ -166,7 +164,6 @@ fun EditProfileScreen(
                             selectedDays = userProfileData.selectedDays,
                             preferredTimeRange = userProfileData.preferredTimeRange
                         )
-
                         if (id != null) {
                             if(photoUri!=null&&userId!=null)photoUri?.let { uri ->
                                 profileViewModel.updateUserPhotoUriToUpdate(id = id,userId=userId, photoUri = uri, context = context)
@@ -188,8 +185,6 @@ fun UpdatePopularCategories(
     profileViewModel: ProfileViewModel,
     text: String
 ) {
-
-
     val categories = listOf(
         stringResource(id = R.string.animals),
         stringResource(id = R.string.help),
@@ -210,7 +205,6 @@ fun UpdatePopularCategories(
     )
     val userProfileData by profileViewModel.userProfileData.collectAsState()
 
-    val selectedCategories by profileViewModel.selectedCategoriesOfInterest.collectAsState()
     Column {
         Row(
             modifier = Modifier
@@ -237,7 +231,7 @@ fun UpdatePopularCategories(
         }
         Spacer(modifier = Modifier.height(8.dp))
         chunkedCategories.forEach { categoryRow ->
-            Row() {
+            Row{
                 categoryRow.forEach { category ->
                     val isSelected =
                         userProfileData.interestedSkills.contains(category)
@@ -285,7 +279,7 @@ fun UpdateButton(
             )
         ) {
             Text(
-                text = "GUARDAR",
+                text = stringResource(id = R.string.save).uppercase(),
                 color = if (enabled) Color.Blue else Color.LightGray
             )
         }
@@ -293,7 +287,7 @@ fun UpdateButton(
 }
 
 @Composable
-fun UploadNewPhoto(profileViewModel: ProfileViewModel,photoUri: Uri?,onPhotoUriChanged: (Uri?) -> Unit) {
+fun UploadNewPhoto(photoUri: Uri?,onPhotoUriChanged: (Uri?) -> Unit) {
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -367,7 +361,7 @@ fun UploadNewPhoto(profileViewModel: ProfileViewModel,photoUri: Uri?,onPhotoUriC
 @Composable
 fun ProfilePicTitle() {
     Text(
-        text = "Foto de perfil",
+        text = stringResource(id = R.string.pfp),
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
@@ -387,22 +381,17 @@ fun UpdateDaySelection(profileViewModel: ProfileViewModel) {
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
-
         Spacer(modifier = Modifier.height(10.dp))
-
         Text(
             text = stringResource(id = R.string.select_more_days),
             color = Color.Gray,
             fontSize = 18.sp
         )
-
         Spacer(modifier = Modifier.height(10.dp))
-
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column {
-                // Dropdown trigger
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -498,5 +487,3 @@ fun UpdateDaySelection(profileViewModel: ProfileViewModel) {
         }
     }
 }
-
-
