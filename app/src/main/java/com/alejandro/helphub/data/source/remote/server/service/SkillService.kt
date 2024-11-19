@@ -3,7 +3,6 @@ package com.alejandro.helphub.data.source.remote.server.service
 import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
 import com.alejandro.helphub.data.source.remote.server.SkillClient
 import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
-import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response

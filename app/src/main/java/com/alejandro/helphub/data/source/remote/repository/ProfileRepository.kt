@@ -2,17 +2,12 @@ package com.alejandro.helphub.data.source.remote.repository
 
 import android.util.Log
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
-import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
-import com.alejandro.helphub.data.source.remote.dto.skill.CreateSkillDTO
-import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.data.source.remote.mappers.ProfileDataMapper
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
-import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.service.ProfileService
-import com.alejandro.helphub.domain.models.ProfileImageData
-import com.alejandro.helphub.domain.models.SkillData
+import com.alejandro.helphub.domain.models.UserProfileData
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody

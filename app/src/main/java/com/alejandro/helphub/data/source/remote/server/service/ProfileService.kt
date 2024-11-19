@@ -3,13 +3,10 @@ package com.alejandro.helphub.data.source.remote.server.service
 
 import android.util.Log
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
-import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
-import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
 import com.alejandro.helphub.data.source.remote.server.ProfileClient
 import com.alejandro.helphub.data.source.remote.server.response.ApiResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
-import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

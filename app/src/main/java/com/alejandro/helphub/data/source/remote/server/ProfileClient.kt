@@ -1,14 +1,10 @@
 package com.alejandro.helphub.data.source.remote.server
 
 
-import com.alejandro.helphub.data.source.remote.server.response.CreateSkillResponse
-import com.alejandro.helphub.data.source.remote.server.response.SearchResponse
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
-import com.alejandro.helphub.data.source.remote.dto.profile.UpdatePfpDTO
-import com.alejandro.helphub.data.source.remote.dto.profile.UploadProfileImageDTO
+import com.alejandro.helphub.data.source.remote.server.response.CreateSkillResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileImageResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
-import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response

@@ -1,7 +1,5 @@
 package com.alejandro.helphub.data.source.remote.server.service
 
-import com.alejandro.helphub.data.source.remote.dto.auth.SendTwofaDTO
-import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import com.alejandro.helphub.data.source.remote.server.TwofaClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

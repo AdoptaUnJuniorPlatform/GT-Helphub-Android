@@ -5,7 +5,6 @@ import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import com.alejandro.helphub.data.source.remote.server.AuthClient
 import com.alejandro.helphub.data.source.remote.server.response.LoginResponse
 import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
-import com.alejandro.helphub.data.source.remote.server.response.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -48,7 +47,7 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
         }
     }
 
-    suspend fun requestResetPassword(loginDTO: com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO): Result<String> {
+    suspend fun requestResetPassword(loginDTO:LoginDTO): Result<String> {
         return withContext(Dispatchers.IO) {
             val response = authClient.resetPasswordRequest(loginDTO)
             if (response.isSuccessful) {
