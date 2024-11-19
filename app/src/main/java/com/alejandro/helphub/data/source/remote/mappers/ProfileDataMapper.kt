@@ -15,16 +15,9 @@ class ProfileDataMapper @Inject constructor() {
         return CreateProfileDTO(
             location = userProfileData.location,
             description = userProfileData.description,
-            //profilePicture = userProfileData.profilePicture,
             preferredTimeRange = userProfileData.preferredTimeRange,
             selectedDays = userProfileData.selectedDays,
             interestedSkills = userProfileData.interestedSkills
-        )
-    }
-
-    fun uploadProfileImageDTO(profileImageData: ProfileImageData): UploadProfileImageDTO {
-        return UploadProfileImageDTO(
-            profileImage = profileImageData.imageProfile
         )
     }
 
@@ -36,14 +29,6 @@ class ProfileDataMapper @Inject constructor() {
             preferredTimeRange = profileResponse.preferredTimeRange,
             selectedDays = profileResponse.selectedDays,
             interestedSkills = profileResponse.interestedSkills
-        )
-    }
-    fun mapImageToDomain(profileResponse: ProfileResponse):UserProfileData{
-        return UserProfileData(
-            profileImage = profileResponse.profilePicture,
-            userId = profileResponse.userId.id,
-            id = profileResponse.id
-
         )
     }
 }

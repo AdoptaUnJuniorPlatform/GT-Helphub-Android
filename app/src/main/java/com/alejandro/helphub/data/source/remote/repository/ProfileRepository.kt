@@ -29,7 +29,6 @@ class ProfileRepository @Inject constructor(
         return profileService.updateProfileImage(id,idUserPart, imageProfilePart)
     }
 
-
     suspend fun updateProfile(id: String,createProfileDTO: CreateProfileDTO): UserProfileData {
         val response = profileService.updateProfile(id, createProfileDTO)
         if (response.isSuccessful) {
@@ -40,7 +39,6 @@ class ProfileRepository @Inject constructor(
         }
     }
 
-
     suspend fun getProfileImageByImageId(id: String): Response<ResponseBody> {
         return try {
             val response = profileService.getProfileImageByImageId(id)
@@ -49,7 +47,7 @@ class ProfileRepository @Inject constructor(
             if (response.isSuccessful) {
                 response
             } else {
-                // Si la respuesta no es exitosa, devolvemos un Response con un error
+
                 Log.e("ProfileRepository", "Failed with error code: ${response.code()}")
                 Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
                     null
@@ -58,7 +56,7 @@ class ProfileRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("ProfileRepository", "Error fetching profile image: ${e.message}")
-            // Retornamos un Response con error si ocurre una excepción
+
             Response.error(500,
                 (e.message ?: "Unknown error").toResponseBody(null)
             )
@@ -72,11 +70,9 @@ class ProfileRepository @Inject constructor(
         return try {
             val response = profileService.getProfileById(id)
 
-            // Retornamos directamente el Response de Retrofit
             if (response.isSuccessful) {
                 response
             } else {
-                // Si la respuesta no es exitosa, devolvemos un Response con un error
                 Log.e("ProfileRepository", "Failed with error code: ${response.code()}")
                 Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
                     null
@@ -85,13 +81,11 @@ class ProfileRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("ProfileRepository", "Error fetching profile: ${e.message}")
-            // Retornamos un Response con error si ocurre una excepción
             Response.error(500,
                 (e.message ?: "Unknown error").toResponseBody(null)
             )
         }
     }
-
 
     suspend fun createProfile(userProfileData: UserProfileData): String {
         val createProfileDTO =
@@ -99,23 +93,7 @@ class ProfileRepository @Inject constructor(
         return profileService.createProfile(createProfileDTO)
     }
 
-
-    suspend fun getUserInfo(email: String): Result<SearchResponse> {
-        return try {
-            val response = profileService.getUserInfo(email)
-            if (response.isSuccessful) {
-                response.body()?.let { Result.success(it) } ?: Result.failure(
-                    Exception("Response body is null")
-                )
-            } else {
-                Result.failure(Exception("Failed with error code : ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
     suspend fun fetchProfile(): ApiResponse<ProfileResponse> {
         return profileService.fetchProfile()
     }
-
 }

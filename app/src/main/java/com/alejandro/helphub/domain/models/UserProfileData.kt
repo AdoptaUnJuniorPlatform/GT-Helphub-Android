@@ -6,7 +6,6 @@ data class UserProfileData (
     val location:String="",
     val description:String="",
     val profileImage: ByteArray?=null,
-    //val photoBitmap: GlyphRenderData.Bitmap? = null,
     val preferredTimeRange:String="",
     val selectedDays:List<String> = emptyList(),
     val interestedSkills:List<String> =emptyList()

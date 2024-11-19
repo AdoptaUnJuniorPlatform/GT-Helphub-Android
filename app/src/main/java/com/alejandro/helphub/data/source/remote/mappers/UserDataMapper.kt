@@ -7,8 +7,8 @@ import com.alejandro.helphub.data.source.remote.dto.auth.UserDTO
 import javax.inject.Inject
 
 class UserDataMapper @Inject constructor() {
-    fun toUserDTO(userAuthData: UserAuthData): com.alejandro.helphub.data.source.remote.dto.auth.UserDTO {
-        return com.alejandro.helphub.data.source.remote.dto.auth.UserDTO(
+    fun toUserDTO(userAuthData: UserAuthData): UserDTO {
+        return UserDTO(
             email = userAuthData.email,
             twoFa = userAuthData.twoFa,
             password = userAuthData.password,
@@ -21,23 +21,20 @@ class UserDataMapper @Inject constructor() {
             role = userAuthData.role
         )
     }
-
-    fun toLoginDTO(userAuthData: UserAuthData): com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO {
-        return com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO(
+    fun toLoginDTO(userAuthData: UserAuthData):LoginDTO {
+        return LoginDTO(
             email = userAuthData.email,
             password = userAuthData.password
         )
     }
-
-    fun requestResetPassword(userAuthData: UserAuthData): com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO {
-        return com.alejandro.helphub.data.source.remote.dto.auth.LoginDTO(
+    fun requestResetPassword(userAuthData: UserAuthData): LoginDTO {
+        return LoginDTO(
             email = userAuthData.email,
             password = userAuthData.password
         )
     }
-
-    fun sendTwofaResetPasswordandLogin(userAuthData: UserAuthData): com.alejandro.helphub.data.source.remote.dto.auth.SendTwofaDTO {
-        return com.alejandro.helphub.data.source.remote.dto.auth.SendTwofaDTO(
+    fun sendTwofaResetPasswordandLogin(userAuthData: UserAuthData):SendTwofaDTO {
+        return SendTwofaDTO(
             email = userAuthData.email,
             twoFa = userAuthData.twoFa
         )

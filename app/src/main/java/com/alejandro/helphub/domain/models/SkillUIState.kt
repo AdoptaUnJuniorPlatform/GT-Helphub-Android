@@ -1,6 +1,5 @@
 package com.alejandro.helphub.domain.models
 
-import com.alejandro.helphub.data.source.remote.server.response.ProfileResponse
 import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 
 sealed class SkillUIState {

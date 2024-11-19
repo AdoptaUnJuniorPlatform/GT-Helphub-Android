@@ -1,6 +1,5 @@
 package com.alejandro.helphub.domain.models
 
-import android.os.Parcelable
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -25,7 +25,6 @@ class ProfileService @Inject constructor(private val profileClient: ProfileClien
         return if (response.isSuccessful) {
             response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "",statusCode="")
         } else {
-            // Manejo de errores de la respuesta
             ProfileImageResponse(message = "Error: ${response.message()}", idImage = "",statusCode="")
         }
     }
@@ -42,19 +41,12 @@ suspend fun updateProfile(id:String, createProfileDTO: CreateProfileDTO):Respons
         return if (response.isSuccessful) {
             response.body() ?: ProfileImageResponse(message = "Unknown error", idImage = "",statusCode="")
         } else {
-            // Manejo de errores de la respuesta
             ProfileImageResponse(message = "Error: ${response.message()}", idImage = "",statusCode="")
         }
     }
 
     suspend fun getProfileById(id: String):Response<ProfileResponse>{
         return profileClient.getProfileById(id)
-    }
-
-
-
-    suspend fun getUserInfo(email: String): Response<SearchResponse> {
-        return profileClient.getUserInfo(email)
     }
 
     suspend fun createProfile(createProfileDTO: CreateProfileDTO): String {
@@ -109,5 +101,4 @@ suspend fun updateProfile(id:String, createProfileDTO: CreateProfileDTO):Respons
             )
         }
     }
-
 }

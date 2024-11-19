@@ -21,8 +21,6 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ProfileClient {
-    @GET("/api/helphub/user/{email}")
-    suspend fun getUserInfo(@Path("email") email: String): Response<SearchResponse>
 
     @POST("/api/helphub/profile")
     suspend fun createProfile(@Body createProfileDTO: CreateProfileDTO): Response<CreateSkillResponse>
