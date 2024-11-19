@@ -423,6 +423,9 @@ fun CategorySelection(profileViewModel: ProfileViewModel) {
         stringResource(id = R.string.private_lessons),
         stringResource(id = R.string.others)
     )
+    LaunchedEffect(Unit) {
+        profileViewModel.resetSkillCategories()
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -497,6 +500,9 @@ fun SkillTextBox(
     onShowCardChange: (Boolean) -> Unit
 ) {
     val skillData by profileViewModel.skillData.collectAsState()
+    LaunchedEffect(Unit) {
+        profileViewModel.resetSkillDescription()
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -34,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.isActive
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -67,6 +69,26 @@ class ProfileViewModel @Inject constructor(
     private val _skillDataList =
         MutableStateFlow<List<SkillData>>(emptyList()) // Esto crea una lista vacía de SkillData
     val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
+
+
+    //<!--------------------New Skill Screen---------------->
+
+    fun resetPostTitle(){
+        _skillData.update{it.copy(title = "")}
+    }
+    fun resetSkillLevel(){
+        _skillData.update { it.copy(level = "") }
+    }
+    fun resetLearningMode(){
+        _skillData.update { it.copy(mode = "") }
+    }
+    fun resetSkillDescription(){
+        _skillData.update { it.copy(description = "") }
+    }
+    fun resetSkillCategories(){
+        _skillData.update { it.copy(category = emptyList()) }
+    }
+
     //<!--------------------Update Profile Screen---------------->
 
     fun updateProfile(id:String,createProfileDTO: CreateProfileDTO){

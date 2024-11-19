@@ -48,6 +48,7 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -131,6 +132,7 @@ fun NewSkillScreen1(
 @Composable
 fun NextButton( onNextClick: () -> Unit,
                 enabled: Boolean) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -206,6 +208,9 @@ fun SkillCounterCard(profileViewModel: ProfileViewModel) {
 fun NewSkillMode(profileViewModel: ProfileViewModel) {
     val skillData by profileViewModel.skillData.collectAsState()
     var selectedItem by remember { mutableStateOf(skillData.mode ?: "") }
+    LaunchedEffect(Unit) {
+        profileViewModel.resetLearningMode()
+    }
     Row {
         Text(
             text = stringResource(id = R.string.mode),
@@ -219,7 +224,7 @@ fun NewSkillMode(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.weight(1f)) {
             RadioButton(
                 text = stringResource(id = R.string.online),
-                selectedItem = selectedItem,
+                selectedItem = skillData.mode,
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateLearningMode(it)
@@ -229,7 +234,7 @@ fun NewSkillMode(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.weight(1.3f)) {
             RadioButton(
                 text = stringResource(id = R.string.face_to_face),
-                selectedItem = selectedItem,
+                selectedItem = skillData.mode,
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateLearningMode(it)
@@ -250,6 +255,9 @@ fun NewSkillMode(profileViewModel: ProfileViewModel) {
 fun NewSkillLevel(profileViewModel: ProfileViewModel) {
      val skillData by profileViewModel.skillData.collectAsState()
     var selectedItem by remember { mutableStateOf(skillData.level ?: "") }
+    LaunchedEffect(Unit) {
+        profileViewModel.resetSkillLevel()
+    }
     Row {
         Text(
             text = stringResource(id = R.string.level),
@@ -263,7 +271,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(100.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.basic),
-                selectedItem = selectedItem,
+                selectedItem = skillData.level?:"",
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -273,7 +281,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(100.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.amateur),
-                selectedItem = selectedItem,
+                selectedItem = skillData.level?:"",
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -282,7 +290,7 @@ fun NewSkillLevel(profileViewModel: ProfileViewModel) {
         Box(modifier = Modifier.width(160.dp)) {
             NewSkillRadioButton(
                 text = stringResource(id = R.string.advanced),
-                selectedItem = selectedItem,
+                selectedItem = skillData.level?:"",
                 onItemSelected = {
                     selectedItem = it
                     profileViewModel.updateSelectedLevel(it)
@@ -298,6 +306,7 @@ fun NewSkillRadioButton(
     selectedItem: String,
     onItemSelected: (String) -> Unit
 ) {
+
     Row(
         modifier = Modifier
             .width(170.dp)
@@ -332,6 +341,9 @@ fun NewPostTitle(
     onShowCardChange: (Boolean) -> Unit
 ) {
     val skillData by profileViewModel.skillData.collectAsState()
+    LaunchedEffect(Unit) {
+        profileViewModel.resetPostTitle()
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
