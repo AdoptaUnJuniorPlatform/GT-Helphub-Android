@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.alejandro.helphub.R
 import com.alejandro.helphub.data.source.remote.dto.profile.CreateProfileDTO
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
@@ -134,7 +135,10 @@ fun EditProfileScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         ProfilePicTitle()
                         Spacer(modifier = Modifier.height(10.dp))
-                        UploadNewPhoto(photoUri=photoUri, onPhotoUriChanged = {newUri->photoUri=newUri})
+                        UploadNewPhoto(
+                            profileViewModel,
+                            photoUri = photoUri,
+                            onPhotoUriChanged = { newUri -> photoUri = newUri })
                         Spacer(modifier = Modifier.height(10.dp))
                         AvailabilityOptions(profileViewModel)
                         Spacer(modifier = Modifier.height(10.dp))
@@ -165,11 +169,26 @@ fun EditProfileScreen(
                             preferredTimeRange = userProfileData.preferredTimeRange
                         )
                         if (id != null) {
-                            if(photoUri!=null&&userId!=null)photoUri?.let { uri ->
-                                profileViewModel.updateUserPhotoUriToUpdate(id = id,userId=userId, photoUri = uri, context = context)
-                                profileViewModel.updateProfileImage(id = userId, userId=userId,photoUri = uri, context = context)
-                            }else{Log.e("EditProfileScreen", "Error: id o userId es nulo")}
-                           profileViewModel.updateProfile(id, createProfileDTO)
+                            if (photoUri != null && userId != null) photoUri?.let { uri ->
+                                profileViewModel.updateUserPhotoUriToUpdate(
+                                    id = id,
+                                    userId = userId,
+                                    photoUri = uri,
+                                    context = context
+                                )
+                                profileViewModel.updateProfileImage(
+                                    id = userId,
+                                    userId = userId,
+                                    photoUri = uri,
+                                    context = context
+                                )
+                            } else {
+                                Log.e(
+                                    "EditProfileScreen",
+                                    "Error: id o userId es nulo"
+                                )
+                            }
+                            profileViewModel.updateProfile(id, createProfileDTO)
                         }
                         navController.navigate(BottomBarScreen.Profile.route)
                     },
@@ -231,7 +250,7 @@ fun UpdatePopularCategories(
         }
         Spacer(modifier = Modifier.height(8.dp))
         chunkedCategories.forEach { categoryRow ->
-            Row{
+            Row {
                 categoryRow.forEach { category ->
                     val isSelected =
                         userProfileData.interestedSkills.contains(category)
@@ -287,7 +306,12 @@ fun UpdateButton(
 }
 
 @Composable
-fun UploadNewPhoto(photoUri: Uri?,onPhotoUriChanged: (Uri?) -> Unit) {
+fun UploadNewPhoto(
+    profileViewModel: ProfileViewModel,
+    photoUri: Uri?,
+    onPhotoUriChanged: (Uri?) -> Unit
+) {
+    val profileImageBytes by profileViewModel.profileImage.collectAsState()
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -303,18 +327,21 @@ fun UploadNewPhoto(photoUri: Uri?,onPhotoUriChanged: (Uri?) -> Unit) {
             Box(modifier = Modifier.size(100.dp)) {
                 Image(
                     painter =
-                    if (photoUri != null) {
-                        rememberAsyncImagePainter(photoUri)
-                    } else {
-                        painterResource(id = R.drawable.default_profile_icon)
-                    },
+                    when {
+                        photoUri != null -> rememberAsyncImagePainter(photoUri)
+                        profileImageBytes != null -> rememberAsyncImagePainter(
+                            ImageRequest.Builder(LocalContext.current)
+                                .data(profileImageBytes)
+                                .build()
+                        )
+                        else -> painterResource(id = R.drawable.default_profile_icon)},
                     contentDescription = stringResource(id = R.string.user_photo_content_description),
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
                         .background(Color.Gray)
                         .then(
-                            if (photoUri == null) Modifier.border(
+                            if (photoUri == null&&profileImageBytes==null) Modifier.border(
                                 12.dp,
                                 Color.Gray,
                                 CircleShape
