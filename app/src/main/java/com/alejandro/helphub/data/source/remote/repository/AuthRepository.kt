@@ -15,6 +15,11 @@ class AuthRepository @Inject constructor(
     private val userDataMapper:UserDataMapper,
     private val tokenRepository:TokenRepository
 ) {
+
+    suspend fun getAllUsers(): Response<List<ProfileResponse>>{
+        return authService.getAllUsers()
+    }
+
     suspend fun getUserByEmail(email: String): Response<List<ProfileResponse>>{
     return try {
         val response = authService.getUserByEmail(email)

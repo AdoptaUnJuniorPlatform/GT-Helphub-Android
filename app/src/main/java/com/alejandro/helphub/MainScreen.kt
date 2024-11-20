@@ -1,7 +1,6 @@
 package com.alejandro.helphub
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,14 +45,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.alejandro.helphub.presentation.profile.ProfileViewModel
 import com.alejandro.helphub.domain.models.ProfileUIState
-import com.alejandro.helphub.presentation.auth.AuthViewModel
+import com.alejandro.helphub.presentation.home.HomeViewModel
 import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 import com.alejandro.helphub.presentation.navigation.BottomNavGraph
 import com.alejandro.helphub.presentation.navigation.NavigationViewModel
 import com.alejandro.helphub.presentation.navigation.RootNavGraphObjects
 import com.alejandro.helphub.presentation.navigation.bottomBarIcons
+import com.alejandro.helphub.presentation.profile.ProfileViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -62,6 +61,7 @@ fun MainScreen(
     navigationViewModel: NavigationViewModel,
     navController: NavHostController,
     profileViewModel: ProfileViewModel,
+    homeViewModel: HomeViewModel,
     email:String?
 ) {
     var showPopUp by remember { mutableStateOf(false) }
@@ -83,7 +83,6 @@ fun MainScreen(
         {
             BottomBar(
                 navController =navController,
-                //bottomNavController,
                 navigationViewModel=navigationViewModel,
                 onShowPopUp = { showPopUp = true }
             )
@@ -91,7 +90,7 @@ fun MainScreen(
     }) { paddingValues ->
         Box(modifier = Modifier.padding(PaddingValues())) {
            BottomNavGraph(
-                navController = navController, profileViewModel = profileViewModel
+                navController = navController, profileViewModel = profileViewModel, homeViewModel = homeViewModel
             )
 
             if (showPopUp) {
@@ -108,7 +107,6 @@ fun MainScreen(
         }
     }
 }
-
 
 @Composable
 fun BottomBar(
@@ -141,11 +139,9 @@ fun BottomBar(
                     onShowPopUp()
                 }
             }
-
             is ProfileUIState.Error -> {
                 onShowPopUp()
             }
-
             else -> {} // Handle other states if needed
         }
     }
@@ -243,7 +239,6 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Completa los detalles y recibe recomendaciones personalizadas.",
-
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier
@@ -256,7 +251,6 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
                 )
                 Text(
                     text = "Añade al menos una habilidad para iniciar tu experiencia de intercambio.",
-
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier
@@ -281,5 +275,3 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
         }
     }
 }
-
-

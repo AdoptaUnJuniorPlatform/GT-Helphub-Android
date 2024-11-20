@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.alejandro.helphub.presentation.chat.ChatScreen
 import com.alejandro.helphub.presentation.home.Home
+import com.alejandro.helphub.presentation.home.HomeViewModel
 import com.alejandro.helphub.presentation.notifications.NotificationsScreen
 import com.alejandro.helphub.presentation.profile.EditProfileScreen
 import com.alejandro.helphub.presentation.profile.EditSkillScreen
@@ -26,14 +27,15 @@ import com.alejandro.helphub.presentation.profile.ProfileViewModel
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    homeViewModel: HomeViewModel
 ) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Home.route
     ) {
         composable(BottomBarScreen.Home.route) {
-            Home(navController = navController)
+            Home(homeViewModel)
         }
         composable(BottomBarScreen.Chat.route) {
             ChatScreen()

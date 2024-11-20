@@ -28,4 +28,7 @@ interface AuthClient {
 
     @GET("/api/helphub/user/{email}")
     suspend fun getUserByEmail(@Path("email")email:String):Response<List<ProfileResponse>>
+
+    @GET("api/helphub/user/allUsers")
+    suspend fun getAllUsers():Response<List<ProfileResponse>>
 }
