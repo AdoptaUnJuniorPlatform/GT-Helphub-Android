@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -57,18 +58,8 @@ fun EditSkillScreen(
     skillId: String?
 ) {
     val listState = rememberLazyListState()
-    var skillTitle by remember { mutableStateOf("") }
-    var skillDescription by remember { mutableStateOf("") }
-    var skillLevel by remember { mutableStateOf("") }
-    var skillMode by remember { mutableStateOf("") }
     val skillData by profileViewModel.skillData.collectAsState()
 
-    LaunchedEffect(skillData) {
-        skillTitle = skillData.title
-        skillDescription = skillData.description
-        skillLevel = skillData.level
-        skillMode = skillData.mode
-    }
     Scaffold(topBar = {
         Row(
             modifier = Modifier
@@ -125,14 +116,8 @@ fun EditSkillScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         EditMode(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-                        EditSkillDescription(
-                            profileViewModel,
-                            description = skillDescription,
-                            onDescriptionChange = { newDescription ->
-                                skillDescription = newDescription
-                            })
+                        EditSkillDescription(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -142,7 +127,6 @@ fun EditSkillScreen(
                         }
                     }
                 }
-
             }
             item {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -151,10 +135,11 @@ fun EditSkillScreen(
                 UpdateButton(
                     onNextClick = {
                         val createSkillDTO = CreateSkillDTO(
-                            title = skillTitle,
-                            description = skillDescription,
-                            level = skillLevel,
-                            mode = skillMode
+                            title = skillData.title,
+                            description = skillData.description,
+                            level = skillData.level,
+                            mode = skillData.mode,
+                            category = skillData.category
                         )
                         if (skillId != null) {
                             profileViewModel.updateSkill(
@@ -255,25 +240,35 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
                                 stringResource(id = R.string.others)
                             )
                             categories.forEach { category ->
-                                val isChecked =
-                                    selectedCategories.contains(category)
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Checkbox(
-                                                checked = isChecked,
-                                                onCheckedChange = {
-                                                    profileViewModel.onCategoryChecked(
-                                                        category,
-                                                        it
-                                                    )
-                                                }
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        profileViewModel.onCategoryChecked(
+                                            category,
+                                            !selectedCategories.contains(
+                                                category
                                             )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(text = category)
+                                        )
+                                    }
+                                    .padding(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    ), verticalAlignment = CenterVertically
+
+                                ) {
+                                    Checkbox(
+                                        checked = selectedCategories.contains(category),
+                                        onCheckedChange = { checked ->
+                                            profileViewModel.onCategoryChecked(
+                                                category,
+                                                checked
+                                            )
                                         }
-                                    },
-                                    onClick = { })
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(text = category)
+                                }
+
                             }
                         }
                     }
@@ -286,8 +281,6 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
 @Composable
 fun EditSkillDescription(
     profileViewModel: ProfileViewModel,
-    description: String,
-    onDescriptionChange: (String) -> Unit
 ) {
     val skillData by profileViewModel.skillData.collectAsState()
     Row(
