@@ -1,12 +1,8 @@
 package com.alejandro.helphub.presentation.home
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alejandro.helphub.data.source.remote.server.response.SkillResponse
 import com.alejandro.helphub.domain.models.ProfileListUIState
 import com.alejandro.helphub.domain.models.ProfileUIState
 import com.alejandro.helphub.domain.models.SkillData
@@ -15,10 +11,8 @@ import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
 import com.alejandro.helphub.domain.usecase.auth.GetAllUsersUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
-import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByUserIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileImageByUserIdUseCase
-import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.skill.GetSkillsByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +26,6 @@ class HomeViewModel @Inject constructor(
     private val getAllUsersUseCase: GetAllUsersUseCase, //For future needs
     private val getSkillsByCategoryUseCase: GetSkillsByCategoryUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
-    private val getProfileImageUseCase: GetProfileImageUseCase,
     private val getProfileByUserIdUseCase: GetProfileByUserIdUseCase,
     private val getProfileImageByUserIdUseCase: GetProfileImageByUserIdUseCase
 
@@ -49,6 +42,11 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow<List<SkillData>>(emptyList())
     val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
 
+    private val _profileDataList =
+        MutableStateFlow<List<UserProfileData>>(emptyList())
+    val profileDataList: StateFlow<List<UserProfileData>> =
+        _profileDataList.asStateFlow()
+
     private val _skillUIState = MutableStateFlow<SkillUIState>(
         SkillUIState.Idle
     )
@@ -58,7 +56,6 @@ class HomeViewModel @Inject constructor(
     )
     val profileUIState: StateFlow<ProfileUIState> =
         _profileUIState.asStateFlow()
-
 
     private val _profileListUIState = MutableStateFlow<ProfileListUIState>(
         ProfileListUIState.Idle
@@ -71,119 +68,15 @@ class HomeViewModel @Inject constructor(
     val userListState: StateFlow<List<UserAuthData>> =
         _userListState.asStateFlow()
 
-    private val _profileImage = MutableStateFlow<ByteArray?>(null)
-    val profileImage: StateFlow<ByteArray?> = _profileImage
+    private val _profileListState =
+        MutableStateFlow<List<UserProfileData>>(emptyList())
+    val profileListState: StateFlow<List<UserProfileData>> =
+        _profileListState.asStateFlow()
 
-    private val _profileImageBitmap = MutableStateFlow<Bitmap?>(null)
-    val profileImageBitmap: StateFlow<Bitmap?> = _profileImageBitmap
-
-    fun getUserById(userId: String) {
-        viewModelScope.launch {
-            _profileUIState.value = ProfileUIState.Loading
-            Log.d(
-                "ProfileViewModel",
-                "Fetching user for userId: $userId"
-            )
-
-            try {
-                val response = getUserByIdUseCase(userId)
-                // Verifica si la respuesta fue exitosa
-                if (response.isSuccessful) {
-                    response.body()?.let { userResponse ->
-                        _userAuthData.value = UserAuthData(
-                            nameUser = userResponse.nameUser,
-                            surnameUser = userResponse.surnameUser,
-                            id = userResponse.id
-                        )
-                        _profileUIState.value =
-                            ProfileUIState.Success(userResponse)
-                        Log.i(
-                            "ProfileViewModel",
-                            "User loaded successfully $userResponse"
-                        )
-                        getProfileByUserId(userResponse.id)
-                        Log.d(
-                            "ProfileViewModel",
-                            "getProfileById called with id: ${userResponse.id}"
-                        )
-                    } ?: run {
-                        _profileUIState.value =
-                            ProfileUIState.ProfileNotFound
-                        Log.w("ProfileViewModel", "User not found")
-                    }
-                } else {
-                    _profileUIState.value =
-                        ProfileUIState.Error(500) // Or another error code
-                    Log.e(
-                        "ProfileViewModel",
-                        "Error: ${response.code()}"
-                    )
-                }
-            } catch (e: Exception) {
-                _profileUIState.value =
-                    ProfileUIState.Error(500) // Or another error code
-                Log.e(
-                    "ProfileViewModel",
-                    "Error loading user: ${e.message}"
-                )
-            }
-        }
-    }
-
-    fun getProfileByUserId(id: String) {
-        viewModelScope.launch {
-            _profileUIState.value = ProfileUIState.Loading
-            Log.d(
-                "ProfileViewModel",
-                "Fetching profile for userId: $id"
-            )
-
-            try {
-                val response = getProfileByUserIdUseCase(id)
-
-                // Verifica si la respuesta fue exitosa
-                if (response.isSuccessful) {
-                    response.body()?.let { profileResponse ->
-
-                        _userProfileData.value = UserProfileData(
-                            profileImage = profileResponse.profilePicture,
-                            description = profileResponse.description,
-                            location = profileResponse.location,
-                            preferredTimeRange = profileResponse.preferredTimeRange,
-                            interestedSkills = profileResponse.interestedSkills,
-                            selectedDays = profileResponse.selectedDays
-
-                        )
-
-                        _profileUIState.value =
-                            ProfileUIState.Success(profileResponse)
-                        Log.i(
-                            "ProfileViewModel",
-                            "Profile loaded successfully $profileResponse"
-                        )
-                    } ?: run {
-                        _profileUIState.value =
-                            ProfileUIState.ProfileNotFound
-                        Log.w("ProfileViewModel", "Profile not found")
-                    }
-                } else {
-                    _profileUIState.value =
-                        ProfileUIState.Error(500) // Or another error code
-                    Log.e(
-                        "ProfileViewModel",
-                        "Error: ${response.code()}"
-                    )
-                }
-            } catch (e: Exception) {
-                _profileUIState.value =
-                    ProfileUIState.Error(500) // Or another error code
-                Log.e(
-                    "ProfileViewModel",
-                    "Error loading profile: ${e.message}"
-                )
-            }
-        }
-    }
+    private val _profileImageMap =
+        MutableStateFlow<Map<String, ByteArray?>>(emptyMap())
+    val profileImageMap: StateFlow<Map<String, ByteArray?>> =
+        _profileImageMap.asStateFlow()
 
     fun getSkillsForAllCategories(categories: List<String>) {
         viewModelScope.launch {
@@ -192,6 +85,9 @@ class HomeViewModel @Inject constructor(
 
             val allSkills = mutableListOf<SkillData>()
             val userIds = mutableSetOf<String>()
+            val userList = mutableListOf<UserAuthData>()
+            val profileList = mutableListOf<UserProfileData>()
+            val newProfileImageMap = mutableMapOf<String, ByteArray?>()
             categories.forEach { category ->
                 try {
                     val response = getSkillsByCategoryUseCase(category)
@@ -236,61 +132,57 @@ class HomeViewModel @Inject constructor(
             val distinctUserIds = userIds.toList()
             Log.d("HomeViewModel", "User IDs: $distinctUserIds")
             distinctUserIds.forEach { userId ->
-                launch {
-                    getUserById(userId)
-                    getProfileByUserId(userId)
-                    getProfileImageByUserId(userId)
-                }
-            }
-        }
-    }
-
-    fun getBitmapFromByteArray(byteArray: ByteArray?): Bitmap? {
-        return byteArray?.let {
-            BitmapFactory.decodeByteArray(it, 0, it.size)
-        }
-    }
-
-    fun getProfileImageByUserId(id: String) {
-        viewModelScope.launch {
-            try {
-                val response = getProfileImageByUserIdUseCase(id)
-                if (response.isSuccessful) {
-                    // Si la respuesta es exitosa, obtenemos el flujo de la imagen
-                    val inputStream = response.body()?.byteStream()
-
-                    if (inputStream != null) {
-                        // Aquí puedes convertir el InputStream en una imagen para mostrarla en la UI
-                        // Por ejemplo, guardarla en un archivo o mostrarla con una librería como Glide
-                        val byteArray = inputStream.readBytes()
-                        val bitmap = getBitmapFromByteArray(byteArray)
-
-                        _profileImage.value = byteArray
-                        _profileImageBitmap.value = bitmap
-
-                        Log.i(
-                            "ProfileViewModel",
-                            "Imagen recuperada correctamente."
-                        )
-                        // Aquí puedes usar el InputStream o guardarlo como un archivo
-                    } else {
-                        Log.e(
-                            "ProfileViewModel",
-                            "Error: El flujo de la imagen está vacío"
-                        )
+                try {
+                    val userResponse = getUserByIdUseCase(userId)
+                    if (userResponse.isSuccessful) {
+                        userResponse.body()?.let { user ->
+                            userList.add(
+                                UserAuthData(
+                                    nameUser = user.nameUser,
+                                    surnameUser = user.surnameUser,
+                                    id = user.id
+                                )
+                            )
+                        }
                     }
-                } else {
+                    val profileResponse = getProfileByUserIdUseCase(userId)
+                    if (profileResponse.isSuccessful) {
+                        profileResponse.body()?.let { profile ->
+                            profileList.add(
+                                UserProfileData(
+                                    userId = profile.userId.id,
+                                    profileImage = profile.profilePicture,
+                                    description = profile.description,
+                                    location = profile.location,
+                                    preferredTimeRange = profile.preferredTimeRange,
+                                    interestedSkills = profile.interestedSkills,
+                                    selectedDays = profile.selectedDays
+                                )
+                            )
+                        }
+                    }
+                    val imageResponse = getProfileImageByUserIdUseCase(userId)
+                    if (imageResponse.isSuccessful) {
+                        imageResponse.body()?.byteStream()?.let { inputStream ->
+                            val byteArray = inputStream.readBytes()
+                            newProfileImageMap[userId] = byteArray
+                        }
+                    }
+                } catch (e: Exception) {
                     Log.e(
-                        "ProfileViewModel",
-                        "Error al recuperar la imagen: ${response.code()}"
+                        "HomeViewModel",
+                        "Error fetching user or profile: ${e.message}"
                     )
                 }
-            } catch (e: Exception) {
-                Log.e(
-                    "ProfileViewModel",
-                    "Error al recuperar la imagen: ${e.message}"
-                )
             }
+            _profileImageMap.value = newProfileImageMap
+            _skillDataList.value = allSkills.distinctBy { it.id }
+            _userListState.value = userList
+            _profileListState.value = profileList
+            Log.d(
+                "HomeViewModel",
+                "Final profileList size: ${profileList.size}"
+            )
         }
     }
 }

@@ -45,9 +45,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.alejandro.helphub.R
@@ -134,13 +141,17 @@ fun RecommendedUsers(homeViewModel: HomeViewModel) {
 @Composable
 fun HomeCards(homeViewModel: HomeViewModel) {
     val listState = rememberLazyListState()
-    val userAuthData by homeViewModel.userAuthData.collectAsState()
-    val userProfileData by homeViewModel.userProfileData.collectAsState()
     val skillDataList: List<SkillData> by homeViewModel.skillDataList.collectAsState()
-    val profileImageBytes by homeViewModel.profileImage.collectAsState()
+    val profileImageMap by homeViewModel.profileImageMap.collectAsState()
+    val userListState by homeViewModel.userListState.collectAsState()
+    val profileListState by homeViewModel.profileListState.collectAsState()
 
     LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
-        items(skillDataList) { skillDataList ->
+        items(skillDataList) { skillData ->
+            val userAuthData = userListState.find { it.id == skillData.userId }
+            val userProfileData =
+                profileListState.find { it.userId == skillData.userId }
+            val userProfileImage = profileImageMap[skillData.userId]
             Card(
                 modifier = Modifier
                     .width(300.dp)
@@ -153,15 +164,14 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     Box(modifier = Modifier.size(50.dp)) {
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                ImageRequest.Builder(LocalContext.current)
-                                    .data(profileImageBytes)
-                                    .build()
-                            ),
-                            //rememberAsyncImagePainter(userProfileData.profileImage),
-                            //painterResource(id = R.drawable.pfp_laura)
-                            contentDescription = stringResource(id = R.string.user_photo_content_description),
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(userProfileImage)
+                                .crossfade(true)
+                                .build(),
+                            error = painterResource(id = R.drawable.default_profile_icon),
+                            contentDescription =
+                            stringResource(id = R.string.user_photo_content_description),
                             modifier = Modifier
                                 .size(124.dp)
                                 .clip(CircleShape)
@@ -171,7 +181,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = "${userAuthData.nameUser} ${userAuthData.surnameUser}",
+                        text = "${userAuthData?.nameUser} ${userAuthData?.surnameUser}",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -180,19 +190,19 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = skillDataList.title, fontSize = 20.sp
+                        text = skillData.title, fontSize = 20.sp
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    if (skillDataList.mode == "Presencial") {
+                    if (skillData.mode == "Presencial") {
                         Text(
-                            text = userProfileData.location,
+                            text = userProfileData?.location ?: "",
                             fontSize = 16.sp
                         )
                     } else {
                         Text(
-                            text = skillDataList.mode,
+                            text = skillData.mode,
                             fontSize = 16.sp
                         )
                     }
@@ -209,7 +219,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = if (level == skillDataList.level
+                                    color = if (level == skillData.level
                                     )
                                         Color.Blue else Color(0x0FA58E8E),
                                     shape = RoundedCornerShape(12.dp)
@@ -224,7 +234,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                             Text(
                                 text = level,
                                 fontSize = 14.sp,
-                                color = if (level == skillDataList.level
+                                color = if (level == skillData.level
                                 ) Color.White else Color.Black
                             )
                         }
@@ -250,7 +260,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                             .padding(horizontal = 16.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = userProfileData.preferredTimeRange,
+                            text = userProfileData?.preferredTimeRange ?: "",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -263,7 +273,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                         .padding(horizontal = 16.dp)
                 ) {
                     Text(
-                        text = skillDataList.description,
+                        text = skillData.description,
                         fontSize = 14.sp
                     )
                 }
@@ -271,7 +281,7 @@ fun HomeCards(homeViewModel: HomeViewModel) {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-                    skillDataList.category.forEach { category ->
+                    skillData.category.forEach { category ->
                         Box(
                             modifier = Modifier
                                 .border(
