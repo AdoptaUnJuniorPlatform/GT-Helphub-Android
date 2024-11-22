@@ -17,6 +17,13 @@ import javax.inject.Inject
 
 class ProfileService @Inject constructor(private val profileClient: ProfileClient) {
 
+    suspend fun getProfileImageByUserId(id: String):Response<ResponseBody>{
+        return profileClient.getProfileImageByUserId(id)
+    }
+    suspend fun getProfileByUserId(id: String):Response<ProfileResponse>{
+        return profileClient.getProfileByUserId(id)
+    }
+
     suspend fun updateProfileImage(id:String,idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part ):ProfileImageResponse{
         val response= profileClient.updateProfileImageByUserId(id,idUserPart,imageProfilePart)
         return if (response.isSuccessful) {

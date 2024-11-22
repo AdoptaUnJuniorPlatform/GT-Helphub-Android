@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +37,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +57,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.alejandro.helphub.R
+import com.alejandro.helphub.domain.models.SkillData
+import com.alejandro.helphub.domain.models.UserAuthData
 
 
 @Composable
@@ -70,11 +77,10 @@ fun Home(homeViewModel: HomeViewModel) {
         stringResource(id = R.string.private_lessons),
         stringResource(id = R.string.others)
     )
-LaunchedEffect(Unit) {
 
-    homeViewModel.getSkillsForAllCategories(categories)
-}
-
+    LaunchedEffect(Unit) {
+        homeViewModel.getSkillsForAllCategories(categories)
+    }
 
     Scaffold(topBar = {
         Row(
@@ -112,180 +118,182 @@ LaunchedEffect(Unit) {
                 Spacer(modifier = Modifier.height(20.dp))
                 HomeTitle()
                 Spacer(modifier = Modifier.height(20.dp))
-                RecommendedUsers()
-
+                RecommendedUsers(homeViewModel)
             }
         }
     }
 }
 
 @Composable
-fun RecommendedUsers() {
+fun RecommendedUsers(homeViewModel: HomeViewModel) {
     Text(text = "Recomendados", fontSize = 24.sp)
-    Spacer(modifier = Modifier.height(10.dp))
-    HomeCards()
+    Spacer(modifier = Modifier.height(30.dp))
+    HomeCards(homeViewModel)
 }
 
 @Composable
-fun HomeCards() {
+fun HomeCards(homeViewModel: HomeViewModel) {
     val listState = rememberLazyListState()
-LazyRow(state=listState, modifier = Modifier.fillMaxWidth()){
-    //Crear lazy row para tarjetas
-}
+    val userAuthData by homeViewModel.userAuthData.collectAsState()
+    val userProfileData by homeViewModel.userProfileData.collectAsState()
+    val skillDataList: List<SkillData> by homeViewModel.skillDataList.collectAsState()
+    val profileImageBytes by homeViewModel.profileImage.collectAsState()
 
-    Card(
-        modifier = Modifier.width(300.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFBFBFF)
-        ),
-        elevation = CardDefaults.cardElevation(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 24.dp)) {
-            Box(modifier = Modifier.size(50.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.pfp_laura),
-                    //rememberAsyncImagePainter(userProfileData.profileImage),
-                    contentDescription = stringResource(id = R.string.user_photo_content_description),
-                    modifier = Modifier
-                        .size(124.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                text = "Juanita Pérez",
-                //"${userAuthData.nameUser} ${userAuthData.surnameUser}",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = "Cuidado de animales"
-                //   skillData.title
-                , fontSize = 24.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            //Aqui hay que poner online o location
-            Text(
-                text = "14005"
-                // userProfileData.location
-                ,
-                fontSize = 16.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = "Medio"
-                // skillData.mode
-                ,
-                fontSize = 16.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(12.dp))
-        Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-            listOf(
-                stringResource(id = R.string.basic), stringResource(
-                    id = R.string.amateur
-                ), stringResource(id = R.string.advanced)
-            ).forEach { level ->
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = if (level == "Medio"
-                            // skillData.level
-                            )
-                                Color.Blue else Color.Transparent,
-                            shape = RoundedCornerShape(12.dp)
+    LazyRow(state = listState, modifier = Modifier.fillMaxWidth()) {
+        items(skillDataList) { skillDataList ->
+            Card(
+                modifier = Modifier
+                    .width(300.dp)
+                    .padding(end = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFBFBFF)
+                ),
+                elevation = CardDefaults.cardElevation(6.dp)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    Box(modifier = Modifier.size(50.dp)) {
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                ImageRequest.Builder(LocalContext.current)
+                                    .data(profileImageBytes)
+                                    .build()
+                            ),
+                            //rememberAsyncImagePainter(userProfileData.profileImage),
+                            //painterResource(id = R.drawable.pfp_laura)
+                            contentDescription = stringResource(id = R.string.user_photo_content_description),
+                            modifier = Modifier
+                                .size(124.dp)
+                                .clip(CircleShape)
+                                .background(Color.Gray),
+                            contentScale = ContentScale.Crop
                         )
-                        .border(
-                            width = 1.dp,
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = level,
-                        fontSize = 14.sp,
-                        color = if (level == "Medio"
-                        //  skillData.level
-                        ) Color.White else Color.Black
+                        text = "${userAuthData.nameUser} ${userAuthData.surnameUser}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = stringResource(id = R.string.availability),
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-            Spacer(modifier = Modifier.width(50.dp))
-            Box(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(6.dp)
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = skillDataList.title, fontSize = 20.sp
                     )
-                    .padding(horizontal = 10.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = "8:00 a 14:00",
-                    //userProfileData.preferredTimeRange,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = "Aprende a preparar un plato vegano delicioso y nutritivo (desde entrantes hasta postres"
-                // skillData.description
-                ,
-                fontSize = 16.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 26.dp)) {
-            //skillData.category.forEach { category ->
-            Box(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(12.dp)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    if (skillDataList.mode == "Presencial") {
+                        Text(
+                            text = userProfileData.location,
+                            fontSize = 16.sp
+                        )
+                    } else {
+                        Text(
+                            text = skillDataList.mode,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    listOf(
+                        stringResource(id = R.string.basic), stringResource(
+                            id = R.string.amateur
+                        ), stringResource(id = R.string.advanced)
+                    ).forEach { level ->
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = if (level == skillDataList.level
+                                    )
+                                        Color.Blue else Color(0x0FA58E8E),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Transparent,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = level,
+                                fontSize = 14.sp,
+                                color = if (level == skillDataList.level
+                                ) Color.White else Color.Black
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.availability),
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.CenterVertically)
                     )
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = "Animales",
-                    //category,
-                    fontSize = 16.sp
-                )
+                    Spacer(modifier = Modifier.width(24.dp))
+                    Box(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .border(
+                                width = 1.dp,
+                                color = Color.Gray,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = userProfileData.preferredTimeRange,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = skillDataList.description,
+                        fontSize = 14.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(modifier = Modifier.padding(horizontal = 26.dp)) {
+                    skillDataList.category.forEach { category ->
+                        Box(
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = category,
+                                fontSize = 16.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.height(26.dp))
             }
-            Spacer(modifier = Modifier.width(8.dp))
         }
     }
-    Spacer(modifier = Modifier.height(26.dp))
 }
-
 
 @Composable
 fun HomeTitle() {
