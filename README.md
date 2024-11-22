@@ -23,20 +23,45 @@ HelpHub está diseñado para una audiencia diversa, incluyendo:
 - **Registro de Usuario con 2FA**: 🛡️ Los nuevos usuarios pueden registrarse proporcionando su información básica. Se implementa un sistema de autenticación de dos factores (2FA) para mayor seguridad.
 
 - **Inicio de Sesión**: 🔐 Los usuarios pueden iniciar sesión con su correo y contraseña. Compatibilidad con el sistema 2FA para confirmar la identidad del usuario en cada inicio de sesión.
+ 
+<p align="center">
+  <img src="assets/Landing.png" alt="Landing de la app" width="30%" style="margin-right:10px;">
+  <img src="assets/SignUp.png" alt="Pantalla de registro" width="30%" style="margin-right:10px;">
+  <img src="assets/SignIn.png" alt="Pantalla de login" width="30%" style="margin-right:10px;">
+  <img src="assets/Home.png" alt="Pantalla Home" width="30%" style="margin-right:10px;">
+</p>
 
 - **Perfil**: 👤 Los usuarios pueden crear, editar, ver y eliminar su perfil personal.
+  
+<p align="center">
+  <img src="assets/step1.png" alt="Primer paso de creación de usuario" width="30%" style="margin-right:10px;">
+  <img src="assets/Step2.png" alt="Segundo paso de creación de usuario" width="30%" style="margin-right:10px;">
+  <img src="assets/step3.png" alt="Tercer paso de creación de usuario" width="30%" style="margin-right:10px;">
+  <img src="assets/step4a.png" alt="Cuarto paso de creación de usuario" width="30%" style="margin-right:10px;">
+  <img src="assets/step4b.png" alt="Cuarto paso de creación de usuario" width="30%" style="margin-right:10px;">
+  <img src="assets/step5.png" alt="Quinto paso de creación de usuario" width="30%" style="margin-right:10px;">
+</p> 
+
+<p align="center">
+    <img src="assets/Profile.png" alt="Pantalla de perfil" width="30%" style="margin-right:10px;">
+</p>
 
 - **Habilidades**: 💡 Los usuarios pueden añadir, editar, listar y eliminar habilidades que desean ofrecer.
+  
+  <p align="center">
+    <img src="assets/addSkill.png" alt="Añadir habilidad" width="30%" style="margin-right:10px;">
+    <img src="assets/editSkill.png" alt="Editar habilidad" width="30%" style="margin-right:10px;">
+</p>
 
-- **Solicitar Intercambio**: 🤝 Los usuarios pueden enviar solicitudes de intercambio a otros miembros de la plataforma. Sistema de notificaciones para informar al receptor de la solicitud.
+- **Solicitar Intercambio** (TBD): 🤝 Los usuarios pueden enviar solicitudes de intercambio a otros miembros de la plataforma. Sistema de notificaciones para informar al receptor de la solicitud.
 
-- **Petición de Ayuda**: 🆘 Los usuarios pueden realizar una petición de ayuda si tienen algo específico que quieren resolver sin solicitar un intercambio.
+- **Petición de Ayuda** (TBD): 🆘 Los usuarios pueden realizar una petición de ayuda si tienen algo específico que quieren resolver sin solicitar un intercambio.
 
-- **Chat en Tiempo Real**: 💬 Comunicación directa entre usuarios para coordinar los intercambios.
+- **Chat en Tiempo Real** (TBD): 💬 Comunicación directa entre usuarios para coordinar los intercambios.
 
-- **Filtrar por Categorías**: 🔍 Herramienta de búsqueda avanzada para encontrar habilidades o usuarios específicos.
+- **Filtrar por Categorías** (On progress): 🔍 Herramienta de búsqueda avanzada para encontrar habilidades o usuarios específicos.
 
-- **Valoración del Intercambio**: ⭐ Los usuarios pueden añadir una breve reseña describiendo su experiencia y calificando el intercambio.
+- **Valoración del Intercambio** (TBD): ⭐ Los usuarios pueden añadir una breve reseña describiendo su experiencia y calificando el intercambio.
 
 ## ⚙️ Tecnologías y herramientas
 <div align="center">
@@ -56,7 +81,7 @@ Este proyecto emplea las siguientes dependencias
 - Interfaz de usuario: Jetpack Compose
 - Iconos: Material Icons Extended
 - Inyección de dependencias: Dagger Hilt
-- Comunicación con API: rETROFIT
+- Comunicación con API: Retrofit
 - Interceptores: Okhttp3
 
 ## 🎨 Frontend y Backend
