@@ -21,9 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,8 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,29 +43,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.alejandro.helphub.R
 import com.alejandro.helphub.domain.models.SkillData
-import com.alejandro.helphub.domain.models.UserAuthData
 
 
 @Composable
@@ -133,7 +122,7 @@ fun Home(homeViewModel: HomeViewModel) {
 
 @Composable
 fun RecommendedUsers(homeViewModel: HomeViewModel) {
-    Text(text = "Recomendados", fontSize = 24.sp)
+    Text(text = stringResource(id = R.string.recommended), fontSize = 24.sp)
     Spacer(modifier = Modifier.height(30.dp))
     HomeCards(homeViewModel)
 }
@@ -304,18 +293,28 @@ fun HomeCards(homeViewModel: HomeViewModel) {
         }
     }
 }
-
+@Preview
 @Composable
 fun HomeTitle() {
     Row {
         Column(modifier = Modifier.width(160.dp)) {
-            Text(text = "Categorías y habilidades", fontSize = 28.sp)
+            Text(text = stringResource(id = R.string.categories_and_skills), fontSize = 28.sp)
         }
         Spacer(modifier = Modifier.width(100.dp))
         Text(
-            text = "FILTROS", modifier = Modifier
+            text = stringResource(id = R.string.filters).uppercase(), modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)
+        )
+        Icon(
+            imageVector =
+            Icons.AutoMirrored.Filled.ArrowRight,
+            contentDescription = stringResource(
+                id = R.string.post_title_examples_dialog
+            ).uppercase(),
+            tint = Color.Blue,
+            modifier = Modifier
+                .size(20.dp)
         )
     }
 }
@@ -339,7 +338,7 @@ fun HomeSearchBar() {
         placeholder = {
             Row {
                 Spacer(modifier = Modifier.width(30.dp))
-                Text(text = "¿Qué estás buscando?")
+                Text(text = stringResource(id = R.string.searchbar_placeholder))
             }
         },
         trailingIcon = {

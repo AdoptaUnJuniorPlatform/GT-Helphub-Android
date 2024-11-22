@@ -246,4 +246,10 @@
     <!--Edit profile Screen -->
     <string name="pfp">Foto de perfil</string>
     <string name="edit_profile">Editar Perfil</string>
+    <!--Home Screen -->
+    <string name="recommended">Recomendados</string>
+    <string name="categories_and_skills">Categorias y habilidades</string>
+    <string name="filters">Filtros</string>
+    <string name="searchbar_placeholder">¿Qué estás buscando?</string>
+
 </resources>
