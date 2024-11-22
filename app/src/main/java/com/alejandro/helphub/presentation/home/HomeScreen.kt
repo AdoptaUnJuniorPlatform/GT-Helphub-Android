@@ -3,6 +3,7 @@ package com.alejandro.helphub.presentation.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -293,29 +294,36 @@ fun HomeCards(homeViewModel: HomeViewModel) {
         }
     }
 }
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HomeTitle() {
-    Row {
+    Row(modifier=Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.width(160.dp)) {
             Text(text = stringResource(id = R.string.categories_and_skills), fontSize = 28.sp)
         }
-        Spacer(modifier = Modifier.width(100.dp))
-        Text(
-            text = stringResource(id = R.string.filters).uppercase(), modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterVertically)
-        )
-        Icon(
-            imageVector =
-            Icons.AutoMirrored.Filled.ArrowRight,
-            contentDescription = stringResource(
-                id = R.string.post_title_examples_dialog
-            ).uppercase(),
-            tint = Color.Blue,
-            modifier = Modifier
-                .size(20.dp)
-        )
+        Spacer(modifier = Modifier.weight(1f))
+        Box(modifier=Modifier.align(Alignment.CenterVertically)){
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.padding(end=16.dp)) {
+                Text(
+                    text = stringResource(id = R.string.filters).uppercase(),
+                    modifier = Modifier
+                   
+                        .align(Alignment.CenterVertically)
+
+                )
+                Icon(
+                    imageVector =
+                    Icons.AutoMirrored.Filled.ArrowRight,
+                    contentDescription = stringResource(
+                        id = R.string.post_title_examples_dialog
+                    ).uppercase(),
+                    // tint = Color.Blue,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                )
+            }
+        }
     }
 }
 
