@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -29,13 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -57,18 +53,8 @@ fun EditSkillScreen(
     skillId: String?
 ) {
     val listState = rememberLazyListState()
-    var skillTitle by remember { mutableStateOf("") }
-    var skillDescription by remember { mutableStateOf("") }
-    var skillLevel by remember { mutableStateOf("") }
-    var skillMode by remember { mutableStateOf("") }
     val skillData by profileViewModel.skillData.collectAsState()
 
-    LaunchedEffect(skillData) {
-        skillTitle = skillData.title
-        skillDescription = skillData.description
-        skillLevel = skillData.level
-        skillMode = skillData.mode
-    }
     Scaffold(topBar = {
         Row(
             modifier = Modifier
@@ -125,14 +111,8 @@ fun EditSkillScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         EditMode(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-                        EditSkillDescription(
-                            profileViewModel,
-                            description = skillDescription,
-                            onDescriptionChange = { newDescription ->
-                                skillDescription = newDescription
-                            })
+                        EditSkillDescription(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -142,7 +122,6 @@ fun EditSkillScreen(
                         }
                     }
                 }
-
             }
             item {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -151,10 +130,11 @@ fun EditSkillScreen(
                 UpdateButton(
                     onNextClick = {
                         val createSkillDTO = CreateSkillDTO(
-                            title = skillTitle,
-                            description = skillDescription,
-                            level = skillLevel,
-                            mode = skillMode
+                            title = skillData.title,
+                            description = skillData.description,
+                            level = skillData.level,
+                            mode = skillData.mode,
+                            category = skillData.category
                         )
                         if (skillId != null) {
                             profileViewModel.updateSkill(
@@ -206,7 +186,7 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = CenterVertically
                     ) {
                         Text(
                             text = if (skillData.category.isEmpty()) {
@@ -255,25 +235,35 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
                                 stringResource(id = R.string.others)
                             )
                             categories.forEach { category ->
-                                val isChecked =
-                                    selectedCategories.contains(category)
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Checkbox(
-                                                checked = isChecked,
-                                                onCheckedChange = {
-                                                    profileViewModel.onCategoryChecked(
-                                                        category,
-                                                        it
-                                                    )
-                                                }
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        profileViewModel.onCategoryChecked(
+                                            category,
+                                            !selectedCategories.contains(
+                                                category
                                             )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(text = category)
+                                        )
+                                    }
+                                    .padding(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    ), verticalAlignment = CenterVertically
+
+                                ) {
+                                    Checkbox(
+                                        checked = selectedCategories.contains(category),
+                                        onCheckedChange = { checked ->
+                                            profileViewModel.onCategoryChecked(
+                                                category,
+                                                checked
+                                            )
                                         }
-                                    },
-                                    onClick = { })
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(text = category)
+                                }
+
                             }
                         }
                     }
@@ -286,8 +276,6 @@ fun EditCategory(profileViewModel: ProfileViewModel) {
 @Composable
 fun EditSkillDescription(
     profileViewModel: ProfileViewModel,
-    description: String,
-    onDescriptionChange: (String) -> Unit
 ) {
     val skillData by profileViewModel.skillData.collectAsState()
     Row(
@@ -297,7 +285,7 @@ fun EditSkillDescription(
         Text(
             text = stringResource(id = R.string.skill_offer),
             fontSize = 22.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier.align(CenterVertically),
             fontWeight = FontWeight.Bold
         )
     }
@@ -308,7 +296,6 @@ fun EditSkillDescription(
     ) {
         OutlinedTextField(
             value = skillData.description,
-            //skillData.description,
             onValueChange = {
                 if (it.length <= 90) {
                     profileViewModel.updateSkillDescription(it)
@@ -358,7 +345,7 @@ fun EditMode(profileViewModel: ProfileViewModel) {
         Text(
             text = stringResource(id = R.string.mode),
             fontSize = 22.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier.align(CenterVertically),
             fontWeight = FontWeight.Bold
         )
     }
@@ -401,7 +388,7 @@ fun EditLevel(
         Text(
             text = stringResource(id = R.string.level),
             fontSize = 22.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier.align(CenterVertically),
             fontWeight = FontWeight.Bold
         )
     }
@@ -446,7 +433,7 @@ fun EditPostTitle(profileViewModel: ProfileViewModel) {
         Text(
             text = stringResource(id = R.string.post_title),
             fontSize = 22.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier.align(CenterVertically),
             fontWeight = FontWeight.Bold
         )
     }

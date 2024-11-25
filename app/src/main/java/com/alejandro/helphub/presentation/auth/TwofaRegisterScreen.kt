@@ -134,8 +134,8 @@ fun RegisterValidationButton(
         onNextClick = {
             isTwoFaValid.value = authViewModel.isTwoFaCodeValid()
             if (isTwoFaValid.value) {
-                Log.i("2FA", "Código 2FA correcto.")
-                authViewModel.registerUser() { result ->
+                Log.i("2FA", "2FA code is successfull.")
+                authViewModel.registerUser{ result ->
                     if (result) {
                         onSuccess(true)
                     } else {
@@ -144,7 +144,7 @@ fun RegisterValidationButton(
                 }
                 authViewModel.clearTwofaField()
             } else {
-                Log.i("2FA", "Código 2FA incorrecto.")
+                Log.i("2FA", "2FA code is wrong.")
                 onSuccess(false)
             }
         },

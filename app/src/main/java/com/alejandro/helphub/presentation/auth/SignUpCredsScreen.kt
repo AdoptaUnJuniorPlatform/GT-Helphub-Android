@@ -240,7 +240,7 @@ fun SignUpButton(
             ).show()
             navController.navigate("LoginScreen")
         }
-        else -> {} // No hacer nada en el estado Idle
+        else -> {} // Do nothing on Idle State
     }
 }
 

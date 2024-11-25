@@ -15,10 +15,10 @@ import com.alejandro.helphub.domain.models.SkillData
 import com.alejandro.helphub.domain.models.SkillUIState
 import com.alejandro.helphub.domain.models.UserAuthData
 import com.alejandro.helphub.domain.models.UserProfileData
+import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.auth.GetUserByIdUseCase
 import com.alejandro.helphub.domain.usecase.profile.CreateProfileUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileByIdUseCase
-import com.alejandro.helphub.domain.usecase.auth.GetUserByEmailUseCase
 import com.alejandro.helphub.domain.usecase.profile.GetProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.profile.UpdateProfileImageUseCase
 import com.alejandro.helphub.domain.usecase.profile.UpdateProfileUseCase
@@ -65,9 +65,8 @@ class ProfileViewModel @Inject constructor(
     val skillData: StateFlow<SkillData> = _skillData.asStateFlow()
 
     private val _skillDataList =
-        MutableStateFlow<List<SkillData>>(emptyList()) // Esto crea una lista vacía de SkillData
+        MutableStateFlow<List<SkillData>>(emptyList())
     val skillDataList: StateFlow<List<SkillData>> = _skillDataList.asStateFlow()
-
 
     //<!--------------------New Skill Screen---------------->
 
@@ -96,45 +95,48 @@ class ProfileViewModel @Inject constructor(
     fun updateProfile(id: String, createProfileDTO: CreateProfileDTO) {
         viewModelScope.launch {
             try {
-                // Llama al caso de uso y obtiene los datos actualizados
                 val updatedProfile = updateProfileUseCase(id, createProfileDTO)
-
-                // Actualiza el estado con la nueva información
                 _userProfileData.value = updatedProfile
             } catch (e: Exception) {
-                // En caso de error, maneja el estado del mensaje de error
-
+                Log.d(
+                    "ProfileViewModel",
+                    "Error updating profile  ${e.message}"
+                )
             }
         }
     }
-    fun updateUserPhotoUriToUpdate(id:String,userId:String,photoUri: Uri, context: Context) {
+
+    fun updateUserPhotoUriToUpdate(
+        id: String,
+        userId: String,
+        photoUri: Uri,
+        context: Context
+    ) {
         try {
-            // Convierte el Uri a un ByteArray
+            // Converts the uri to ByteArray
             val byteArray =
                 context.contentResolver.openInputStream(photoUri)?.readBytes()
-
-            // Actualiza el perfil con el nuevo ByteArray de la imagen
+            //Updates profile with image's new Bytearray
             val updateUserData =
                 userProfileData.value.copy(profileImage = byteArray)
             _userProfileData.value = updateUserData
-
-            // Sube la imagen
-            updateProfileImage(id,userId,photoUri, context)
-
-            // Navega a la siguiente pantalla
-            navigateToStep3()
+            // Uploads image
+            updateProfileImage(id, userId, photoUri, context)
         } catch (e: Exception) {
             Log.e(
                 "ProfileViewModel",
-                "Error al convertir la imagen a ByteArray: ${e.message}"
+                "Error converting image to ByteArray: ${e.message}"
             )
         }
     }
 
-    fun updateProfileImage(id: String, userId:String,photoUri: Uri, context: Context) {
+    fun updateProfileImage(
+        id: String,
+        userId: String,
+        photoUri: Uri,
+        context: Context
+    ) {
         viewModelScope.launch {
-           //val userId = userAuthDataList.value.firstOrNull()?.id ?: ""
-            //  val imageProfile = userProfileData.value.profileImage
             Log.d(
                 "ProfileViewModel",
                 "updateProfileImage called with id: $id, userId: $userId, photoUri: $photoUri"
@@ -142,9 +144,9 @@ class ProfileViewModel @Inject constructor(
             if (userId.isNotEmpty() && photoUri != Uri.EMPTY) {
 
                 try {
-                    // Convierte la URI de la imagen a un archivo de tipo MultipartBody.Part
+                    //Converts image's URI to a MultipartBody.part file
                     val imageFile = createTempFileFromUri(photoUri, context)
-                        ?: throw Exception("No se pudo crear el archivo temporal")
+                        ?: throw Exception("Temp image could not be created")
                     val imagePart =
                         imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
                     val imageProfilePart = MultipartBody.Part.createFormData(
@@ -152,12 +154,10 @@ class ProfileViewModel @Inject constructor(
                         imageFile.name,
                         imagePart
                     )
-
-                    // Crea el campo para el id_user
+                    //Creates field for id_user
                     val idUserPart =
                         MultipartBody.Part.createFormData("id_user", userId)
-
-                    // Realiza la llamada al caso de uso
+                    // Calls use case
                     val result =
                         updateProfileImageUseCase(
                             id,
@@ -168,31 +168,30 @@ class ProfileViewModel @Inject constructor(
                     if (result.idImage.isNotEmpty()) {
                         Log.d(
                             "ProfileViewModel",
-                            "Imagen actualizada correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
+                            "Image updated successfully. Image id: ${result.idImage}, message: ${result.message}"
                         )
                         _profileImageId.value = result.idImage
                         saveProfileImageId(context, result.idImage)
                     } else {
                         Log.e(
                             "ProfileViewModel",
-                            "Error al actualizar la imagen: ${result.message}"
+                            "Failure updating image: ${result.message}"
                         )
                         Log.e(
                             "ProfileViewModel",
-                            "Error: ID de usuario vacío (userId: $userId) o URI de imagen no válida (photoUri: $photoUri)."
+                            "Error: User id is empty (userId: $userId) or URI is not valid (photoUri: $photoUri)."
                         )
-
                     }
                 } catch (e: Exception) {
                     Log.e(
                         "ProfileViewModel",
-                        "Error al procesar la imagen: ${e.message}"
+                        "Error processing the image ${e.message}"
                     )
                 }
             } else {
                 Log.e(
                     "ProfileViewModel",
-                    "Error: ID de usuario vacío o URI de imagen no válida."
+                    "Error: User id is empty or URI is not valid."
                 )
             }
         }
@@ -201,11 +200,9 @@ class ProfileViewModel @Inject constructor(
     //<!--------------------Update Skill Screen---------------->
 
     fun getSkillId(): String? {
-        // Extraemos el primer Skill ID de la lista, o null si la lista está vacía
         return _skillDataList.value.firstOrNull()?.id
     }
 
-    // Función para actualizartodo el objeto SkillData (por ejemplo, cuando se selecciona una habilidad para editar)
     fun selectSkillForEdit(skill: SkillData) {
         _skillData.value = skill
     }
@@ -213,18 +210,13 @@ class ProfileViewModel @Inject constructor(
     fun updateSkill(skillId: String, createSkillDTO: CreateSkillDTO) {
         viewModelScope.launch {
             try {
-                // Llama al caso de uso y obtiene los datos actualizados
                 val updatedSkill = updateSkillUseCase(skillId, createSkillDTO)
-
-                // Actualiza el estado con la nueva información
                 _skillData.value = updatedSkill
             } catch (e: Exception) {
-                // En caso de error, maneja el estado del mensaje de error
-
+                Log.d("ProfileViewModel", "Error updating skill ${e.message}")
             }
         }
     }
-
 
     //<!--------------------Profile ---------------->
 
@@ -250,38 +242,33 @@ class ProfileViewModel @Inject constructor(
     )
     val skillUIState: StateFlow<SkillUIState> = _skillUIState.asStateFlow()
 
-
     fun deleteSkill(skillId: String) {
         viewModelScope.launch {
             _skillUIState.value = SkillUIState.Loading
             try {
                 val response = deleteSkillUseCase(skillId)
                 if (response.isSuccessful) {
-                    // Si la eliminación es exitosa, actualiza la lista de habilidades
                     _skillDataList.value =
                         _skillDataList.value.filterNot { it.id == skillId }
                     _skillUIState.value =
-                        SkillUIState.Success(emptyList()) // O la lista actualizada
+                        SkillUIState.Success(emptyList())
                 } else {
                     _skillUIState.value =
-                        SkillUIState.Error(500) // Error en la respuesta
+                        SkillUIState.Error(500)
                 }
             } catch (e: Exception) {
                 _skillUIState.value =
-                    SkillUIState.Error(500) // Error desconocido
+                    SkillUIState.Error(500)
             }
         }
     }
-
 
     fun getSkillsByUserId(userId: String) {
         viewModelScope.launch {
             _skillUIState.value = SkillUIState.Loading
             Log.d("ProfileViewModel", "Fetching skills for userId: $userId")
-
             try {
                 val response = getSkillsByUserIdUseCase(userId)
-                // Verifica si la respuesta fue exitosa
                 if (response.isSuccessful) {
                     response.body()?.let { skillResponseList ->
                         if (skillResponseList.isNotEmpty()) {
@@ -297,7 +284,6 @@ class ProfileViewModel @Inject constructor(
                                         userId = skill.userId
                                     )
                                 }
-
                             _skillUIState.value =
                                 SkillUIState.Success(skillResponseList)
                             Log.i(
@@ -322,12 +308,12 @@ class ProfileViewModel @Inject constructor(
                     }
                 } else {
                     _skillUIState.value =
-                        SkillUIState.Error(500) // Error en la respuesta
+                        SkillUIState.Error(500)
                     Log.e("ProfileViewModel", "Error: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _skillUIState.value =
-                    SkillUIState.Error(500) // Error desconocido
+                    SkillUIState.Error(500)
                 Log.e("ProfileViewModel", "Error loading skills: ${e.message}")
             }
         }
@@ -344,15 +330,12 @@ class ProfileViewModel @Inject constructor(
 
             try {
                 val response = getUserByIdUseCase(userId)
-                // Verifica si la respuesta fue exitosa
                 if (response.isSuccessful) {
                     response.body()?.let { userResponse ->
-
                         _userAuthData.value = UserAuthData(
                             nameUser = userResponse.nameUser,
                             surnameUser = userResponse.surnameUser,
                         )
-
                         _profileUIState.value =
                             ProfileUIState.Success(userResponse)
                         Log.i(
@@ -366,7 +349,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 } else {
                     _profileUIState.value =
-                        ProfileUIState.Error(500) // Or another error code
+                        ProfileUIState.Error(500)
                     Log.e(
                         "ProfileViewModel",
                         "Error: ${response.code()}"
@@ -374,7 +357,7 @@ class ProfileViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _profileUIState.value =
-                    ProfileUIState.Error(500) // Or another error code
+                    ProfileUIState.Error(500)
                 Log.e(
                     "ProfileViewModel",
                     "Error loading user: ${e.message}"
@@ -383,7 +366,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-
     fun getProfileById(id: String) {
         viewModelScope.launch {
             _profileUIState.value = ProfileUIState.Loading
@@ -391,14 +373,10 @@ class ProfileViewModel @Inject constructor(
                 "ProfileViewModel",
                 "Fetching profile for userId: $id"
             )
-
             try {
                 val response = getProfileByIdUseCase(id)
-
-                // Verifica si la respuesta fue exitosa
                 if (response.isSuccessful) {
                     response.body()?.let { profileResponse ->
-
                         _userProfileData.value = UserProfileData(
                             profileImage = profileResponse.profilePicture,
                             description = profileResponse.description,
@@ -406,9 +384,7 @@ class ProfileViewModel @Inject constructor(
                             preferredTimeRange = profileResponse.preferredTimeRange,
                             interestedSkills = profileResponse.interestedSkills,
                             selectedDays = profileResponse.selectedDays
-
                         )
-
                         _profileUIState.value =
                             ProfileUIState.Success(profileResponse)
                         Log.i(
@@ -422,7 +398,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 } else {
                     _profileUIState.value =
-                        ProfileUIState.Error(500) // Or another error code
+                        ProfileUIState.Error(500)
                     Log.e(
                         "ProfileViewModel",
                         "Error: ${response.code()}"
@@ -430,7 +406,7 @@ class ProfileViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _profileUIState.value =
-                    ProfileUIState.Error(500) // Or another error code
+                    ProfileUIState.Error(500)
                 Log.e(
                     "ProfileViewModel",
                     "Error loading profile: ${e.message}"
@@ -438,7 +414,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
 
     //<!--------------------Profile Setup Step 1 ---------------->
 
@@ -465,7 +440,7 @@ class ProfileViewModel @Inject constructor(
     val isNavigationToStep2Enabled: StateFlow<Boolean> =
         _isNavigationToStep2Enabled.asStateFlow()
 
-    fun navigateToStep2() {
+    private fun navigateToStep2() {
         _isNavigationToStep2Enabled.value =
             userProfileData.value.description.isNotBlank() &&
                     userProfileData.value.location.isNotBlank()
@@ -479,29 +454,26 @@ class ProfileViewModel @Inject constructor(
 
     fun updateUserPhotoUriToUpload(photoUri: Uri, context: Context) {
         try {
-            // Convierte el Uri a un ByteArray
+            // Converts URI to ByteArray
             val byteArray =
                 context.contentResolver.openInputStream(photoUri)?.readBytes()
-
-            // Actualiza el perfil con el nuevo ByteArray de la imagen
+            //Updates profile with new image's ByteArray
             val updateUserData =
                 userProfileData.value.copy(profileImage = byteArray)
             _userProfileData.value = updateUserData
-
-            // Sube la imagen
+            // Uploads image
             uploadProfileImage(photoUri, context)
-
-            // Navega a la siguiente pantalla
+            // Navigates to next screen
             navigateToStep3()
         } catch (e: Exception) {
             Log.e(
                 "ProfileViewModel",
-                "Error al convertir la imagen a ByteArray: ${e.message}"
+                "Error converting image to BytArray: ${e.message}"
             )
         }
     }
 
-    fun createTempFileFromUri(uri: Uri, context: Context): File? {
+    private fun createTempFileFromUri(uri: Uri, context: Context): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
             val tempFile =
@@ -513,7 +485,7 @@ class ProfileViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e(
                 "UploadProfileImage",
-                "Error creando archivo temporal: ${e.message}"
+                "Error creating temp file: ${e.message}"
             )
             null
         }
@@ -531,13 +503,11 @@ class ProfileViewModel @Inject constructor(
     fun uploadProfileImage(photoUri: Uri, context: Context) {
         viewModelScope.launch {
             val userId = userAuthDataList.value.firstOrNull()?.id ?: ""
-            //  val imageProfile = userProfileData.value.profileImage
             if (userId.isNotEmpty() && photoUri != Uri.EMPTY) {
-
                 try {
-                    // Convierte la URI de la imagen a un archivo de tipo MultipartBody.Part
+                    // Converts URI into MultipartBody.Part
                     val imageFile = createTempFileFromUri(photoUri, context)
-                        ?: throw Exception("No se pudo crear el archivo temporal")
+                        ?: throw Exception("Temp file could not be created")
                     val imagePart =
                         imageFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
                     val imageProfilePart = MultipartBody.Part.createFormData(
@@ -545,38 +515,35 @@ class ProfileViewModel @Inject constructor(
                         imageFile.name,
                         imagePart
                     )
-
-                    // Crea el campo para el id_user
+                    // Creates field for id_user
                     val idUserPart =
                         MultipartBody.Part.createFormData("id_user", userId)
-
-                    // Realiza la llamada al caso de uso
+                    //Call the use case
                     val result =
                         uploadProfileImageUseCase(idUserPart, imageProfilePart)
-
                     if (result.idImage.isNotEmpty()) {
                         Log.d(
                             "ProfileViewModel",
-                            "Imagen subida correctamente. ID de imagen: ${result.idImage}, Mensaje: ${result.message}"
+                            "Image uploaded successfully. Image id: ${result.idImage}, message: ${result.message}"
                         )
                         _profileImageId.value = result.idImage
                         saveProfileImageId(context, result.idImage)
                     } else {
                         Log.e(
                             "ProfileViewModel",
-                            "Error al subir la imagen: ${result.message}"
+                            "Error uploading image: ${result.message}"
                         )
                     }
                 } catch (e: Exception) {
                     Log.e(
                         "ProfileViewModel",
-                        "Error al procesar la imagen: ${e.message}"
+                        "Error processing image: ${e.message}"
                     )
                 }
             } else {
                 Log.e(
                     "ProfileViewModel",
-                    "Error: ID de usuario vacío o URI de imagen no válida."
+                    "Error: User id is empty or image's URI is not valid"
                 )
             }
         }
@@ -594,20 +561,20 @@ class ProfileViewModel @Inject constructor(
                     .apply()
                 Log.d(
                     "ProfileViewModel",
-                    "ID de la imagen guardado en SharedPreferences: $idImage"
+                    "Image id saved in SharedPreferences: $idImage"
                 )
 
             }
         }
     }
 
-    fun getProfileImageId(context: Context): String? {
+    private fun getProfileImageId(context: Context): String? {
         val sharedPreferences =
             context.getSharedPreferences("helphub_prefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("profile_image_id", null)
     }
 
-    fun getBitmapFromByteArray(byteArray: ByteArray?): Bitmap? {
+    private fun getBitmapFromByteArray(byteArray: ByteArray?): Bitmap? {
         return byteArray?.let {
             BitmapFactory.decodeByteArray(it, 0, it.size)
         }
@@ -623,12 +590,11 @@ class ProfileViewModel @Inject constructor(
                     val response = getProfileImageUseCase(imageId)
 
                     if (response.isSuccessful) {
-                        // Si la respuesta es exitosa, obtenemos el flujo de la imagen
+                        // We get the image flow
                         val inputStream = response.body()?.byteStream()
 
                         if (inputStream != null) {
-                            // Aquí puedes convertir el InputStream en una imagen para mostrarla en la UI
-                            // Por ejemplo, guardarla en un archivo o mostrarla con una librería como Glide
+                            //We convert the InputSteam into an image to be shown in the UI
                             val byteArray = inputStream.readBytes()
                             val bitmap = getBitmapFromByteArray(byteArray)
 
@@ -637,38 +603,36 @@ class ProfileViewModel @Inject constructor(
 
                             Log.i(
                                 "ProfileViewModel",
-                                "Imagen recuperada correctamente."
+                                "Image loaded successfully."
                             )
-                            // Aquí puedes usar el InputStream o guardarlo como un archivo
                         } else {
                             Log.e(
                                 "ProfileViewModel",
-                                "Error: El flujo de la imagen está vacío"
+                                "Error: Image's flow is empty"
                             )
                         }
                     } else {
                         Log.e(
                             "ProfileViewModel",
-                            "Error al recuperar la imagen: ${response.code()}"
+                            "Error loading image: ${response.code()}"
                         )
                     }
                 } catch (e: Exception) {
                     Log.e(
                         "ProfileViewModel",
-                        "Error al recuperar la imagen: ${e.message}"
+                        "Error loading image: ${e.message}"
                     )
                 }
             } else {
                 Log.i(
                     "ProfileViewModel",
-                    "ID de imagen no encontrado en SharedPreferences"
+                    "Image's id not found in SharedPreferences"
                 )
             }
         }
     }
 
-
-    fun navigateToStep3() {
+    private fun navigateToStep3() {
         _isNavigationToStep3Enabled.value =
             userProfileData.value.profileImage != null
     }
@@ -702,7 +666,7 @@ class ProfileViewModel @Inject constructor(
         updateUserDays(currentDays)
     }
 
-    fun updateUserDays(days: List<String>) {
+    private fun updateUserDays(days: List<String>) {
         _userProfileData.value =
             _userProfileData.value.copy(selectedDays = days)
         navigateToStep4Post()
@@ -719,7 +683,7 @@ class ProfileViewModel @Inject constructor(
         navigateToStep4Post()
     }
 
-    fun navigateToStep4Post() {
+    private fun navigateToStep4Post() {
         _isNavigationToStep4PostEnabled.value =
             userProfileData.value.selectedDays.isNotEmpty() &&
                     userProfileData.value.preferredTimeRange != null
@@ -752,7 +716,7 @@ class ProfileViewModel @Inject constructor(
         navigateToStep4Skill()
     }
 
-    fun navigateToStep4Skill() {
+    private fun navigateToStep4Skill() {
         _isNavigationToStep4SkillEnabled.value =
             skillData.value.title.isNotBlank() &&
                     skillData.value.level != null &&
@@ -767,13 +731,13 @@ class ProfileViewModel @Inject constructor(
     private val _selectedCategories =
         MutableStateFlow<List<String>>(emptyList())
     val selectedCategories: StateFlow<List<String>> =
-        _selectedCategories.asStateFlow()
+        _selectedCategories
 
     private val _createSkillResult = MutableStateFlow<String?>(null)
     val createSkillResult: StateFlow<String?> get() = _createSkillResult
 
     private val _userAuthDataList =
-        MutableStateFlow<List<UserAuthData>>(emptyList()) // Esto crea una lista vacía de SkillData
+        MutableStateFlow<List<UserAuthData>>(emptyList())
     val userAuthDataList: StateFlow<List<UserAuthData>> =
         _userAuthDataList.asStateFlow()
 
@@ -786,7 +750,6 @@ class ProfileViewModel @Inject constructor(
             )
             try {
                 val response = getUserByEmailUseCase(email)
-                // Verifica si la respuesta fue exitosa
                 if (response.isSuccessful) {
                     response.body()?.let { userResponseList ->
                         if (userResponseList.isNotEmpty()) {
@@ -796,9 +759,7 @@ class ProfileViewModel @Inject constructor(
                                         nameUser = user.nameUser,
                                         surnameUser = user.surnameUser,
                                         id = user.id
-
                                     )
-
                                 }
                             _profileListUIState.value =
                                 ProfileListUIState.Success(userResponseList)
@@ -816,7 +777,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 } else {
                     _profileListUIState.value =
-                        ProfileListUIState.Error(500) // Or another error code
+                        ProfileListUIState.Error(500)
                     Log.e(
                         "ProfileViewModel",
                         "Error: ${response.code()}"
@@ -824,7 +785,7 @@ class ProfileViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _profileListUIState.value =
-                    ProfileListUIState.Error(500) // Or another error code
+                    ProfileListUIState.Error(500)
                 Log.e(
                     "ProfileViewModel",
                     "Error loading user: ${e.message}"
@@ -832,7 +793,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
 
     fun updateSkillDescription(skillDescription: String) {
         Log.d(
@@ -852,20 +812,19 @@ class ProfileViewModel @Inject constructor(
             isChecked && currentCategories.size < 2 -> currentCategories.add(
                 category
             )
-
             !isChecked -> currentCategories.remove(category)
         }
         _selectedCategories.value = currentCategories
         updateSelectedCategories(currentCategories)
     }
 
-    fun updateSelectedCategories(categories: List<String>) {
+    private fun updateSelectedCategories(categories: List<String>) {
         Log.d(
             "ProfileViewModel",
             "Updating selectedCategories to: $categories"
         )
         _skillData.value =
-            skillData.value.copy(category = categories)
+            _skillData.value.copy(category = categories)
         navigateToStep5()
     }
 
@@ -882,13 +841,11 @@ class ProfileViewModel @Inject constructor(
                     "Error creating skill: ${e.message}"
                 )
                 _createSkillResult.value = null
-
             }
         }
-
     }
 
-    fun navigateToStep5() {
+    private fun navigateToStep5() {
         Log.d(
             "ProfileViewModel",
             "Skill Description: ${skillData.value.description}"
@@ -901,7 +858,6 @@ class ProfileViewModel @Inject constructor(
             skillData.value.description.isNotBlank() &&
                     skillData.value.category.isNotEmpty()
     }
-
 
     //<!--------------------Profile Setup Step 5 ---------------->
 
@@ -924,14 +880,13 @@ class ProfileViewModel @Inject constructor(
             isSelected && currentCategories.size < 3 -> currentCategories.add(
                 category
             )
-
             !isSelected -> currentCategories.remove(category)
         }
         _selectedCategoriesOfInterest.value = currentCategories
         updateCategoriesOfInterest(currentCategories)
     }
 
-    fun updateCategoriesOfInterest(categories: List<String>) {
+    private fun updateCategoriesOfInterest(categories: List<String>) {
         _userProfileData.value =
             userProfileData.value.copy(interestedSkills = categories)
         navigateToHome()
@@ -953,13 +908,12 @@ class ProfileViewModel @Inject constructor(
                     "Error creating profile: ${e.message}"
                 )
                 _createProfileResult.value = null
-
             }
         }
 
     }
 
-    fun navigateToHome() {
+    private fun navigateToHome() {
         Log.d(
             "ProfileViewModel",
             "Categories Of Interest: ${userProfileData.value.interestedSkills}"

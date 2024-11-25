@@ -95,7 +95,7 @@ fun ProfileScreen(
     val user = profileViewModel.userAuthData.collectAsState().value
     Log.d(
         "ProfileScreen",
-        "Comprobado valores ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}"
+        "Checking values ${userProfile.description} ${userProfile.preferredTimeRange} ${userProfile.interestedSkills}"
     )
     Scaffold {
         Box(
@@ -385,19 +385,19 @@ fun ReviewCard() {
                     .padding(end = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.lore_ipsum), //Aquí irá la reseña del usuario
+                    text = stringResource(id = R.string.lore_ipsum), //Text for users' review
                     fontSize = 14.sp,
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 Image(
-                    painter = painterResource(id = R.drawable.pfp_laura), //Aqui irá la foto de perfil del usuario que reseña
+                    painter = painterResource(id = R.drawable.pfp_laura), // Profile image from reviewers
                     contentDescription = stringResource(id = R.string.pfp_content_description)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Laura García", //Aqui irá el nombre del usuario que hace la review
+                    text = "Laura García", //Reviewers' name
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -417,7 +417,7 @@ fun UserRating() {
                 .background(MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "5", //Aqui irá la valoración del usuario
+                text = "5", //Average rating from reviewers
                 color = Color.White,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -519,14 +519,14 @@ fun UserCard(
                         )
                         val painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(it) // Convertimos el ByteArray a Input stream
+                                .data(it) // Convert from ByteArray to Input stream
                                 .build()
                         )
                         val painterState = painter.state
                         if (painterState is AsyncImagePainter.State.Error) {
                             Log.e(
                                 "UserCard",
-                                "Error al cargar la imagen: ${painterState.result.throwable}"
+                                "Failure when loading image: ${painterState.result.throwable}"
                             )
                         }
                         Image(
@@ -539,7 +539,7 @@ fun UserCard(
                                 ),
                             contentScale = ContentScale.Crop
                         )
-                    } ?: run { // Si no hay imagen, mostramos un placeholder
+                    } ?: run { // If there's no image, show this as a placeholder. Need instructions from UX team.
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -578,7 +578,6 @@ fun UserCard(
             Spacer(modifier = Modifier.height(16.dp))
             Card(
                 modifier = Modifier
-
                     .width(340.dp), colors = CardDefaults.cardColors(
                     containerColor = Color(
                         0x39D5D3DA
@@ -633,7 +632,7 @@ fun CategoriesOfInterest(userProfile: UserProfileData) {
 
 @Composable
 fun DayBox(userProfile: UserProfileData) {
-    val dayMapping = mapOf(
+    val dayMapping = mapOf( //Needs to be updated if the app is going to be localized in other languages as sunday could be the firs day of the week in english.
         stringResource(id = R.string.monday) to stringResource(id = R.string.monday_letter),
         stringResource(id = R.string.tuesday) to stringResource(id = R.string.tuesday_letter),
         stringResource(id = R.string.wednesday) to stringResource(id = R.string.wednesday_letter),

@@ -42,14 +42,14 @@ fun TwofaLoginScreen(
             is ResultStatus.Error -> {
                 Toast.makeText(
                     context,
-                    "Error durante el login",
+                    "Error when login",
                     Toast.LENGTH_SHORT
                 ).show()
                 navController.navigate(RootNavGraphObjects.LoginScreen.route) {
                     popUpTo(RootNavGraphObjects.TwofaLoginScreen.route) { inclusive = true }
                 }
             }
-            else -> {} // Manejo de otros estados si es necesario
+            else -> {} // Handle other states if necessary
         }
     }
     Scaffold { innerPadding ->
@@ -111,13 +111,11 @@ fun LoginValidationButton(
         onNextClick = {
             isTwoFaValid.value = authViewModel.isTwoFaCodeValid()
             if (isTwoFaValid.value) {
-                Log.i("2FA", "Código 2FA correcto.")
+                Log.i("2FA", "2FA code is successful.")
                 authViewModel.loginUser()
                 authViewModel.clearTwofaField()
-               // navController.navigate("MainScreen/${authViewModel.userAuthDataJson}"){popUpTo(0)
-             //   launchSingleTop=true}
             } else {
-                Log.i("2FA", "Código 2FA incorrecto.")
+                Log.i("2FA", "2FA code is wrong")
             }
         },
         enabled = enabled

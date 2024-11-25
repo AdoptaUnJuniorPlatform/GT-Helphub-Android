@@ -11,7 +11,6 @@ import com.alejandro.helphub.domain.usecase.auth.RequestResetPasswordUseCase
 import com.alejandro.helphub.domain.usecase.auth.sendtwofa.SendTwoFaLoginUseCase
 import com.alejandro.helphub.domain.usecase.auth.sendtwofa.SendTwoFaRegisterUseCase
 import com.alejandro.helphub.domain.usecase.auth.sendtwofa.SendTwoFaResetPasswordUseCase
-
 import com.alejandro.helphub.utils.ResultStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -169,7 +166,7 @@ class AuthViewModel @Inject constructor(
         val code = (100000..999999).random().toString()
         Log.i(
             "2FA Code",
-            "Código generado: $code"
+            "Generated code: $code"
         )
         return code
     }
@@ -185,20 +182,20 @@ class AuthViewModel @Inject constructor(
                 val generatedTwoFa = generateTwoFaCode()
                 val updatedUserData =
                     userAuthData.value.copy(twoFa = generatedTwoFa)
-                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                Log.i("2FA", "Saved 2fa code: ${updatedUserData.twoFa}")
                 val result = sendTwoFaRegisterUseCase(updatedUserData)
                 if (result.isNotEmpty()) {
                     _twoFaStatus.value = ResultStatus.Success(Unit)
-                    Log.i("this", "funciona")
+                    Log.i("this", "success")
                 } else {
                     _twoFaStatus.value =
-                        ResultStatus.Error("Credenciales no válidas")
-                    Log.i("this", "Credenciales no válidas")
+                        ResultStatus.Error("Credentials are not accepted")
+                    Log.i("this", "Credentials are not accepted")
                 }
                 _userAuthData.value = updatedUserData
             } catch (e: Exception) {
-                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
-                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+                _twoFaStatus.value = ResultStatus.Error("Connection failed")
+                Log.e("2FA", "Sending 2fa code failed: ${e.message}")
             } finally {
                 _isLoading.value = false
             }
@@ -214,14 +211,14 @@ class AuthViewModel @Inject constructor(
     val registrationResult: StateFlow<String?> get() = _registrationResult
 
     fun isTwoFaCodeValid(): Boolean {
-        Log.i("2FA", "Código 2FA ingresado: ${inputTwoFaCode.value}")
-        Log.i("2FA", "Código 2FA almacenado: ${userAuthData.value.twoFa}")
-        Log.i("2FA", "Email almacenado: ${userAuthData.value.email}")
+        Log.i("2FA", "2FA typed code: ${inputTwoFaCode.value}")
+        Log.i("2FA", "2FA saved code: ${userAuthData.value.twoFa}")
+        Log.i("2FA", "Saved email: ${userAuthData.value.email}")
         return userAuthData.value.twoFa == inputTwoFaCode.value
     }
 
     fun onTwoFaCodeChanged(newCode: String) {
-        Log.i("2FA", "Nuevo código 2FA ingresado: $newCode")
+        Log.i("2FA", "Typed new 2fa code: $newCode")
         _inputTwoFaCode.value = newCode
     }
 
@@ -232,7 +229,7 @@ class AuthViewModel @Inject constructor(
                 _registrationResult.value = result
                 callback(true)
             } catch (e: Exception) {
-                Log.e("Registro", "Error durante el registro: ${e.message}")
+                Log.e("Register", "Failure during register: ${e.message}")
                 _registrationResult.value = null
                 callback(false)
             }
@@ -264,13 +261,13 @@ class AuthViewModel @Inject constructor(
                     },
                     onFailure = { e ->
                         ResultStatus.Error(
-                            e.message ?: "Error desconocido"
+                            e.message ?: "Unknown error"
                         )
                     }
                 )
             } catch (e: Exception) {
                 _loginStatus.value =
-                    ResultStatus.Error(e.message ?: "Error inesperado")
+                    ResultStatus.Error(e.message ?: "Sudden error")
                 Log.e("LoginError", "Failed to login", e)
             } finally {
                 _isLoginLoading.value = false
@@ -288,20 +285,20 @@ class AuthViewModel @Inject constructor(
                 val generatedTwoFa = generateTwoFaCode()
                 val updatedUserData =
                     userAuthData.value.copy(twoFa = generatedTwoFa)
-                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                Log.i("2FA", "Saved 2fa code: ${updatedUserData.twoFa}")
                 val result = sendTwoFaLoginUseCase(updatedUserData)
                 if (result.isNotEmpty()) {
                     _twoFaStatus.value = ResultStatus.Success(Unit)
-                    Log.i("this", "funciona")
+                    Log.i("this", "success")
                 } else {
                     _twoFaStatus.value =
-                        ResultStatus.Error("Credenciales no válidas")
-                    Log.i("this", "Credenciales no válidas")
+                        ResultStatus.Error("Credentials are not accepted")
+                    Log.i("this", "Credentials are not accepted")
                 }
                 _userAuthData.value = updatedUserData
             } catch (e: Exception) {
-                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
-                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+                _twoFaStatus.value = ResultStatus.Error("Connection failure")
+                Log.e("2FA", "Failure sending 2fa code: ${e.message}")
             } finally {
                 _isLoading.value = false
             }
@@ -322,20 +319,20 @@ class AuthViewModel @Inject constructor(
                 val generatedTwoFa = generateTwoFaCode()
                 val updatedUserData =
                     userAuthData.value.copy(twoFa = generatedTwoFa)
-                Log.i("2FA", "Código 2FA almacenado: ${updatedUserData.twoFa}")
+                Log.i("2FA", "Saved 2fa code: ${updatedUserData.twoFa}")
                 val result = sendTwoFaResetPasswordUseCase(updatedUserData)
                 if (result.isNotEmpty()) {
                     _twoFaStatus.value = ResultStatus.Success(Unit)
-                    Log.i("this", "funciona")
+                    Log.i("this", "success")
                 } else {
                     _twoFaStatus.value =
-                        ResultStatus.Error("Credenciales no válidas")
-                    Log.i("this", "Credenciales no válidas")
+                        ResultStatus.Error("Credentials are not accepted")
+                    Log.i("this", "Credentials are not accepted")
                 }
                 _userAuthData.value = updatedUserData
             } catch (e: Exception) {
-                _twoFaStatus.value = ResultStatus.Error("Error de conexión")
-                Log.e("2FA", "Error al enviar el código 2FA: ${e.message}")
+                _twoFaStatus.value = ResultStatus.Error("Connection failure")
+                Log.e("2FA", "Failure sending 2fa code: ${e.message}")
             } finally {
                 _isLoading.value = false
             }

@@ -10,6 +10,9 @@ import javax.inject.Inject
 
 class SkillService @Inject constructor(private val skillClient: SkillClient) {
 
+    suspend fun getSkillsByCategory(category: String):Response<List<SkillResponse>>{
+        return skillClient.getSkillsByCategory(category)
+    }
 
     suspend fun updateSkill(skillId:String, createSkillDTO: CreateSkillDTO):Response<SkillResponse>{
         return skillClient.updateSkill(skillId,createSkillDTO)

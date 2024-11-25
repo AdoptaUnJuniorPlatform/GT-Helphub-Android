@@ -106,7 +106,7 @@ fun ResetButton(
             navController.navigate(RootNavGraphObjects.LoginScreen.route)
         }
 
-        else -> {} // No hacer nada en el estado Idle
+        else -> {} // Do nothing on Idle State
     }
 }
 

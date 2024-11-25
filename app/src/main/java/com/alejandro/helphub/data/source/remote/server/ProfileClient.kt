@@ -34,7 +34,6 @@ interface ProfileClient {
         @Part image_profile: MultipartBody.Part
     ): Response<ProfileImageResponse>
 
-
     @GET("/api/helphub/upload-service/profile-image/{id}")
     suspend fun getProfileImageByImageId(@Path("id") id: String): Response<ResponseBody>
 
@@ -47,4 +46,10 @@ interface ProfileClient {
         @Path("id")id:String,
         @Part id_user: MultipartBody.Part,
         @Part image_profile: MultipartBody.Part):Response<ProfileImageResponse>
+
+    @GET("/api/helphub/profile/byUserId/{id}")
+    suspend fun getProfileByUserId(@Path("id") id: String): Response<ProfileResponse>
+
+    @GET("/api/helphub/upload-service/profile-imageByUser/{id}")
+    suspend fun getProfileImageByUserId(@Path("id")id:String):Response<ResponseBody>
 }

@@ -27,14 +27,21 @@ class NetworkModule {
     fun provideTokenRepository(sharedPreferences: SharedPreferences): TokenRepository {
         return TokenRepository(sharedPreferences)
     }
+
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        return context.getSharedPreferences(
+            "app_preferences",
+            Context.MODE_PRIVATE
+        )
     }
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(authInterceptor: AuthInterceptor,contentTypeInterceptor: ContentTypeInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        contentTypeInterceptor: ContentTypeInterceptor
+    ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -47,10 +54,10 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient):Retrofit{
-       return Retrofit.Builder()
-           .baseUrl("http://10.0.2.2:4002/api/helphub/")
-           .client(okHttpClient)
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:4002/api/helphub/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -58,26 +65,24 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideTwofaClient(retrofit: Retrofit): TwofaClient {
-       return  retrofit.create(TwofaClient::class.java)
+        return retrofit.create(TwofaClient::class.java)
     }
 
     @Singleton
     @Provides
     fun provideAuthClient(retrofit: Retrofit): AuthClient {
-        return  retrofit.create(AuthClient::class.java)
+        return retrofit.create(AuthClient::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideProfileClient(retrofit:Retrofit): ProfileClient {
+    fun provideProfileClient(retrofit: Retrofit): ProfileClient {
         return retrofit.create(ProfileClient::class.java)
     }
 
-       @Singleton
+    @Singleton
     @Provides
     fun provideSkillClient(retrofit: Retrofit): SkillClient {
         return retrofit.create(SkillClient::class.java)
     }
-
-
 }

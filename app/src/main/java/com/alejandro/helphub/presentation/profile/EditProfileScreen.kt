@@ -78,7 +78,7 @@ fun EditProfileScreen(
     val context = LocalContext.current
     var photoUri by remember { mutableStateOf<Uri?>(null) }
 
-    Log.d("EditProfileScreen", "comprobando si id esta vacio $userId")
+    Log.d("EditProfileScreen", "checking if id is empty: $userId")
 
     Scaffold(topBar = {
         Row(
@@ -128,7 +128,7 @@ fun EditProfileScreen(
                             .padding(horizontal = 16.dp)
                     ) {
                         Spacer(modifier = Modifier.height(20.dp))
-                        Description(text = "Descripción del usuario")
+                        Description(text = stringResource(id = R.string.user_description))
                         TextBox(profileViewModel)
                         Spacer(modifier = Modifier.height(20.dp))
                         Location(profileViewModel)
@@ -185,7 +185,7 @@ fun EditProfileScreen(
                             } else {
                                 Log.e(
                                     "EditProfileScreen",
-                                    "Error: id o userId es nulo"
+                                    "Error: id or userId is null"
                                 )
                             }
                             profileViewModel.updateProfile(id, createProfileDTO)
@@ -341,7 +341,7 @@ fun UploadNewPhoto(
                         .clip(CircleShape)
                         .background(Color.Gray)
                         .then(
-                            if (photoUri == null&&profileImageBytes==null) Modifier.border(
+                            if (photoUri == null && profileImageBytes == null) Modifier.border(
                                 12.dp,
                                 Color.Gray,
                                 CircleShape
