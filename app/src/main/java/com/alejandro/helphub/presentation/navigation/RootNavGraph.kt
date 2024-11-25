@@ -17,13 +17,15 @@ import com.alejandro.helphub.presentation.auth.ResetPasswordScreen
 import com.alejandro.helphub.presentation.auth.SignUpCredsScreen
 import com.alejandro.helphub.presentation.auth.TwofaLoginScreen
 import com.alejandro.helphub.presentation.home.Home
+import com.alejandro.helphub.presentation.home.HomeViewModel
 import com.alejandro.helphub.presentation.profile.ProfileViewModel
 import com.alejandro.helphub.presentation.splash.SplashScreen
 @Composable
 fun RootNavGraph(navController: NavHostController,
                 authViewModel: AuthViewModel,
                 profileViewModel: ProfileViewModel,
-                navigationViewModel: NavigationViewModel
+                navigationViewModel: NavigationViewModel,
+                 homeViewModel: HomeViewModel
 )
 {
     NavHost(navController = navController, startDestination = "SplashScreen") {
@@ -35,11 +37,12 @@ fun RootNavGraph(navController: NavHostController,
                 navigationViewModel = navigationViewModel,
                 navController = navController,
                 profileViewModel = profileViewModel,
-                email=email
+                email=email,
+                homeViewModel = homeViewModel
             )
         }
         composable(RootNavGraphObjects.Home.route) {
-            Home(navController = navController)
+            Home(homeViewModel)
         }
         composable(RootNavGraphObjects.SplashScreen.route) {
             SplashScreen(onNavigateToLogin = {

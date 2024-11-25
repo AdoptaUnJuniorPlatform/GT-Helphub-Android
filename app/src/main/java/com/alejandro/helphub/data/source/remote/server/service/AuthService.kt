@@ -12,6 +12,9 @@ import javax.inject.Inject
 
 class AuthService @Inject constructor(private val authClient: AuthClient) {
 
+    suspend fun getAllUsers(): Response<List<ProfileResponse>> {
+        return authClient.getAllUsers()
+    }
 
     suspend fun getUserByEmail(email: String): Response<List<ProfileResponse>> {
         return authClient.getUserByEmail(email)
@@ -47,7 +50,7 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
         }
     }
 
-    suspend fun requestResetPassword(loginDTO:LoginDTO): Result<String> {
+    suspend fun requestResetPassword(loginDTO: LoginDTO): Result<String> {
         return withContext(Dispatchers.IO) {
             val response = authClient.resetPasswordRequest(loginDTO)
             if (response.isSuccessful) {

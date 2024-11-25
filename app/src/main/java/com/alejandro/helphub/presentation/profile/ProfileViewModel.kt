@@ -767,7 +767,7 @@ class ProfileViewModel @Inject constructor(
     private val _selectedCategories =
         MutableStateFlow<List<String>>(emptyList())
     val selectedCategories: StateFlow<List<String>> =
-        _selectedCategories.asStateFlow()
+        _selectedCategories
 
     private val _createSkillResult = MutableStateFlow<String?>(null)
     val createSkillResult: StateFlow<String?> get() = _createSkillResult
@@ -865,7 +865,7 @@ class ProfileViewModel @Inject constructor(
             "Updating selectedCategories to: $categories"
         )
         _skillData.value =
-            skillData.value.copy(category = categories)
+            _skillData.value.copy(category = categories)
         navigateToStep5()
     }
 

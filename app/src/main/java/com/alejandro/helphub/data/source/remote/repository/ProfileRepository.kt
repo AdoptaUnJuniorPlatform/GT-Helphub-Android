@@ -19,6 +19,30 @@ class ProfileRepository @Inject constructor(
     private val profileService: ProfileService,
     private val profileDataMapper: ProfileDataMapper
 ) {
+    suspend fun getProfileImageByUserId(id:String):Response<ResponseBody> {
+        return profileService.getProfileImageByUserId(id)
+    }
+
+    suspend fun getProfileByUserId(id: String): Response<ProfileResponse> {
+        return try {
+            val response = profileService.getProfileByUserId(id)
+
+            if (response.isSuccessful) {
+                response
+            } else {
+                Log.e("ProfileRepository", "Failed with error code: ${response.code()}")
+                Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
+                    null
+                )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Error fetching profile: ${e.message}")
+            Response.error(500,
+                (e.message ?: "Unknown error").toResponseBody(null)
+            )
+        }
+    }
 
     suspend fun updateProfileImage(id:String,idUserPart: MultipartBody.Part, imageProfilePart: MultipartBody.Part): ProfileImageResponse {
         return profileService.updateProfileImage(id,idUserPart, imageProfilePart)

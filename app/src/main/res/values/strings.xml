@@ -246,4 +246,18 @@
     <!--Edit profile Screen -->
     <string name="pfp">Foto de perfil</string>
     <string name="edit_profile">Editar Perfil</string>
+    <!--Home Screen -->
+    <string name="recommended">Recomendados</string>
+    <string name="categories_and_skills">Categorias y habilidades</string>
+    <string name="filters">Filtros</string>
+    <string name="searchbar_placeholder">¿Qué estás buscando?</string>
+    <!--Main Screen -->
+    <string name="warning_content_description">Icono de alerta</string>
+    <string name="profile_popup_title">Personaliza tu experiencia</string>
+    <string name="profile_popup_text1">Cuéntanos de ti y activa tu primera habilidad.</string>
+    <string name="profile_popup_text2">Completa los detalles y recibe recomendaciones personalizadas.</string>
+    <string name="profile_popup_text3">Añade al menos una habilidad para iniciar tu experiencia de intercambio.</string>
+    <string name="profile_popup_button">Completar perfil</string>
+
+
 </resources>

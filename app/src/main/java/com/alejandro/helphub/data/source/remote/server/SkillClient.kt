@@ -26,4 +26,6 @@ interface SkillClient {
     @PATCH("/api/helphub/hability/{id}")
     suspend fun updateSkill(@Path("id")skillId:String, @Body createSkillDTO: CreateSkillDTO):Response<SkillResponse>
 
+    @GET("/api/helphub/hability/category-habilities/{category}")
+    suspend fun getSkillsByCategory(@Path("category")category:String):Response<List<SkillResponse>>
 }
