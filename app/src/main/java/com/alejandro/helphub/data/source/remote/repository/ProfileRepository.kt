@@ -26,7 +26,6 @@ class ProfileRepository @Inject constructor(
     suspend fun getProfileByUserId(id: String): Response<ProfileResponse> {
         return try {
             val response = profileService.getProfileByUserId(id)
-
             if (response.isSuccessful) {
                 response
             } else {
@@ -61,12 +60,9 @@ class ProfileRepository @Inject constructor(
     suspend fun getProfileImageByImageId(id: String): Response<ResponseBody> {
         return try {
             val response = profileService.getProfileImageByImageId(id)
-
-            // Retornamos directamente el Response de Retrofit
             if (response.isSuccessful) {
                 response
             } else {
-
                 Log.e("ProfileRepository", "Failed with error code: ${response.code()}")
                 Response.error(response.code(), response.errorBody() ?: "Unknown error".toResponseBody(
                     null
@@ -88,7 +84,6 @@ class ProfileRepository @Inject constructor(
     suspend fun getProfileById(id: String): Response<ProfileResponse> {
         return try {
             val response = profileService.getProfileById(id)
-
             if (response.isSuccessful) {
                 response
             } else {

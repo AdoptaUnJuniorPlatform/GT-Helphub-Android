@@ -20,7 +20,6 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
         return authClient.getUserByEmail(email)
     }
 
-
     suspend fun getUserById(userId: String): Response<ProfileResponse> {
         return authClient.getUserById(userId)
     }
@@ -37,11 +36,11 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
             val response = authClient.doLogin(loginDTO)
             if (response.isSuccessful) {
                 response.body()?.let { Result.success(it) }
-                    ?: Result.failure(Exception("Token no disponible"))
+                    ?: Result.failure(Exception("Token not available"))
             } else {
                 Result.failure(
                     Exception(
-                        "Error en inicio de sesión${
+                        "Error in login ${
                             response.errorBody()?.string()
                         }"
                     )
@@ -55,11 +54,11 @@ class AuthService @Inject constructor(private val authClient: AuthClient) {
             val response = authClient.resetPasswordRequest(loginDTO)
             if (response.isSuccessful) {
                 response.body()?.code?.let { Result.success(it) }
-                    ?: Result.failure(Exception("Nueva contraseña no aceptada"))
+                    ?: Result.failure(Exception("New password not accepted"))
             } else {
                 Result.failure(
                     Exception(
-                        "Error en cambio de contraseña${
+                        "Error when changing password ${
                             response.errorBody()?.string()
                         }"
                     )

@@ -157,7 +157,7 @@ fun RandomCards(
                 )
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = "${userName} ${userSurname1}",
+                    text = "$userName $userSurname1",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -218,7 +218,7 @@ fun RandomCards(
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
-            Row() {
+            Row{
                 Box(
                     modifier = Modifier
                         .border(

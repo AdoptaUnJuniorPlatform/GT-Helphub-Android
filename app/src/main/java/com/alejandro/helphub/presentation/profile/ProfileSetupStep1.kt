@@ -51,9 +51,7 @@ fun ProfileSetupStep1(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
     email:String?
-
 ) {
-
     val isStep2Enabled by profileViewModel.isNavigationToStep2Enabled.collectAsState(
         initial = false
     )

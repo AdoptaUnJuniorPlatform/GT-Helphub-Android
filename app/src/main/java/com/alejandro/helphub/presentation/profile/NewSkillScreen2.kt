@@ -75,7 +75,6 @@ fun NewSkillScreen2(
                 )
         ) {
             Column(
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .zIndex(0f)

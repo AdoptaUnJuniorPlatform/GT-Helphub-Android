@@ -81,7 +81,6 @@ fun NewSkillScreen1(
             Spacer(modifier = Modifier.width(20.dp))
             Text(text = stringResource(id = R.string.skills), fontSize = 24.sp)
         }
-
     }) { innerPadding ->
         Box(
             modifier = Modifier
@@ -139,13 +138,11 @@ fun NextButton(
     onNextClick: () -> Unit,
     enabled: Boolean
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
-
         Button(
             onClick = { onNextClick() },
             enabled = enabled,
@@ -190,7 +187,11 @@ fun SkillCounterCard(profileViewModel: ProfileViewModel) {
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "${stringResource(id = R.string.you_have)} ${skillDataList.size} ${stringResource(id = R.string._skills)}",
+                    text = "${stringResource(id = R.string.you_have)} ${skillDataList.size} ${
+                        stringResource(
+                            id = R.string._skills
+                        )
+                    }",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF3F6810),
@@ -202,7 +203,7 @@ fun SkillCounterCard(profileViewModel: ProfileViewModel) {
             Spacer(modifier = Modifier.height(10.dp))
             Row {
                 Text(
-                    text = "Sigue sumando habilidades para hacer crecer esta comunidad",
+                    text = stringResource(id = R.string.top_message),
                     fontSize = 14.sp,
                     color = Color(0xFF3F6810)
                 )

@@ -116,7 +116,6 @@ fun ProfileSetupStep4b(
                         onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4a.createRoute(email!!)) },
                         onNextClick = {
                             profileViewModel.createSkill()
-
                             showDataCard = true
                         },
                         enabled = isStep5Enabled && !showDataCard
@@ -171,7 +170,7 @@ fun DataCard(
                 "postTitle: ${skillData.title}, " +
                 "selectedLevel: ${skillData.level}, " +
                 "mode: ${skillData.mode}, " +
-                "skilLDescription: ${skillData.description}, " +
+                "skillDescription: ${skillData.description}, " +
                 "selectedCategory: ${skillData.category},"
     )
         Card(

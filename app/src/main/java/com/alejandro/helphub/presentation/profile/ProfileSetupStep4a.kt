@@ -55,7 +55,7 @@ import com.alejandro.helphub.presentation.navigation.BottomBarScreen
 fun ProfileSetupStep4a(
     profileViewModel: ProfileViewModel,
     navController: NavHostController,
-    email:String?
+    email: String?
 ) {
     val listState = rememberLazyListState()
     var showCard by remember { mutableStateOf(false) }
@@ -97,8 +97,20 @@ fun ProfileSetupStep4a(
                 item { Spacer(modifier = Modifier.height(22.dp)) }
                 item {
                     StepButtons(
-                        onBackClick = { navController.navigate(BottomBarScreen.ProfileSetupStep3.createRoute(email!!)) },
-                        onNextClick = { navController.navigate(BottomBarScreen.ProfileSetupStep4b.createRoute(email!!)) },
+                        onBackClick = {
+                            navController.navigate(
+                                BottomBarScreen.ProfileSetupStep3.createRoute(
+                                    email!!
+                                )
+                            )
+                        },
+                        onNextClick = {
+                            navController.navigate(
+                                BottomBarScreen.ProfileSetupStep4b.createRoute(
+                                    email!!
+                                )
+                            )
+                        },
                         enabled = isStep4SkillEnabled
                     )
                 }

@@ -240,9 +240,11 @@
     <string name="saturday_letter">S</string>
     <string name="sunday_letter">D</string>
     <string name="save">Guardar</string>
+    <string name= "user_description">Descripción del usuario</string>
     <!--New Skills Screen -->
     <string name="you_have">Ya tienes</string>
     <string name="_skills"> habilidades.</string>
+    <string name="top_message">Sigue sumando habilidades para hacer crecer esta comunidad.</string>
     <!--Edit profile Screen -->
     <string name="pfp">Foto de perfil</string>
     <string name="edit_profile">Editar Perfil</string>

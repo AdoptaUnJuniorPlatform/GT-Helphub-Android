@@ -13,32 +13,27 @@ import kotlinx.serialization.Serializable
 sealed class BottomBarScreen(
     val route: String,
     val title: String,
-    //val icon: ImageVector
 ) {
 
     object Home : BottomBarScreen(
         route = "Home",
         title = "Home",
-        //  icon = Icons.Default.Home
     )
 
     object Chat : BottomBarScreen(
         route = "Chat",
         title = "Chat",
-        // icon = Icons.Default.Mail
     )
 
     object Notifications : BottomBarScreen(
         route = "Notifications",
         title = "Notifications",
-        //icon = Icons.Default.Notifications
     )
 
     @Serializable
     object Profile : BottomBarScreen(
         route = "Profile/{id}/{userId}",
         title = "Profile",
-        // icon = Icons.Default.Person
     ) {
         fun createRoute(id: String, userId: String) = "Profile/$id/$userId"
     }
@@ -111,8 +106,6 @@ sealed class BottomBarScreen(
     ) {
         fun createRoute(skillId: String) = "EditSkillScreen/$skillId"
     }
-
-
 }
 
 val bottomBarIcons = mapOf(

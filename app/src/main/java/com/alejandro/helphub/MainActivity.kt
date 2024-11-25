@@ -9,10 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import com.alejandro.helphub.presentation.auth.AuthViewModel
 import com.alejandro.helphub.presentation.home.HomeViewModel
-import com.alejandro.helphub.presentation.profile.ProfileViewModel
 import com.alejandro.helphub.presentation.navigation.BottomNavGraph
 import com.alejandro.helphub.presentation.navigation.NavigationViewModel
 import com.alejandro.helphub.presentation.navigation.RootNavGraph
+import com.alejandro.helphub.presentation.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
             val email = authViewModel.email.collectAsState().value
 
             if (isAuthenticated) {
-                //NavigationWrapper()
                 BottomNavGraph(navController = navController, profileViewModel = profileViewModel,homeViewModel)
                MainScreen(navigationViewModel = navigationViewModel,navController=navController,profileViewModel, homeViewModel = homeViewModel, email=email)
             }else{

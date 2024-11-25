@@ -27,9 +27,7 @@ fun SplashScreen(onNavigateToLogin:()->Unit) {
     LaunchedEffect(Unit) {
         delay(2000)
         onNavigateToLogin()
-
     }
-
 
     Column(
         modifier = Modifier
@@ -37,7 +35,6 @@ fun SplashScreen(onNavigateToLogin:()->Unit) {
             .background(MaterialTheme.colorScheme.primary),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Box(modifier = Modifier.weight(1f)) {
             Spacer(modifier = Modifier.fillMaxSize())
         }
@@ -58,8 +55,6 @@ fun SplashScreen(onNavigateToLogin:()->Unit) {
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.background
-
-
             )
         }
     }
