@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,14 +63,15 @@ fun MainScreen(
     navController: NavHostController,
     profileViewModel: ProfileViewModel,
     homeViewModel: HomeViewModel,
-    email:String?
+    email: String?
 ) {
     var showPopUp by remember { mutableStateOf(false) }
-    val currentDestination=navController.currentBackStackEntryAsState().value?.destination?.route
+    val currentDestination =
+        navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(bottomBar = {
 
-        if(currentDestination != BottomBarScreen.ProfileSetupStep1.route &&
+        if (currentDestination != BottomBarScreen.ProfileSetupStep1.route &&
             currentDestination != BottomBarScreen.ProfileSetupStep2.route &&
             currentDestination != BottomBarScreen.ProfileSetupStep3.route &&
             currentDestination != BottomBarScreen.ProfileSetupStep4a.route &&
@@ -78,29 +80,35 @@ fun MainScreen(
             currentDestination != BottomBarScreen.NewSkillScreen1.route &&
             currentDestination != BottomBarScreen.NewSkillScreen2.route &&
             currentDestination != BottomBarScreen.EditProfileScreen.route &&
-            currentDestination != BottomBarScreen.EditSkillScreen.route )
-
-        {
+            currentDestination != BottomBarScreen.EditSkillScreen.route
+        ) {
             BottomBar(
-                navController =navController,
-                navigationViewModel=navigationViewModel,
+                navController = navController,
+                navigationViewModel = navigationViewModel,
                 onShowPopUp = { showPopUp = true }
             )
         }
     }) { paddingValues ->
         Box(modifier = Modifier.padding(PaddingValues())) {
-           BottomNavGraph(
-                navController = navController, profileViewModel = profileViewModel, homeViewModel = homeViewModel
+            BottomNavGraph(
+                navController = navController,
+                profileViewModel = profileViewModel,
+                homeViewModel = homeViewModel
             )
-
             if (showPopUp) {
                 CardPopUp(onCompleteProfile = {
                     showPopUp = false
                     navigationViewModel.resetState()
-                    navController.navigate(BottomBarScreen.ProfileSetupStep1.createRoute(email!!)){
-                        popUpTo(RootNavGraphObjects.MainScreen.route){saveState=true}
-                        launchSingleTop=true
-                        restoreState=true
+                    navController.navigate(
+                        BottomBarScreen.ProfileSetupStep1.createRoute(
+                            email!!
+                        )
+                    ) {
+                        popUpTo(RootNavGraphObjects.MainScreen.route) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 })
             }
@@ -125,13 +133,18 @@ fun BottomBar(
     val uiState by navigationViewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
-        when (val state=uiState) {
+        when (val state = uiState) {
             is ProfileUIState.Success -> {
                 val statusCode = state.profile.statusCode
-                val id=state.profile.id
-                val userId=state.profile.userId.id
+                val id = state.profile.id
+                val userId = state.profile.userId.id
                 if (statusCode == null) {
-                    navController.navigate(BottomBarScreen.Profile.createRoute(id,userId)) {
+                    navController.navigate(
+                        BottomBarScreen.Profile.createRoute(
+                            id,
+                            userId
+                        )
+                    ) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
@@ -178,8 +191,8 @@ fun BottomBar(
                 },
                 icon = {
                     Icon(
-                        imageVector =bottomBarIcons[screen.route] ?: Icons.Default.Home,
-                       // imageVector = screen.icon,
+                        imageVector = bottomBarIcons[screen.route]
+                            ?: Icons.Default.Home,
                         contentDescription = screen.title,
                         modifier = Modifier.offset(y = 8.dp)
                     )
@@ -197,16 +210,21 @@ fun BottomBar(
 }
 
 @Composable
-fun CardPopUp(onCompleteProfile: () -> Unit) {
+fun CardPopUp(
+    onCompleteProfile: () -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center
     ) {
         Card(
             modifier = Modifier
                 .padding(24.dp),
             elevation = CardDefaults.cardElevation(8.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             Column(
@@ -215,20 +233,22 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.WarningAmber,
-                    contentDescription = "Warning Icon",
+                    contentDescription = stringResource(id = R.string.warning_content_description),
                     tint = Color.Red,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Personaliza tu Experiencia", fontSize = 32.sp,
-                    textAlign = TextAlign.Center, fontWeight = FontWeight.Bold,
+                    text = stringResource(id = R.string.profile_popup_title),
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
 
                     color = Color(0xFF6A4CCD)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Cuéntanos de ti y activa tu primera habilidad.",
+                    text = stringResource(id = R.string.profile_popup_text1),
 
                     color = MaterialTheme.colorScheme.primary,
 
@@ -238,7 +258,7 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Completa los detalles y recibe recomendaciones personalizadas.",
+                    text = stringResource(id = R.string.profile_popup_text2),
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier
@@ -250,7 +270,7 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
                         .padding(horizontal = 18.dp, vertical = 8.dp)
                 )
                 Text(
-                    text = "Añade al menos una habilidad para iniciar tu experiencia de intercambio.",
+                    text = stringResource(id = R.string.profile_popup_text3),
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier
@@ -268,8 +288,10 @@ fun CardPopUp(onCompleteProfile: () -> Unit) {
                         .padding(end = 6.dp),
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                    onClick = { onCompleteProfile() }) {
-                    Text(text = "COMPLETAR PERFIL")
+                    onClick = {
+                        onCompleteProfile()
+                    }) {
+                    Text(text = stringResource(id = R.string.profile_popup_button))
                 }
             }
         }
